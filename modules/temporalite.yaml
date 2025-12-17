@@ -1,0 +1,65 @@
+module: temporalite
+title: Temporalité
+include_paths:
+- Event.Event.IsInSale
+- Event.Event.HasNoSpecificDate
+- IDChain.TimeZoneID
+- Timezone.TZDatabaseID
+- EventDates.EventDateModelList[].Date
+- EventDates.EventDateModelList[].SalesStartDateBoxOffice
+- EventDates.EventDateModelList[].SalesEndDateBoxOffice
+- EventDates.EventDateModelList[].SalesStartDateNetwork
+- EventDates.EventDateModelList[].SalesEndDateNetwork
+- EventDates.EventDateModelList[].SalesStartDateInternet
+- EventDates.EventDateModelList[].SalesEndDateInternet
+routes:
+- name: list_representation_types
+  method: GET
+  url: '{base_url}/bill/representationtypes'
+  optional: true
+- name: list_activity_types
+  method: GET
+  url: '{base_url}/bill/activitytypes'
+  optional: true
+- name: list_producers
+  method: GET
+  url: '{base_url}/bill/producers'
+  optional: true
+- name: list_presales
+  method: GET
+  url: '{base_url}/bill/presales'
+  optional: true
+- name: presale_eventdates
+  method: GET
+  url: '{base_url}/bill/presales/{presaleId}/eventdates'
+  optional: true
+- name: list_events
+  method: GET
+  url: '{base_url}/bill/events'
+  optional: true
+policy: 'Tu es un VALIDATEUR « Temporalité ». Analyse l''évènement en te concentrant
+  sur :
+
+  - Fenêtres de vente par représentation : ouverture < fermeture ≤ date de show ;
+  pas de dates nulles/placeholders ; timezone cohérente entre champs.
+
+  - IsInSale doit refléter l’existence d’au moins une fenêtre de vente active (sinon
+  erreur).
+
+  - HasNoSpecificDate ↔ EventDates : si activé, ne pas avoir de EventDates ; si des
+  dates existent, ne pas activer HasNoSpecificDate.
+
+  - Formats ISO (pas de "0001-01-01", pas de chaînes vides), cohérence heure locale
+  vs TZ.
+
+  - Pré-publication : vérifier qu’aucune représentation passée n’est encore ouverte
+  à la vente.
+
+  Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos
+  utiles → info.
+
+  '
+source_versions:
+  rules_mapping_version: 1
+  routes_version: 1
+  modules_version: 1

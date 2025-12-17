@@ -1,0 +1,155 @@
+version: 1
+base_url: "https://apistaging.reservatech.net"
+
+modules:
+  temporalite:
+    title: "Temporalité"
+    routes:
+      # Types & référentiels utiles pour valider la cohérence temporelle (type de rep, activité, producteur)
+      - name: list_representation_types
+        method: GET
+        url: "{base_url}/bill/representationtypes"         # référentiel types de représentation
+        optional: true
+      - name: list_activity_types
+        method: GET
+        url: "{base_url}/bill/activitytypes"
+        optional: true
+      - name: list_producers
+        method: GET
+        url: "{base_url}/bill/producers"
+        optional: true
+      # Presales: fenêtres (peuvent impacter l’état IsInSale / fenêtres par canal)
+      - name: list_presales
+        method: GET
+        url: "{base_url}/bill/presales"
+        optional: true
+      - name: presale_eventdates
+        method: GET
+        url: "{base_url}/bill/presales/{presaleId}/eventdates"
+        optional: true
+      # (Si besoin d’un point d’entrée événement)
+      - name: list_events
+        method: GET
+        url: "{base_url}/bill/events"
+        optional: true
+
+  plan_capacite:
+    title: "Plan/Capacité"
+    routes:
+      - name: org_venue_models_base
+        method: GET
+        url: "{base_url}/bill/organizations/{orgId}/venuemodels/base"   # toutes les configs de salle d’une org
+      - name: org_venues
+        method: GET
+        url: "{base_url}/bill/organizations/{orgId}/venues"
+        optional: true
+      - name: physical_venues
+        method: GET
+        url: "{base_url}/bill/physicalvenues"
+        optional: true
+      - name: venue_model_fullconfig
+        method: GET
+        url: "{base_url}/bill/venuemodels/{venueModelId}/fullconfig"    # comparer plan officiel vs configuré
+      - name: venue_model_info
+        method: GET
+        url: "{base_url}/bill/venuemodels/{venueModelId}"
+        optional: true
+
+  internet:
+    title: "Internet"
+    routes:
+      - name: event_page_url
+        method: GET
+        url: "{base_url}/pos/{posId}/website/settings/eventpageurl"     # url de vente / affichage public
+      - name: list_tags
+        method: GET
+        url: "{base_url}/pos/{posId}/tags"
+      - name: org_event_reminder_template
+        method: GET
+        url: "{base_url}/templates/pos/{posId}/emails/eventreminder"    # état/templating rappel (org/pos)
+        optional: true
+      - name: venue_event_reminder_state
+        method: GET
+        url: "{base_url}/venues/{venueId}/eventreminder/state"
+        optional: true
+
+  tarifs_client:
+    title: "Tarifs (+ Client)"
+    routes:
+      - name: list_taxes
+        method: GET
+        url: "{base_url}/bill/taxes"                                   # définitions de taxes
+      - name: promo_rules
+        method: GET
+        url: "{base_url}/bill/promorules"
+        optional: true
+      - name: promo_definitions
+        method: GET
+        url: "{base_url}/bill/promodefinitions"
+        optional: true
+      - name: promo_codes_for_definition
+        method: GET
+        url: "{base_url}/bill/promodefinitions/{promoDefinitionId}/promocodes"
+        optional: true
+      - name: presale_pricegroups
+        method: GET
+        url: "{base_url}/bill/presales/{presaleId}/pricegroups"        # lier préventes ↔ groupes de prix
+        optional: true
+
+  pos_frais:
+    title: "POS/Frais"
+    routes:
+      - name: list_organizations_points_of_sale
+        method: GET
+        url: "{base_url}/bill/organizations"                           # points de vente / organisations
+      - name: list_taxes
+        method: GET
+        url: "{base_url}/bill/taxes"                                   # cohérence taxable vs non-taxable
+      - name: event_page_url
+        method: GET
+        url: "{base_url}/pos/{posId}/website/settings/eventpageurl"    # vérifier ouverture web vs guichet
+      - name: list_tags
+        method: GET
+        url: "{base_url}/pos/{posId}/tags"
+        optional: true
+
+  forfaits_produits:
+    title: "Forfaits/Produits"
+    routes:
+      - name: list_packages
+        method: GET
+        url: "{base_url}/bill/packages"
+      - name: package_fullconfig
+        method: GET
+        url: "{base_url}/bill/packages/{packageId}/fullconfig"
+
+  ids_tags:
+    title: "IDs/Tags"
+    routes:
+      # La plupart des contrôles sont internes (GUID par défaut, IDChain vs Event, cohérence tags)
+      # Seules ces routes peuvent aider pour référentiels ou tags disponibles
+      - name: list_tags
+        method: GET
+        url: "{base_url}/pos/{posId}/tags"
+        optional: true
+
+  final_validation:
+    title: "Validation finale (orchestrateur)"
+    depends_on:
+      - temporalite
+      - plan_capacite
+      - tarifs_client
+      - pos_frais
+      - internet
+      - forfaits_produits
+      - ids_tags
+    routes:
+      # Pour la simulation d’achat, pas d’endpoint direct listé : exécuter via test end-to-end interne (headless/driver).
+      - name: venue_model_fullconfig
+        method: GET
+        url: "{base_url}/bill/venuemodels/{venueModelId}/fullconfig"
+        optional: true
+      - name: event_page_url
+        method: GET
+        url: "{base_url}/pos/{posId}/website/settings/eventpageurl"
+        optional: true

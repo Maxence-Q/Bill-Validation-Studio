@@ -1,0 +1,9 @@
+# Ignorer les logs
+*.log
+logs/
+
+# Ignorer les dossiers système/cache python
+__pycache__/
+*.pyc
+.env
+.DS_Store

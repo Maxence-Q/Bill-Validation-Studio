@@ -1,0 +1,88 @@
+modules:
+  temporalite:
+    title: "Temporalité"
+    description: "Dates, fenêtres de vente, formats ISO, flags de temporalité."
+    policy: |
+      Tu es un VALIDATEUR « Temporalité ». Analyse l'évènement en te concentrant sur :
+      - Fenêtres de vente par représentation : ouverture < fermeture ≤ date de show ; pas de dates nulles/placeholders ; timezone cohérente entre champs.
+      - IsInSale doit refléter l’existence d’au moins une fenêtre de vente active (sinon erreur).
+      - HasNoSpecificDate ↔ EventDates : si activé, ne pas avoir de EventDates ; si des dates existent, ne pas activer HasNoSpecificDate.
+      - Formats ISO (pas de "0001-01-01", pas de chaînes vides), cohérence heure locale vs TZ.
+      - Pré-publication : vérifier qu’aucune représentation passée n’est encore ouverte à la vente.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  plan_capacite:
+    title: "Plan/Capacité"
+    description: "Capacité officielle, régie bloquée, sections tarifées vs actives."
+    policy: |
+      Tu es un VALIDATEUR « Plan/Capacité ». Contrôle :
+      - Jauge totale configurée ≤ capacité officielle de la salle (ex. André-Mathieu: 827). Sections bloquées (régie, zones techniques) non vendables.
+      - Cohérence « admission générale » vs plan par sections : si GA=true, éviter structure contradictoire par sections ; si GA=false, vérifier sections activées et cohérentes.
+      - Aucune section vendable sans tarif assigné ; pas de section tarifée mais désactivée par erreur.
+      - Si distanciation sociale/zonage technique est mentionné, vérifier qu’elle est reflétée dans les sections ou sièges bloqués.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  internet:
+    title: "Internet"
+    description: "Affichage public FR/EN, contenu cohérent, pas de lorem ipsum."
+    policy: |
+      Tu es un VALIDATEUR « Internet ». Vérifie (si DisplayOnTheInternet=true) :
+      - Paire FR/EN complète et non vide : InternetName_Fr/En, LongDescription_Fr/En, résumés et champs visibles publics (pas de lorem ipsum/placeholder).
+      - Cohérence sémantique : titres Internet* alignés avec LongDescription* (pas de contradictions).
+      - Liens, images/affiches, URL de page d’évènement (si disponible côté POS/site) présents/valables.
+      - Étiquettes publiques (PublicTags/NotToMiss) cohérentes avec le contenu réellement affiché.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  tarifs_client:
+    title: "Tarifs (+ Client)"
+    description: "Groupes de prix, taxes, GA vs sections, cas Co-Motion/Club."
+    policy: |
+      Tu es un VALIDATEUR « Tarifs ». Contrôle :
+      - Existence de PriceGroups ; champs obligatoires (nom, type, taxes, AllowedPointOfSales plausibles).
+      - Pas de mélange incohérent de taxes pour un même groupe/section (tout taxable ou tout non-taxable selon la règle).
+      - Prix à 0 uniquement si faveur/promo/comp clairement indiquée ; si "Invité" ou "faveur" dans le nom → flag faveur activé ; si "consigne" dans le nom → cocher consigne, prix=0 et "Prix différent sur billet" renseigné.
+      - GA vs sections : si GA=true, affectations tarifaires cohérentes ; sinon, chaque section vendable doit avoir un tarif.
+      - Cas client Co-Motion : si le nom contient "club comotion", exiger la carte membre liée au tarif membre.
+      - Éviter l’erreur fréquente : prix de salle écrasé par prix de section (signaler incohérence).
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  pos_frais:
+    title: "POS/Frais"
+    description: "Droits de vente par canal, POS requis, synchronisation d’ouvertures."
+    policy: |
+      Tu es un VALIDATEUR « POS/Frais ». Vérifie :
+      - Droits et canaux actifs (web, guichet, admin) alignés avec la stratégie/contrat : vente internet active si prévu ; guichet présent si requis.
+      - Frais (FeeDefinitions) présents et marqués taxable/non-taxable conformément au client.
+      - Cas client ROR : frais 1 non taxable et frais 2 taxable (inverser = erreur).
+      - Incohérences : promo active alors que canal correspondant est inactif ; dates d’ouverture non synchronisées si exigée l’ouverture simultanée.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  forfaits_produits:
+    title: "Forfaits/Produits"
+    description: "Cohérence des forfaits/passeports/produits liés."
+    policy: |
+      Tu es un VALIDATEUR « Forfaits/Produits ». Valide :
+      - Cohérence d’un forfait/passeport : tous les événements composants existent, sont publiables, compatibles taxes/frais et en vente selon le planning.
+      - Si un composant n’est pas vendable, le forfait ne doit pas être en vente ou doit l’exclure (erreur sinon).
+      - Pour les produits/passeports avec date à déterminer, s’assurer que l’affichage et la logique le reflètent clairement.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  ids_tags:
+    title: "IDs/Tags"
+    description: "GUID non par défaut, concordance IDChain, tags publics/internes."
+    policy: |
+      Tu es un VALIDATEUR « IDs/Tags ». Vérifie :
+      - Pas de GUID/ID par défaut (00000000-0000-0000-0000-000000000000 ou 0) sur des entités requises.
+      - Concordance des chaînes internes RO_* et IDChain avec les méta-données Event.*.
+      - Cohérence des tags publics (PublicTags/NotToMiss) et internes (InternalTags) avec l’état de publication.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.
+
+  final_validation:
+    title: "Validation finale (orchestrateur)"
+    description: "Simulation d’achat (régulier/membre) + warnings optionnels."
+    policy: |
+      Tu es l’ORCHESTRATEUR de la validation finale. Tu consolides les vérifications de tous les modules et ajoutes :
+      - Check global : plan complet, jauge ≤ capacité officielle, FR/EN complets si Internet, groupes de prix présents, pas de GUID par défaut, canaux vente OK.
+      - Simulation d’achat : scénario régulier et membre (si applicable) pour détecter blocages évidents (tarif manquant, carte membre non exigée alors qu’affichée, etc.).
+      - Publication : prêt à publier seulement si aucune erreur bloquante ; sinon lister erreurs + suggestions concrètes.
+      Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos utiles → info.

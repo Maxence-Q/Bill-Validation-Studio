@@ -1,0 +1,35 @@
+module: final_validation
+title: Validation finale (orchestrateur)
+include_paths:
+- Event.Event.IsInSale
+- PriceGroups.PriceGroupModelList[].AllowedPointOfSales[].PointOfSaleID
+- PriceGroups.PriceGroupModelList[].MembershipTypeID
+routes:
+- name: venue_model_fullconfig
+  method: GET
+  url: '{base_url}/bill/venuemodels/{venueModelId}/fullconfig'
+  optional: true
+- name: event_page_url
+  method: GET
+  url: '{base_url}/pos/{posId}/website/settings/eventpageurl'
+  optional: true
+policy: 'Tu es l’ORCHESTRATEUR de la validation finale. Tu consolides les vérifications
+  de tous les modules et ajoutes :
+
+  - Check global : plan complet, jauge ≤ capacité officielle, FR/EN complets si Internet,
+  groupes de prix présents, pas de GUID par défaut, canaux vente OK.
+
+  - Simulation d’achat : scénario régulier et membre (si applicable) pour détecter
+  blocages évidents (tarif manquant, carte membre non exigée alors qu’affichée, etc.).
+
+  - Publication : prêt à publier seulement si aucune erreur bloquante ; sinon lister
+  erreurs + suggestions concrètes.
+
+  Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos
+  utiles → info.
+
+  '
+source_versions:
+  rules_mapping_version: 1
+  routes_version: 1
+  modules_version: 1

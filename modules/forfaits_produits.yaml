@@ -1,0 +1,32 @@
+module: forfaits_produits
+title: Forfaits/Produits
+include_paths:
+- PriceGroups.IsPackage
+- PriceGroups.PackageID
+- Event.Event.ProductType
+routes:
+- name: list_packages
+  method: GET
+  url: '{base_url}/bill/packages'
+- name: package_fullconfig
+  method: GET
+  url: '{base_url}/bill/packages/{packageId}/fullconfig'
+policy: 'Tu es un VALIDATEUR « Forfaits/Produits ». Valide :
+
+  - Cohérence d’un forfait/passeport : tous les événements composants existent, sont
+  publiables, compatibles taxes/frais et en vente selon le planning.
+
+  - Si un composant n’est pas vendable, le forfait ne doit pas être en vente ou doit
+  l’exclure (erreur sinon).
+
+  - Pour les produits/passeports avec date à déterminer, s’assurer que l’affichage
+  et la logique le reflètent clairement.
+
+  Gravité: incohérences bloquantes → error ; mauvaises pratiques → warning ; infos
+  utiles → info.
+
+  '
+source_versions:
+  rules_mapping_version: 1
+  routes_version: 1
+  modules_version: 1

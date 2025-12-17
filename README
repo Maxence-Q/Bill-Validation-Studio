@@ -1,0 +1,40 @@
+## 1) Setup
+```bash
+make install
+```
+
+## 2) Lancer
+- UI (event brief) :
+```bash
+make brief
+make brief ARGS="--id 1234"
+```
+- Évaluation LangSmith :
+```bash
+make eval
+```
+- Fichier arbitraire :
+```bash
+make run FILE=path/to/script.py ARGS="..."
+```
+
+## 3) Debug
+- Lancer avec debugpy via Makefile :
+```bash
+make debug FILE=event_brief.py ARGS="--id 1234"
+```
+- Dans VS Code, utiliser une config **Attach** :
+```jsonc
+{
+  "name": "Attach to debugpy (localhost:5678)",
+  "type": "debugpy",
+  "request": "attach",
+  "connect": { "host": "localhost", "port": 5678 }
+}
+```
+(Exécute `make debug` puis clique **Start Debugging** sur cette config.)
+
+## Remarques
+- Le Makefile exporte automatiquement les variables de `.env` et active le venv.
+- `PYTHONPATH` est positionné sur la racine du repo.
+

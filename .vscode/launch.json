@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug eval_langsmith (module)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "tests.eval_langsmith",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "console": "integratedTerminal",
+      "env": {
+        "GROQ_API_KEY": "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",
+        "LANGCHAIN_TRACING_V2": "true",
+        "LANGCHAIN_ENDPOINT": "https://api.smith.langchain.com",
+        "LANGCHAIN_PROJECT": "premier_test",
+        "LANGSMITH_API_KEY": "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"
+      }
+    },
+    {
+      "name": "Debug current file (adds PYTHONPATH)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "GROQ_API_KEY": "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",
+        "LANGCHAIN_TRACING_V2": "true",
+        "LANGCHAIN_ENDPOINT": "https://api.smith.langchain.com",
+        "LANGCHAIN_PROJECT": "premier_test",
+        "LANGSMITH_API_KEY": "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"
+      }
+    }
+  ]
+}
