@@ -10,11 +10,15 @@
       "justMyCode": false,
       "console": "integratedTerminal",
       "env": {
+        "BILL_TS_API_URL":"https://apistaging.reservatech.net/",
+        "BILL_TS_API_KEY":"xx554t09j40jf03jjf03j09fj30j49gjhh39hg0pf",
         "GROQ_API_KEY": "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",
         "LANGCHAIN_TRACING_V2": "true",
         "LANGCHAIN_ENDPOINT": "https://api.smith.langchain.com",
         "LANGCHAIN_PROJECT": "premier_test",
-        "LANGSMITH_API_KEY": "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"
+        "LANGSMITH_API_KEY": "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",
+        "QDRANT_URL":"https://f6d14f40-6df5-4eec-a3be-e6c4a6578374.us-east-1-1.aws.cloud.qdrant.io:6333",
+        "QDRANT_API_KEY":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.uZL91EYFwkNuY0Z_Sjd4gziRPjs5FBO2HZFYS6eCf7E"
       }
     },
     {
@@ -27,11 +31,15 @@
       "console": "integratedTerminal",
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
+        "BILL_TS_API_URL":"https://apistaging.reservatech.net/",
+        "BILL_TS_API_KEY":"xx554t09j40jf03jjf03j09fj30j49gjhh39hg0pf",
         "GROQ_API_KEY": "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",
         "LANGCHAIN_TRACING_V2": "true",
         "LANGCHAIN_ENDPOINT": "https://api.smith.langchain.com",
         "LANGCHAIN_PROJECT": "premier_test",
-        "LANGSMITH_API_KEY": "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"
+        "LANGSMITH_API_KEY": "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",
+        "QDRANT_URL":"https://f6d14f40-6df5-4eec-a3be-e6c4a6578374.us-east-1-1.aws.cloud.qdrant.io:6333",
+        "QDRANT_API_KEY":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.uZL91EYFwkNuY0Z_Sjd4gziRPjs5FBO2HZFYS6eCf7E"
       }
     }
   ]

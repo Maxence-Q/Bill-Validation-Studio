@@ -1,8 +1,9 @@
 import random
 import re
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Callable
 import uuid
+from collections import Counter
 
 
 class PerturbationEngine:
@@ -23,6 +24,17 @@ class PerturbationEngine:
         """Initialize the perturbation engine with optional seed for reproducibility."""
         if seed is not None:
             random.seed(seed)
+
+        # Initialisation du compteur de statistiques
+        self.stats = Counter()
+
+    def get_stats(self) -> Dict[str, int]:
+        """
+        Returns the statistics of applied perturbations.
+        Example: {'null_to_empty_string': 5, 'integer_to_zero': 2}
+        """
+        return dict(self.stats)
+    
 
     def inject_perturbation(self, block: str, min_attributes:int=1,max_attributes: int = 5) -> Tuple[Dict[int, str], Dict[int, str], str]:
         """
@@ -174,6 +186,16 @@ class PerturbationEngine:
             return f"{section_part}: {perturbed_attributes}"
         else:
             return perturbed_attributes
+        
+    def _apply_strategy(self, strategies: List[Tuple[str, Callable]], value=None) -> str:
+        """Helper to pick a strategy, update stats, and execute it."""
+        name, func = random.choice(strategies)
+        self.stats[name] += 1
+        if value is not None:
+            return func(value)
+        return func()
+
+    # --- Type Checkers (unchanged) ---
 
     def _is_uuid(self, value: str) -> bool:
         """Check if value is a UUID."""
@@ -201,21 +223,18 @@ class PerturbationEngine:
         except ValueError:
             return False
 
+    # --- Perturbation Methods with Stats Tracking ---
+
     def _perturb_string(self, value: str) -> str:
-        """
-        Perturb a string value.
-        Strategies: empty string, random character substitution, truncation, reversal
-        """
         strategies = [
-            lambda v: "",  # Empty string
-            lambda v: self._substitute_characters(v),  # Random substitution
-            lambda v: v[:len(v)//2] if len(v) > 1 else "",  # Truncation
-            lambda v: v[::-1] if len(v) > 1 else v,  # Reversal
+            ("string_to_empty", lambda v: ""),
+            ("string_char_substitution", lambda v: self._substitute_characters(v)),
+            ("string_truncation", lambda v: v[:len(v)//2] if len(v) > 1 else ""),
+            ("string_reversal", lambda v: v[::-1] if len(v) > 1 else v),
         ]
-        return random.choice(strategies)(value)
+        return self._apply_strategy(strategies, value)
 
     def _substitute_characters(self, value: str) -> str:
-        """Randomly substitute some characters in a string."""
         if len(value) == 0:
             return value
         value_list = list(value)
@@ -226,22 +245,16 @@ class PerturbationEngine:
         return "".join(value_list)
 
     def _perturb_uuid(self, value: str) -> str:
-        """
-        Perturb a UUID value.
-        Strategies: random UUID, null, empty string, partial modification
-        """
         strategies = [
-            lambda v: str(uuid.uuid4()),  # Generate new random UUID
-            lambda v: "",  # Empty string
-            lambda v: "null",  # Null
-            lambda v: self._mutate_uuid(v),  # Mutate some hex digits
+            ("uuid_random", lambda v: str(uuid.uuid4())),
+            ("uuid_to_empty", lambda v: ""),
+            ("uuid_to_null", lambda v: "null"),
+            ("uuid_mutation", lambda v: self._mutate_uuid(v)),
         ]
-        return random.choice(strategies)(value)
+        return self._apply_strategy(strategies, value)
 
     def _mutate_uuid(self, value: str) -> str:
-        """Randomly mutate some hex digits in a UUID."""
         value_list = list(value)
-        # Find indices of hex characters (not dashes)
         hex_indices = [i for i, c in enumerate(value_list) if c != "-"]
         if hex_indices:
             num_mutations = random.randint(1, max(1, len(hex_indices) // 3))
@@ -251,37 +264,27 @@ class PerturbationEngine:
         return "".join(value_list)
 
     def _perturb_date(self, value: str) -> str:
-        """
-        Perturb a date value.
-        Strategies: null, empty string, random date, date shift, invalid date format
-        """
         strategies = [
-            lambda v: "",  # Empty string
-            lambda v: "null",  # Null
-            lambda v: self._generate_random_date(),  # Random date
-            lambda v: self._shift_date(v),  # Shift date by random days
+            ("date_to_empty", lambda v: ""),
+            ("date_to_null", lambda v: "null"),
+            ("date_random", lambda v: self._generate_random_date()),
+            ("date_shift", lambda v: self._shift_date(v)),
         ]
-        return random.choice(strategies)(value)
+        return self._apply_strategy(strategies, value)
 
     def _generate_random_date(self) -> str:
-        """Generate a random ISO 8601 date string."""
-        # Random date between 1970 and 2050
         start_year = 1970
         end_year = 2050
         random_year = random.randint(start_year, end_year)
         random_month = random.randint(1, 12)
-        random_day = random.randint(1, 28)  # Use 28 to avoid month-specific issues
+        random_day = random.randint(1, 28)
         random_hour = random.randint(0, 23)
         random_minute = random.randint(0, 59)
         random_second = random.randint(0, 59)
-
-        # Match original format (with or without milliseconds, with or without Z)
         return f"{random_year:04d}-{random_month:02d}-{random_day:02d}T{random_hour:02d}:{random_minute:02d}:{random_second:02d}"
 
     def _shift_date(self, value: str) -> str:
-        """Shift a date by a random number of days."""
         try:
-            # Parse the date (try multiple formats)
             date_obj = None
             for fmt in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"]:
                 try:
@@ -291,10 +294,8 @@ class PerturbationEngine:
                     continue
 
             if date_obj:
-                # Shift by random days (positive or negative, within 365 days)
                 shift_days = random.randint(-365, 365)
                 shifted_date = date_obj + timedelta(days=shift_days)
-                # Return in same format as input
                 if "Z" in value:
                     return shifted_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
                 elif "." in value:
@@ -307,56 +308,44 @@ class PerturbationEngine:
             return ""
 
     def _perturb_integer(self, value: str) -> str:
-        """
-        Perturb an integer value.
-        Strategies: null, empty string, random integer, increment/decrement, zero
-        """
         try:
             int_value = int(value)
             strategies = [
-                lambda v: "",  # Empty string
-                lambda v: "null",  # Null
-                lambda v: str(random.randint(-10000, 10000)),  # Random integer
-                lambda v: str(v + random.randint(-100, 100)),  # Increment/decrement
-                lambda v: "0",  # Zero
+                ("integer_to_empty", lambda v: ""),
+                ("integer_to_null", lambda v: "null"),
+                ("integer_random", lambda v: str(random.randint(-10000, 10000))),
+                ("integer_increment_decrement", lambda v: str(v + random.randint(-100, 100))),
+                ("integer_to_zero", lambda v: "0"),
             ]
-            return random.choice(strategies)(int_value)
+            # Ici, on passe int_value (l'entier) à la lambda, pas la string
+            name, func = random.choice(strategies)
+            self.stats[name] += 1
+            return func(int_value)
         except ValueError:
+            self.stats["integer_parsing_error"] += 1
             return ""
 
     def _perturb_boolean(self, value: str) -> str:
-        """
-        Perturb a boolean value.
-        Strategies: flip, null, empty string
-        """
         strategies = [
-            lambda v: "false" if v.lower() == "true" else "true",  # Flip
-            lambda v: "",  # Empty string
-            lambda v: "null",  # Null
+            ("boolean_flip", lambda v: "false" if v.lower() == "true" else "true"),
+            ("boolean_to_empty", lambda v: ""),
+            ("boolean_to_null", lambda v: "null"),
         ]
-        return random.choice(strategies)(value)
+        return self._apply_strategy(strategies, value)
 
     def _perturb_null(self) -> str:
-        """
-        Perturb a null value.
-        Strategies: empty string, random string, random value of appropriate type
-        """
         strategies = [
-            lambda: "",  # Empty string
-            lambda: "0",  # Default integer
-            lambda: "false",  # Default boolean
-            lambda: "null",  # Keep null
+            ("null_to_empty", lambda: ""),
+            ("null_to_zero", lambda: "0"),
+            ("null_to_false", lambda: "false"),
+            ("null_keep_null", lambda: "null"),
         ]
-        return random.choice(strategies)()
+        return self._apply_strategy(strategies)
 
     def _perturb_empty_string(self) -> str:
-        """
-        Perturb an empty string.
-        Strategies: null, random string, keep empty
-        """
         strategies = [
-            lambda: "",  # Keep empty
-            lambda: "null",  # Null
-            lambda: "".join(random.choices("abcdefghijklmnopqrstuvwxyz", k=random.randint(1, 5))),  # Random string
+            ("empty_keep_empty", lambda: ""),
+            ("empty_to_null", lambda: "null"),
+            ("empty_to_random_string", lambda: "".join(random.choices("abcdefghijklmnopqrstuvwxyz", k=random.randint(1, 5)))),
         ]
-        return random.choice(strategies)()
+        return self._apply_strategy(strategies)

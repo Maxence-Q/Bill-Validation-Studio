@@ -10,6 +10,7 @@ from tests.test_perturbation.perturbation_engine import PerturbationEngine
 from LLM.llm_event_validator import LlmEventValidator
 from LLM.llm_conf import *
 from utils.utils import load_all_ids
+from utils.utils import extract_signature
 from RAG.rag import similar_by_id
 from utils.utils import get_ts_api
 from utils.module_manager_helper import event_contribution_for_module
@@ -28,7 +29,7 @@ class ModuleManager:
 
         self.log_path: str = ""
 
-        self.policies: Dict[str, str] = {}
+        self.policies: Dict[str, Dict[str,Any]] = {}
 
         self.user_prompts: Dict[str, str] = {}
         self.contribution_details: Dict[str, Dict[int, str]] = {} # Dict[module_id, Dict[event_id, contribution]]
@@ -88,13 +89,14 @@ class ModuleManager:
             self.modules[module_id] = module
 
     # ---------- attach policy to modules ----------
-    def attach_policy_to_module(self, match_policy: Dict[str,str],modules_list_to_attach: List[str] = []) -> Dict[str,str]:
+    def attach_policy_to_module(self, match_policy: Dict[str,Dict[str,Any]],modules_list_to_attach: List[str] = []) -> Dict[str,Dict[str,Any]]:
         for module_id, policy in match_policy.items():
             
             if module_id not in modules_list_to_attach:
                 continue
 
             if module_id in self.modules:
+
                 self.modules[module_id].set_policy(policy=policy)
                 self.policies[module_id] = policy
         return self.policies
@@ -216,9 +218,13 @@ if __name__ == "__main__":
  
     # Create the mapping with shuffled sections and random (model, key) pairs
     Sections_Models = create_sections_models_mapping(SECTIONS, LLM_NAME_KEY)
+    sections_models_safe = {
+        module: info[0] 
+        for module, info in Sections_Models.items()
+    }
     
     random_eid = manager.pick_one_random_event()
-    sids,_=manager.get_similar_events_for_id(random_eid, top_k=4,return_full_cache=False)
+    sids, events_cache = manager.get_similar_events_for_id(random_eid, top_k=4, return_full_cache=True)
 
     # in logs/module_manager_test, create folder event{random_eid}_{datetime} (year,month,date,hour,minute,second)
     log_path = f"/logs/module_manager_test_v2/event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -234,8 +240,32 @@ if __name__ == "__main__":
     with open(config_log_path, "w", encoding="utf-8") as f:
         f.write(f"Random Event ID: {random_eid}\n")
         f.write(f"Similar Event IDs: {sids}\n")
-        f.write(f"Sections_Models mapping:\n{json.dumps(Sections_Models, ensure_ascii=False, indent=2)}\n")
+        f.write(f"Sections_Models mapping:\n{json.dumps(sections_models_safe, ensure_ascii=False, indent=2)}\n")
 
+    # 3. CONSTRUCTION DU DICTIONNAIRE DE SIGNATURES
+    signatures_summary = {
+        "TARGET_EVENT": {
+            f"ID_{random_eid}": extract_signature(events_cache.get(random_eid, {}))
+        },
+        "SIMILAR_EVENTS": {}
+    }
+    for sid in sids:
+        signatures_summary["SIMILAR_EVENTS"][f"ID_{sid}"] = extract_signature(events_cache.get(sid, {}))
+
+    # 4. ÉCRITURE DANS LE FICHIER DE CONFIG
+    config_log_path = os.path.join(log_path, "config.txt")
+    with open(config_log_path, "w", encoding="utf-8") as f:
+        f.write(f"Random Event ID: {random_eid}\n")
+        f.write(f"Similar Event IDs: {sids}\n")
+        f.write(f"Sections_Models mapping:\n{json.dumps(Sections_Models, ensure_ascii=False, indent=2)}\n")
+        
+        f.write("\n" + "="*50 + "\n")
+        f.write("=== RAG PERFORMANCE CHECK (SIGNATURES) ===\n")
+        f.write("="*50 + "\n")
+        f.write(json.dumps(signatures_summary, ensure_ascii=False, indent=2))
+        f.write("\n")
+
+        
     print("Config written to:", config_log_path)
 
 
@@ -246,26 +276,8 @@ if __name__ == "__main__":
         policies_data = yaml.safe_load(f)
     match_policy = {}
     for module_id in Sections_Models.keys():
-        match_policy[module_id] = policies_data[module_id]['policy']
+        match_policy[module_id] = policies_data[module_id]
     policies = manager.attach_policy_to_module(match_policy=match_policy,modules_list_to_attach=modules_to_debug)
-
-    # Dict:
-    # Key: module_id
-    # Value: Tuple(min_attr,max_attr)
-    min_max_attributes_per_module = {
-        'Event': (2, 4),
-        'OwnerPOS': (1, 3),
-        'EventDates': (2, 4),
-        'PriceGroups': (1, 3),
-        'Prices': (1, 3),
-        'FeeDefinitions': (5, 7),
-        'RightToSellAndFees': (1, 3)
-    }
-
-    '''perturbations_info = manager.inject_perturbation_to_event(
-        event_id=random_eid,
-        min_max_attr_par_modules=min_max_attributes_per_module
-    )'''
 
 
     print("\n\n\n")
@@ -286,7 +298,16 @@ if __name__ == "__main__":
     print("==============================================================")
     print("\n\n\n")
 
-
+    stats_log_path = os.path.join(log_path, "stats.txt")
+    with open(stats_log_path, "w", encoding="utf-8") as f:
+        f.write("=== STATS BY MODULE ===\n\n")
+        for module_id in Sections_Models.keys():
+            if module_id in manager.modules:
+                stats = manager.modules[module_id].stats
+                f.write(f"--- Module: {module_id} ---\n")
+                for stat_name, stat_value in stats.items():
+                    f.write(f"{stat_name}: {stat_value}\n")
+                f.write("\n")
 
 
     '''    # creating folder

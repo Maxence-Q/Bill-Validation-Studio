@@ -39,6 +39,7 @@ class LlmEventValidator:
         self.path_provider = LlmPathProvider(modele=model,api_key=api_key,base_url=base_url)
 
         self.perturbation_engine = PerturbationEngine()
+        self.stats: Dict[str,int] = {}
 
         self.model = model
 
@@ -62,7 +63,7 @@ class LlmEventValidator:
 
         self.system_message: str = SYSTEM_MESSAGE
 
-        self.policy: str | None = None
+        self.policy: Dict[str,Any]
         
         # Perturbed memory: tracks which paths were perturbed in each iteration
         # Structure: Dict[iteration_number, List[str]] -> list of perturbed paths
@@ -70,17 +71,6 @@ class LlmEventValidator:
         
         # Store the final perturbed payload sent to LLM (for detailed analysis)
         self.final_perturbed_payload: Dict[int, str] = {}
-
-        if module_id in ["Prices", "PriceGroups", "RightToSellAndFees"]:
-            self.first_user_message: str = FIRST_USER_MESSAGE_SPEC.format(
-            module_id=self.module_id,
-            target_event_id=self.cible_id,
-            )
-        else:
-            self.first_user_message: str = FIRST_USER_MESSAGE.format(
-                module_id=self.module_id,
-                target_event_id=self.cible_id,
-            )
 
 
     def build_payload_for_summarized_modules(self) -> Dict[str, Dict[int, List[str]]]:
@@ -118,9 +108,9 @@ class LlmEventValidator:
         return payload
 
 
-    def set_policy(self, policy: str) -> None:
+    def set_policy(self, policy: Dict[str,Any]) -> None:
         """Définit la policy textuelle (preamble) à passer au LLM pour CE module."""
-        self.policy = (policy or "").strip() or None
+        self.policy = policy
     
     
     def _extract_paths_from_perturbed(self, perturbed: Dict[int, str]) -> List[str]:
@@ -212,7 +202,6 @@ class LlmEventValidator:
         }
 
     
-    
     def _handle_get_event_field(self, description: str) -> Dict[int, str]:
         """
         Pour une description donnée, récupère tous les paths du module,
@@ -241,258 +230,288 @@ class LlmEventValidator:
 
     def validate_section(self) -> Tuple[str, int, int]:
         """
-        Lance la validation LLM pour CE module.
-        Retourne la sortie JSON formatée en string.
+            Exécute la validation séquentielle basée sur la policy.
+            Pour chaque point de contrôle (check) :
+            1. Récupère les données pertinentes via PathProvider.
+            2. Injecte des perturbations.
+            3. Interroge le LLM pour valider ce point précis.
+            4. Agrège les anomalies.
         """
 
         module_id = self.module_id
 
+        # Préparation des logs
         prompt_log_path = os.path.join(self.log_path, f"prompts.txt")
-        os.makedirs(os.path.dirname(prompt_log_path), exist_ok=True)
-
         response_log_path = os.path.join(self.log_path, f"responses.txt")
-        os.makedirs(os.path.dirname(response_log_path), exist_ok=True)
+        performance_log_path = os.path.join(self.log_path, f"performance.txt")
+        perturbations_log_path = os.path.join(self.log_path, f"perturbations.txt")
+        coverage_log_path = os.path.join(self.log_path, f"coverage.txt")
 
-        performance_log_path =  os.path.join(self.log_path, f"performance.txt")
-        os.makedirs(os.path.dirname(performance_log_path), exist_ok=True)
+        for path in [prompt_log_path, response_log_path, performance_log_path, perturbations_log_path,coverage_log_path]:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        perturbations_log_path =  os.path.join(self.log_path, f"perturbations.txt")
-        os.makedirs(os.path.dirname(perturbations_log_path), exist_ok=True)
+        total_tokens = 0
+        all_issues: List[Dict[str, Any]] = []
 
-        # Messages à envoyer
-        messages = [
-            {"role": "system", "content": self.system_message},
-            {"role": "user", "content": self.policy},
-            {"role": "user", "content": self.first_user_message},
-        ]
+        # Pour stocker le bloc de texte perturbé spécifique à chaque itération
+        # Key: iteration number, Value: The perturbed text block sent to LLM
+        iteration_payloads: Dict[int, str] = {}
 
-        iter=1
+        # Pour la couverture (Set pour éviter les doublons)
+        covered_attributes: set[str] = set()
 
-        while True:
+        # Reset memory for this run
+        self.perturbed_memory = {}
+        
+        # Récupération de la liste des checks (assumant que set_policy a bien été appelé avec la nouvelle structure)
+        checks = self.policy.get('checks', [])
+        policy_intro = self.policy.get('policy_intro', "")
 
-            # Appel au LLM avec tools
+
+        # On itère sur chaque point de contrôle
+        for i, check in enumerate(checks, 1):
+            check_name = check.get('name', f"Check {i}")
+            instruction = check.get('instruction', "")
+
+            # ---------------------------------------------------------
+            # 1. Récupération Programmatique des Données
+            # ---------------------------------------------------------
+            # On utilise l'instruction comme description pour le PathProvider
+            try:
+                payload = self._handle_get_event_field(description=instruction)
+            except Exception as e:
+                # Fallback si la récupération échoue
+                payload = {self.cible_id: f"Error retrieving data: {str(e)}"}
+
+            # --- 1-bis. Collecte de couverture ---
+            # On regarde quelles données ont été remontées pour la cible avant perturbation
+            target_raw_data = payload.get(self.cible_id, "")
+            if target_raw_data:
+                for line in target_raw_data.splitlines():
+                    line = line.strip()
+                    # On assume le format "Chemin: Valeur"
+                    if ": " in line:
+                        path_extracted = line.split(": ", 1)[0]
+                        covered_attributes.add(path_extracted)
+
+            # ---------------------------------------------------------
+            # 2. Injection de Perturbations
+            # ---------------------------------------------------------
+            original_block = payload.get(self.cible_id, "")
+            
+            # Calcul du nombre d'attributs pour calibrer la perturbation
+            block_lines = [line.strip() for line in original_block.splitlines() if line.strip()]
+            num_attributes = len(block_lines)
+            min_attrs = max(1, min(num_attributes, 1))
+            max_attrs = max(1, num_attributes)
+
+            # Injection
+            original, perturbed, block = self.perturbation_engine.inject_perturbation(
+                block=original_block,
+                min_attributes=min_attrs,
+                max_attributes=max_attrs
+            )
+
+            # Mise à jour de la mémoire pour la matrice de confusion
+            # i correspond au numéro de l'itération/check
+            perturbed_paths = self._extract_paths_from_perturbed(perturbed)
+            self.perturbed_memory[i] = perturbed_paths
+            iteration_payloads[i] = block
+            
+            # Mise à jour du payload avec la version perturbée
+            payload[self.cible_id] = block
+            self.final_perturbed_payload[self.cible_id] = block # Keep latest for debug
+
+            # Log des perturbations
+            with open(perturbations_log_path, "a", encoding="utf-8") as f:
+                f.write(f"--- Check {i}: {check_name} ---\n")
+                f.write(f"Original Block:\n{json.dumps(original, ensure_ascii=False, indent=2)}\n")
+                f.write(f"Perturbed Block:\n{json.dumps(perturbed, ensure_ascii=False, indent=2)}\n\n")
+
+
+            # ---------------------------------------------------------
+            # Préparation des données pour le prompt
+            # ---------------------------------------------------------
+            
+            # On extrait le contenu de la cible (string)
+            target_content = payload.get(self.cible_id, "Données non disponibles")
+            
+            # On crée un dictionnaire contenant UNIQUEMENT les similaires
+            # (On exclut la clé self.cible_id)
+            similar_content = {k: v for k, v in payload.items() if k != self.cible_id}
+            
+            # ---------------------------------------------------------
+            # 3. Appel au LLM Validator
+            # ---------------------------------------------------------
+            # Construction du prompt isolé pour cette étape
+            step_prompt = f"""
+CONTEXTE:
+{policy_intro}
+
+POINT À VÉRIFIER ({i}/{len(checks)}): "{check_name}"
+
+INSTRUCTIONS SPÉCIFIQUES:
+{instruction}
+
+--------------------------------------------------
+DONNÉES DE L'ÉVÉNEMENT CIBLE (ID: {self.cible_id})
+--------------------------------------------------
+{target_content}
+
+--------------------------------------------------
+DONNÉES DES ÉVÉNEMENTS SIMILAIRES (RÉFÉRENCES)
+--------------------------------------------------
+{json.dumps(similar_content, ensure_ascii=False, indent=2)}
+
+--------------------------------------------------
+
+TACHE :
+Analyse les données fournies UNIQUEMENT par rapport au point à vérifier.
+Si tu détectes des anomalies, utilise l'outil `report_step_issues` pour les signaler.
+Si tout est correct, appelle `report_step_issues` avec une liste vide.
+            """
+
+            messages = [
+                {"role": "system", "content": self.system_message},
+                {"role": "user", "content": step_prompt}
+            ]
+
+            # Log du prompt
+            with open(prompt_log_path, "a", encoding="utf-8") as f:
+                f.write(f"--- Check {i}: {check_name} ---\n")
+                f.write(step_prompt + "\n\n")
+
+            # Appel API
+            # Note: On assume ici que TOOLS_VALIDATOR contient désormais tool_report_step_issues
             resp = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 temperature=0,
-                tools=TOOLS_VALIDATOR,
-                tool_choice="auto",  # le modèle choisit get_event_field ou format_issues
+                tools=TOOLS_VALIDATOR, 
+                tool_choice={"type": "function", "function": {"name": "report_step_issues"}}, 
             )
 
+            total_tokens += resp.usage.total_tokens
             choice = resp.choices[0]
             msg = choice.message
-
-
-            # Cas 1 : le modèle appelle un ou plusieurs tools
             tool_calls = getattr(msg, "tool_calls", None)
+
+            # ---------------------------------------------------------
+            # 4. Traitement de la réponse
+            # ---------------------------------------------------------
+            step_issues = []
             if tool_calls:
-                # On garde l'assistant + ses tool_calls dans l'historique
-                messages.append({
-                    "role": "assistant",
-                    "tool_calls": [tc for tc in tool_calls],
-                })
-
                 for tc in tool_calls:
-                    name = tc.function.name
-                    args = json.loads(tc.function.arguments)
+                    if tc.function.name == "report_step_issues":
+                        try:
+                            args = json.loads(tc.function.arguments)
+                            step_issues = args.get("issues", [])
+                            # On ajoute les issues trouvées à la liste globale
+                            all_issues.extend(step_issues)
+                        except json.JSONDecodeError:
+                            pass # Erreur de parsing, on ignore ou on log
 
-                    if name == "get_event_field":
-                        description = args["description"]
+            # Log de la réponse
+            with open(response_log_path, "a", encoding="utf-8") as f:
+                f.write(f"--- Check {i}: {check_name} ---\n")
+                f.write(f"Issues found: {json.dumps(step_issues, ensure_ascii=False, indent=2)}\n\n")
 
-                        with open(prompt_log_path, "a", encoding="utf-8") as f:
-                            f.write(f"--- Iteration {iter} ---\n")
-                            f.write(f"Description:\n{description}\n\n")
+        # Fin de la boucle sur les checks
 
-                        # Gestion des modules spécialisés avec payload pré-construit
-                        if module_id in ["Prices", "PriceGroups", "RightToSellAndFees"]:
-                            if self.payload is not None and self.payload_iterator < len(self.payload_keys):
-                                # Récupérer l'élément suivant du payload
-                                current_key = self.payload_keys[self.payload_iterator]
-                                payload = {current_key: self.payload[current_key]}
-                                
-                                # Calculer et logger les statistiques de progression
-                                groups_sent = self.payload_iterator + 1
-                                groups_remaining = len(self.payload_keys) - groups_sent
-                                total_groups = len(self.payload_keys)
-                                progress_info = f"Batch {groups_sent}/{total_groups} | Remaining: {groups_remaining}"
-                                
-                                self.payload_iterator += 1
-                            else:
-                                # Pas d'élément restant ou payload vide
-                                payload = {}
-                                progress_info = "All batches processed"
-                        else:
-                            # Traitement standard pour les autres modules
-                            payload = self._handle_get_event_field(description=description)
-                            progress_info = None
+        # ==============================================================================
+        # 5. STATISTIQUES DE PERTURBATIONS
+        # ==============================================================================
 
-                        with open(prompt_log_path, "a", encoding="utf-8") as f:
-                            f.write(f"Payload returned:\n{json.dumps(payload, ensure_ascii=False, indent=2)}\n")
-                            if progress_info:
-                                f.write(f"Progress: {progress_info}\n")
-                            f.write("\n")
+        self.stats = self.perturbation_engine.get_stats()
 
-                        #########################
-                        #  Inject Perturbations
-                        #########################
-                        original_block = payload.get(self.cible_id, "")  # type: ignore
-                        
-                        # Count the number of attributes (lines) in the block
-                        # Each valid line is in format "path: value"
-                        block_lines = [line.strip() for line in original_block.splitlines() if line.strip()]
-                        num_attributes = len(block_lines)
-                        
-                        # min_attributes is at least 1, max_attributes is all attributes
-                        min_attrs = max(1, min(num_attributes, 1))
-                        max_attrs = max(1, num_attributes)
-                        
-                        original, perturbed, block = self.perturbation_engine.inject_perturbation(
-                            block=original_block,
-                            min_attributes=min_attrs,
-                            max_attributes=max_attrs
-                        )
-                        
-                        # Store perturbed paths in memory for confusion matrix later
-                        perturbed_paths = self._extract_paths_from_perturbed(perturbed)
-                        self.perturbed_memory[iter] = perturbed_paths
-                        
-                        # Update the payload with the perturbed block
-                        payload[self.cible_id] = block  # type: ignore
-                        
-                        # Store the final perturbed payload for detailed analysis
-                        self.final_perturbed_payload[self.cible_id] = block
+        # ==============================================================================
+        # 6. RAPPORT DE COUVERTURE (Coverage)
+        # ==============================================================================
+        with open(coverage_log_path, "w", encoding="utf-8") as f:
+            f.write(f"Module: {module_id}\n")
+            f.write(f"Total Unique Attributes Covered: {len(covered_attributes)}\n")
+            f.write("="*80 + "\n\n")
+            # Tri alphabétique pour la lisibilité
+            for attr in sorted(covered_attributes):
+                f.write(f"{attr}\n")
 
-                        with open(perturbations_log_path, "a", encoding="utf-8") as f:
-                            f.write(f"--- Iteration {iter} ---\n\n")
-                            f.write(f"Original Block:\n{json.dumps(original, ensure_ascii=False, indent=2)}\n")
-                            f.write(f"Perturbed Block:\n{json.dumps(perturbed, ensure_ascii=False, indent=2)}\n")
-                            f.write("\n")
+        # ==============================================================================
+        # 7. RAPPORT FINAL & ANALYSE DE PERFORMANCE
+        # ==============================================================================
+        
+        # 1. Calculer les métriques globales (sur toutes les étapes)
+        confusion_analysis = self._compute_confusion_matrix(all_issues)
+        
+        with open(performance_log_path, "a", encoding="utf-8") as f:
+            # En-tête statistiques
+            f.write("="*80 + "\n")
+            f.write("GLOBAL CONFUSION MATRIX ANALYSIS\n")
+            f.write("="*80 + "\n\n")
+            
+            cm = confusion_analysis["confusion_matrix"]
+            metrics = confusion_analysis["metrics"]
+            
+            f.write(f"True Positives (TP):  {cm['TP']} (Perturbations detected)\n")
+            f.write(f"False Positives (FP): {cm['FP']} (Hallucinations?)\n")
+            f.write(f"False Negatives (FN): {cm['FN']} (Perturbations missed)\n")
+            f.write(f"\nPrecision: {metrics['precision']:.4f}\n")
+            f.write(f"Recall:    {metrics['recall']:.4f}\n")
+            f.write(f"Accuracy:  {metrics['accuracy']:.4f}\n\n")
+            f.write(f"Total tokens used: {total_tokens}\n")
+            f.write("="*80 + "\n\n")
 
-                        # On renvoie le résultat du tool au modèle
-                        messages.append({
-                            "role": "tool",
-                            "tool_call_id": tc.id,
-                            "name": "get_event_field",
-                            "content": json.dumps(payload, ensure_ascii=False),
-                        })
+            # 2. Rapport Détaillé Path par Path
+            f.write("DETAILED PERTURBED PATHS WITH CONTEXT\n")
+            f.write("="*80 + "\n\n")
 
-                        # On laisse la boucle continuer : nouveau tour → le modèle pourra
-                        # soit redemander get_event_field, soit appeler format_issues.
-                        iter += 1
-                        continue
+            analysis = confusion_analysis["perturbed_analysis"]
+            found_paths_set = set(analysis['perturbed_paths_found'])
 
-                    elif name == "format_issues":
+            # On itère sur l'historique pour garder l'ordre chronologique des checks
+            for iter_num, paths in self.perturbed_memory.items():
+                
+                # Le bloc de texte perturbé qui a été envoyé à CETTE étape
+                iter_block = iteration_payloads.get(iter_num, "")
+                
+                for perturbed_path in paths:
+                    detected_status = "✓ DETECTED" if perturbed_path in found_paths_set else "✗ MISSED"
+                    
+                    f.write(f"{detected_status} [Iter {iter_num}]: {perturbed_path}\n")
+                    
+                    # A. Valeur Perturbée (Celle vue par le LLM à ce moment précis)
+                    f.write(f"  Target (PERTURBED):\n")
+                    found_in_target = False
+                    for line in iter_block.splitlines():
+                        # Recherche simple (peut être affinée si format strict)
+                        if perturbed_path in line:
+                            f.write(f"    {line.strip()}\n")
+                            found_in_target = True
+                            break
+                    if not found_in_target:
+                        f.write(f"    [Value not found in payload block]\n")
 
-                        with open(response_log_path, "a", encoding="utf-8") as f:
-                            f.write(f"--- Iteration {iter} ---\n")
-                            f.write(f"Format issues called with args:\n{json.dumps(args, ensure_ascii=False, indent=2)}\n\n")
-                        # Ici, on considère que c'est la réponse finale.
-                        result_obj = args
+                    # B. Valeurs de Référence (Similaires)
+                    # On va chercher dans les contributions globales (car elles ne changent pas)
+                    f.write(f"  Similar Events (References):\n")
+                    for sim_id in self.similar_ids:
+                        sim_contrib = self.contributions.get(sim_id, "")
+                        found_in_sim = False
+                        for line in sim_contrib.splitlines():
+                            if perturbed_path in line:
+                                f.write(f"    ID={sim_id}: {line.strip()}\n")
+                                found_in_sim = True
+                                break
+                    
+                    f.write("\n")
 
-                        # Compute confusion matrix based on perturbed paths and detected issues
-                        llm_issues = args.get("issues", [])
-                        confusion_analysis = self._compute_confusion_matrix(llm_issues)
-                        
-                        # Write performance metrics and confusion matrix
-                        with open(performance_log_path, "a", encoding="utf-8") as f:
-                            f.write("="*80 + "\n")
-                            f.write("CONFUSION MATRIX ANALYSIS\n")
-                            f.write("="*80 + "\n\n")
-                            
-                            # Write confusion matrix
-                            cm = confusion_analysis["confusion_matrix"]
-                            f.write("Confusion Matrix:\n")
-                            f.write(f"  True Positives (TP):  {cm['TP']}  (perturbed paths detected)\n")
-                            f.write(f"  False Positives (FP): {cm['FP']}  (non-perturbed paths detected)\n")
-                            f.write(f"  False Negatives (FN): {cm['FN']}  (perturbed paths missed)\n")
-                            f.write(f"  True Negatives (TN):  {cm['TN']}\n\n")
-                            
-                            # Write metrics
-                            metrics = confusion_analysis["metrics"]
-                            f.write("Performance Metrics:\n")
-                            f.write(f"  Precision: {metrics['precision']:.4f}  (of detected issues, how many were actually perturbed)\n")
-                            f.write(f"  Recall:    {metrics['recall']:.4f}  (of perturbed paths, how many were detected)\n")
-                            f.write(f"  Accuracy:  {metrics['accuracy']:.4f}  (overall correctness)\n\n")
-                            
-                            # Write perturbed paths analysis
-                            analysis = confusion_analysis["perturbed_analysis"]
-                            f.write("Perturbed Paths Analysis:\n")
-                            f.write(f"  Total Perturbed Paths: {len(confusion_analysis['all_perturbed_paths'])}\n")
-                            f.write(f"  Detected Perturbed Paths (TP): {len(analysis['perturbed_paths_found'])}\n")
-                            if analysis['perturbed_paths_found']:
-                                f.write(f"    - {json.dumps(analysis['perturbed_paths_found'], ensure_ascii=False, indent=6)}\n")
-                            
-                            f.write(f"\n  Missed Perturbed Paths (FN): {len(analysis['perturbed_paths_missed'])}\n")
-                            if analysis['perturbed_paths_missed']:
-                                f.write(f"    - {json.dumps(analysis['perturbed_paths_missed'], ensure_ascii=False, indent=6)}\n")
-                            
-                            f.write(f"\n  False Positive Paths (FP): {len(analysis['false_positive_paths'])}\n")
-                            if analysis['false_positive_paths']:
-                                f.write(f"    - {json.dumps(analysis['false_positive_paths'], ensure_ascii=False, indent=6)}\n")
-                            
-                            f.write("\n" + "="*80 + "\n")
-                            f.write(f"Total tokens used: {resp.usage.total_tokens}\n")  #type: ignore
-                            f.write(f"Number of iterations: {iter}\n")
-                            f.write("="*80 + "\n\n")
-                            
-                            # Write detailed perturbed paths analysis with similar events context
-                            f.write("="*80 + "\n")
-                            f.write("DETAILED PERTURBED PATHS WITH CONTEXT\n")
-                            f.write("="*80 + "\n\n")
-                            
-                            for perturbed_path in confusion_analysis['all_perturbed_paths']:
-                                detected_status = "✓ DETECTED" if perturbed_path in analysis['perturbed_paths_found'] else "✗ MISSED"
-                                f.write(f"{detected_status}: {perturbed_path}\n")
-                                f.write(f"  Target Event (ID={self.cible_id}) - PERTURBED VALUE:\n")
-                                
-                                # Get the perturbed value from the final perturbed payload
-                                perturbed_payload = self.final_perturbed_payload.get(self.cible_id, "")
-                                found = False
-                                for line in perturbed_payload.splitlines():
-                                    if perturbed_path in line:
-                                        f.write(f"    {line}\n")
-                                        found = True
-                                        break
-                                
-                                # If not found in payload, it might be because the value was emptied/perturbed
-                                # In that case, show that it was perturbed to an empty/missing value
-                                if not found:
-                                    f.write(f"    {perturbed_path}: [PERTURBED - Value not in output or empty]\n")
-                                
-                                # Show similar events values for comparison
-                                f.write(f"  Similar Events:\n")
-                                for sim_id in self.similar_ids:
-                                    sim_contrib = self.contributions.get(sim_id, "")
-                                    for line in sim_contrib.splitlines():
-                                        if perturbed_path in line:
-                                            f.write(f"    ID={sim_id}: {line}\n")
-                                            break
-                                
-                                f.write("\n")
+        # Formatage du résultat final pour le ModuleManager
+        final_result = {
+            "module_id": module_id,
+            "status": "error" if any(i.get('severity') == 'error' for i in all_issues) else ("warning" if all_issues else "ok"),
+            "issues": all_issues
+        }
 
-                        with open(response_log_path, "a", encoding="utf-8") as f:
-                            f.write(f"Total tokens used: {resp.usage.total_tokens}\n\n") #type: ignore
-                            f.write(f"number of iterations: {iter}\n\n")
-
-                        # return response, num_tokens_used, num_iterations
-                        return json.dumps(result_obj, ensure_ascii=False, indent=2), resp.usage.total_tokens, iter # type: ignore
-
-                # Si on a traité tous les tool_calls sans format_output,
-                # la boucle repart pour un nouvel appel LLM.
-                continue
-
-
-            # Cas 2 : pas de tool_call → soit le modèle a répondu en texte brut, soit c'est une erreur
-            content = (msg.content or "").strip()
-            if content:
-                # Tu peux décider ici :
-                # - soit d'essayer de parser content comme JSON,
-                # - soit de le logger comme erreur.
-                return "ERROR: unexpected content from LLM without tool_calls:\n" + content, resp.usage.total_tokens, iter # type: ignore
-
-
-            # Cas 3 : rien du tout → on sort avec une erreur
-            return 'ERROR: no tool_calls and empty content from LLM', resp.usage.total_tokens, iter # type: ignore
+        return json.dumps(final_result, ensure_ascii=False, indent=2), total_tokens, len(checks)
 
 
 # ====================================================

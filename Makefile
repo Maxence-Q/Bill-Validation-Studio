@@ -87,6 +87,12 @@ gathering-result:
 
 scenario-recreation: ## module_manager.py
 	@$(MAKE) run FILE=-m ARGS='tests.test_perturbation.scenario_recreation.module_manager_re $(ARGS)'
+
+gathering-organisation:
+	@$(MAKE) run FILE=-m ARGS='utils.organisations.gather $(ARGS)'
+filtering-organisation:
+	@$(MAKE) run FILE=-m ARGS='utils.organisations.filter $(ARGS)'
+
 ## New rules:
 
 ##

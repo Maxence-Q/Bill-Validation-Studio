@@ -1,0 +1,13 @@
+{
+  "Ville d'Alma SPECTACLES - AA - AA": 619,
+  "Salle André-Mathieu - SAM - SAM": 1774,
+  "Comité des spectacles Dolbeau-Mistassini 2013 - DM - DM": 413,
+  "Dinner in the Sky - DITS - DITS": 248,
+  "Les Croisières du Fjord - CFJORD - CFJORD": 114,
+  "Auditorium Dufour (ancien) - AD - AD": 601,
+  "Réservatech.net (administration) - RN - RN": 277,
+  "Savoy Theatre - SAV - SAV": 478,
+  "Orchestre Symphonique - OS - OS": 154,
+  "Théâtre La Rubrique - RUB - RUB": 137,
+  "Festivalma - FVM - FVM": 121
+}

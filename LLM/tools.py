@@ -1,88 +1,12 @@
 SYSTEM_MESSAGE = """
-Tu es un assistant de validation de configurations d'événements de billetterie.
+Tu es un assistant expert en validation de configurations d'événements de billetterie.
+Ton rôle est d'exécuter une vérification précise sur un événement CIBLE en le comparant à des événements SIMILAIRES de référence.
 
-Règles globales :
-
-- Tu analyses UN seul module à la fois (Event, OwnerPOS, EventDates, Prices, PriceGroups, FeeDefinitions, RightToSellAndFees, etc.).
-- L'entrée contient toujours un événement CIBLE et des événements SIMILAIRES servant de références.
-- Tu NE DOIS JAMAIS corriger ou modifier les événements similaires : ils servent uniquement de comparaison.
-- Tu dois appliquer strictement la policy du module qui t'est fournie dans un message utilisateur séparé.
-- Tu dois toujours utiliser l'outil `format_issues` pour retourner le résultat final.
-- Le résultat attendu est un diagnostic structuré du module pour l'événement CIBLE : status + liste d'issues (message, path, severity, suggestion).
-- Si aucune anomalie digne de mention n'est détectée, tu renvoies status="ok" et issues=[].
-- Tu dois être rigoureux, factuel et concis : n'invente pas de champs et ne te base que sur les données fournies et la policy.
-""".strip()
-
-FIRST_USER_MESSAGE = """
-Tu dois vérifier les points décrits dans la policy pour le module "{module_id}" sur l'événement CIBLE {target_event_id}.
-Tu n'as PAS toutes les données de l'événement directement dans le contexte.
-Tu peux appeler en boucle le tool `get_event_field` pour récupérer uniquement les champs nécessaires
-de l'événement CIBLE et des 4 événements similaires (sélectionnés par RAG côté système).
-
-Comment utiliser `get_event_field` :
-- À chaque fois que tu veux vérifier un point précis de la policy du module, commence par formuler
-  une DESCRIPTION claire de ce que tu veux vérifier.
-- Appelle ensuite le tool `get_event_field` en lui passant cette description, par exemple :
-  - description = "POINT À VÉRIFIER 1"
-  - description = "POINT À VÉRIFIER 2"
-  - description = "POINT À VÉRIFIER 3"
-  - ...
-- Le système utilisera cette description pour choisir et te renvoyer un sous-ensemble pertinent
-  d'attributs pour l'événement CIBLE et les événements similaires.
-
-Stratégie générale :
-- Utilise `get_event_field` autant de fois que nécessaire pour obtenir les informations utiles à ta vérification.
-- Pour chaque point de la policy :
-  1) identifie ce que tu dois vérifier ;
-  2) formule une description explicite ;
-  3) appelle `get_event_field` avec cette description ;
-  4) analyse les champs retournés et mets à jour ton raisonnement global.
-
-Quand tu formules la description pour `get_event_field` :
-- parle en termes de concepts métier.
-- tu n’es pas obligé de citer les chemins techniques exacts.
-- Un autre système se chargera de mapper ta description vers les chemins techniques pertinents.
-
-
-Quand tu as terminé l'analyse du module et identifié toutes les anomalies pertinentes pour l'événement CIBLE,
-tu DOIS appeler la fonction `format_issues` avec la liste complète d'issues (status et issues[]) au format précédemment indiqué.
-""".strip()
-
-
-FIRST_USER_MESSAGE_SPEC = """
-Tu dois vérifier les points décrits dans la policy pour le module "{module_id}" sur l'événement CIBLE {target_event_id}.
-
-IMPORTANT : Ce module gère de grandes quantités de données (Prices, PriceGroups, RightToSellAndFees).
-Les données seront livrées par LOTS DE 5 GROUPES à la fois :
-
-Structure des données reçues :
-- Chaque appel à `get_event_field` te retournera :
-  * UN LOT DE 5 GROUPES (ou moins) de l'événement CIBLE
-  * JUSQU'À 5 GROUPES PERTINENTS pour chaque événement similaire (pour comparaison)
-- Les lots seront envoyés progressivement à chaque appel de `get_event_field`
-- Tu verras la progression : "Batch X/Total | Remaining: Y"
-
-Comment utiliser `get_event_field` :
-- Appelle le tool `get_event_field` pour récupérer le lot suivant de groupes
-- NOTE : Tu n'as pas besoin de fournir une description détaillée (contrairement au mode standard)
-  Tu peux simplement envoyer une brève note (1-2 phrases) pour résumer :
-  * Ton analyse du lot précédent
-  * Les observations ou anomalies détectées
-  * Que tu es prêt pour le lot suivant
-- À chaque lot reçu :
-  1) analyse les groupes du lot CIBLE
-  2) compare-les avec les groupes similaires fournis
-  3) identifie les anomalies ou incohérences
-  4) note tes observations
-
-Stratégie générale :
-- TANT QU'IL Y A DES GROUPES RESTANTS (Remaining > 0), tu DOIS continuer à appeler `get_event_field`
-- Pour chaque appel, fournis une brève note de progression ou tes observations
-- Accumule ton analyse à travers tous les lots
-- Quand la progression indique "Remaining: 0", tous les lots ont été traités
-
-Quand tu as terminé l'analyse de TOUS LES LOTS et identifié toutes les anomalies pertinentes,
-tu DOIS appeler la fonction `format_issues` avec la liste complète d'issues (status et issues[]) au format précédemment indiqué.
+Règles:
+- Tu DOIS utiliser l'outil `report_step_issues` pour donner ta réponse.
+- Si des anomalies sont détectées : liste-les avec précision (chemin, sévérité, message explicatif).
+- Si AUCUNE anomalie n'est détectée : appelle `report_step_issues` avec une liste `issues` vide [].
+- Ne fournis jamais de texte ou de commentaires en dehors de l'appel à l'outil.
 """.strip()
 
 
@@ -154,80 +78,46 @@ IMPORTANT - Comment utiliser `format_groups` :
 """.strip()
 
 
-
-tool_format_issues = {
+tool_report_step_issues = {
     "type": "function",
     "function": {
-        "name": "format_issues",
-        "description": "Uniformise la sortie de validation pour un module donné.",
+        "name": "report_step_issues",
+        "description": (
+            "Rapporte le résultat de l'analyse pour l'étape de vérification en cours. "
+            "Doit être appelé même si aucune anomalie n'est trouvée (avec une liste vide)."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
-                "module_id": {
-                    "type": "string",
-                    "description": "Identifiant du module validé (Event, OwnerPOS, Prices, etc.)."
-                },
-                "status": {
-                    "type": "string",
-                    "description": "Statut global de la validation pour ce module.",
-                    "enum": ["ok", "warning", "error"]
-                },
                 "issues": {
                     "type": "array",
-                    "description": "Liste des anomalies détectées pour ce module.",
+                    "description": "Liste des anomalies détectées. Laisser vide [] si tout est correct.",
                     "items": {
                         "type": "object",
                         "properties": {
                             "path": {
                                 "type": "string",
-                                "description": "Chemin ou identifiant du champ problématique."
+                                "description": "Chemin ou nom du champ concerné (ex: 'Event.NameFR')."
                             },
                             "severity": {
                                 "type": "string",
-                                "enum": ["error", "warning", "info"],
-                                "description": "Gravité de cette issue."
+                                "enum": ["error", "warning"],
+                                "description": "Utiliser 'error' pour une faute bloquante/évidente, 'warning' pour une incohérence suspecte."
                             },
                             "message": {
                                 "type": "string",
-                                "description": "Description courte et claire de l'anomalie."
+                                "description": "Explication courte du problème, mentionnant la différence avec les événements similaires."
                             },
                             "suggestion": {
                                 "type": "string",
-                                "description": "Proposition de correction ou d'action, si applicable."
+                                "description": "Action suggérée pour corriger (optionnel)."
                             },
                         },
                         "required": ["path", "severity", "message"],
                     },
                 },
             },
-            "required": ["module_id", "status", "issues"],
-        },
-    },
-}
-
-
-tool_get_event_field = {
-    "type": "function",
-    "function": {
-        "name": "get_event_field",
-        "description": (
-            "Récupère un ensemble de champs pertinents pour un point de vérification donné, "
-            "sur l'événement CIBLE et les événements similaires."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "description": (
-                        "Description en français du point de la policy que tu veux vérifier. "
-                        "Exemples : "
-                        "\"Vérifier la cohérence des dates de vente Internet par rapport à la date de représentation\", "
-                        "\"Contrôler si les groupes de faveur ont des prix à 0 avec un fake price cohérent\"."
-                    ),
-                }
-            },
-            "required": ["description"],
+            "required": ["issues"],
         },
     },
 }
@@ -288,8 +178,7 @@ tool_format_groups = {
 
 
 TOOLS_VALIDATOR: list = [
-    tool_format_issues,
-    tool_get_event_field,
+    tool_report_step_issues
 ]
 
 TOOLS_PROVIDER: list = [

@@ -7,28 +7,6 @@ import os
 BILL_TS_API_URL=os.getenv("BILL_TS_API_URL", "")
 BILL_TS_API_KEY=os.getenv("BILL_TS_API_KEY")
 
-def _jsonable(obj):
-    """Convertit les objets OpenAIObject/Pydantic en dict JSON-sérialisable."""
-    if obj is None:
-        return None
-    # OpenAI SDK récent (pydantic)
-    if hasattr(obj, "model_dump"):
-        try:
-            return obj.model_dump()
-        except Exception:
-            pass
-    # OpenAIObject (versions diverses)
-    if hasattr(obj, "to_dict_recursive"):
-        try:
-            return obj.to_dict_recursive()
-        except Exception:
-            pass
-    # Tentative: si str(obj) est du JSON
-    try:
-        return json.loads(str(obj))
-    except Exception:
-        return str(obj)
-
 
 # ---------- chargement IDs ----------
 def load_all_ids(path: str = "storage/all_events.json") -> List[int]:
@@ -65,3 +43,25 @@ def get_ts_api_by_url(url: str, *, timeout: int = 20) -> Any:
     api_key = BILL_TS_API_KEY
     headers = {"rese566": api_key} if api_key else {}
     return http_get_json(url, headers=headers, timeout=timeout)
+
+
+
+
+def extract_signature(event_data: dict) -> dict:
+    """Extrait les champs clés pour identifier rapidement l'événement."""
+    # On essaie de récupérer le bloc 'Event' ou on utilise le dict racine si 'Event' n'existe pas
+    evt = event_data.get('Event', event_data)
+    evt = evt.get('Event', evt)
+    if not evt: 
+        return {"Error": "No Event data found"}
+        
+    return {
+        "NameFr": evt.get("NameFr", "N/A"),
+        "NameEn": evt.get("NameEn", "N/A"),
+        "InternetName_Fr": evt.get("InternetName_Fr", "N/A"),
+        "InternetName_En": evt.get("InternetName_En", "N/A"),
+        "ArtistName": evt.get("ArtistName", "N/A"),
+        "RepresentationTypeId": evt.get("RepresentationTypeId", "N/A"),
+        "TicketLimitNumber": evt.get("TicketLimitNumber", "N/A"),
+        "ProducerID": evt.get("ProducerID", "N/A")
+    }
