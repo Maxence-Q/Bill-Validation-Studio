@@ -111,7 +111,11 @@ class ModuleManager:
         """
         try:
             print(f"[THREAD] Starting validation for module: {module_id}")
-            response, total_tokens, iter = module.validate_section()
+            if module_id == "Prices" or module_id == "PriceGroups" or module_id == "RightToSellAndFees":
+                func = module.validate_section_spec
+            else:
+                func = module.validate_section
+            response, total_tokens, iter = func()
             print(f"[THREAD] Completed validation for module: {module_id} (tokens: {total_tokens}, iterations: {iter})")
         except Exception as e:
             response = f"Error during LLM validation for module {module_id}: {str(e)}"
@@ -204,8 +208,36 @@ class ModuleManager:
         print(f"Validation completed. Processed {len(self.llm_responses)} modules")
         return self.llm_responses
 
+    # ---------- run multiple models on one module ----------
+    def run_multiple_model_on_one_module(self, module_id: str, policy: Dict[str,Any], models_keys: Dict[str,str]) -> Dict[str, Dict[str, Any]]:
+        """
+        Exécute la validation LLM pour un module donné avec plusieurs (modèle, clé) pairs.
+        Retourne un dictionnaire de réponses par modèle.
+        """
+
+        contributions: Dict[int, str] = {}
+        for eid, data in self.events_cache.items():
+            contributions[eid] = event_contribution_for_module(module_id, data)
+        self.contribution_details[module_id] = contributions
+
+        log_path = self.log_path + f"/{module_id}"
+        first_model, first_key = list(models_keys.items())[0]
+        module = LlmEventValidator(model=first_model,
+                                    api_key=first_key, 
+                                    module_id=module_id, 
+                                    cible_id=self.eid, 
+                                    sim_ids=self.sim_ids, 
+                                    contributions=contributions,
+                                    log_path=log_path)
+        
+        module.set_policy(policy=policy)
+
+        output = module.validate_section_with_multiple_models(models_keys=models_keys)
+
+        return output
 
 if __name__ == "__main__":
+
 
     print("==============================================================")
     print("==============================================================")
@@ -214,8 +246,54 @@ if __name__ == "__main__":
     print("==============================================================")
     print("\n\n\n")
 
+    module_to_test = "EventDates"
+
     manager = ModuleManager()
+    
+    random_eid = manager.pick_one_random_event()
+    sids, events_cache = manager.get_similar_events_for_id(random_eid, top_k=4, return_full_cache=True)
+
+    # in logs/module_manager_test, create folder event{random_eid}_{datetime} (year,month,date,hour,minute,second)
+    log_path = f"/logs/module_manager_test_v2/event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    try:
+        os.makedirs(log_path, exist_ok=True)
+    except PermissionError:
+        log_path = os.path.join(os.path.dirname(__file__), "logs", "module_manager_test_v2", f"event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        os.makedirs(log_path, exist_ok=True)
+
+    manager.set_log_path(log_path)
+
+    # 3. CONSTRUCTION DU DICTIONNAIRE DE SIGNATURES
+    signatures_summary = {
+        "TARGET_EVENT": {
+            f"ID_{random_eid}": extract_signature(events_cache.get(random_eid, {}))
+        },
+        "SIMILAR_EVENTS": {}
+    }
+    for sid in sids:
+        signatures_summary["SIMILAR_EVENTS"][f"ID_{sid}"] = extract_signature(events_cache.get(sid, {}))
+
+    # 4. ÉCRITURE DANS LE FICHIER DE CONFIG
+    config_log_path = os.path.join(log_path, "config.txt")
+    with open(config_log_path, "w", encoding="utf-8") as f:
+        f.write(f"Random Event ID: {random_eid}\n")
+        f.write(f"Similar Event IDs: {sids}\n")
+        
+        f.write("\n" + "="*50 + "\n")
+        f.write("=== RAG PERFORMANCE CHECK (SIGNATURES) ===\n")
+        f.write("="*50 + "\n")
+        f.write(json.dumps(signatures_summary, ensure_ascii=False, indent=2))
+        f.write("\n")
+
+        
+    print("Config written to:", config_log_path)
+
+    with open("artefacts/policies.yaml", "r", encoding="utf-8") as f:
+        policies_data = yaml.safe_load(f)
+
+    output = manager.run_multiple_model_on_one_module(module_to_test, policies_data[module_to_test], LLM_NAME_KEY)
  
+    '''
     # Create the mapping with shuffled sections and random (model, key) pairs
     Sections_Models = create_sections_models_mapping(SECTIONS, LLM_NAME_KEY)
     sections_models_safe = {
@@ -236,12 +314,6 @@ if __name__ == "__main__":
 
     manager.set_log_path(log_path)
 
-    config_log_path = os.path.join(log_path, "config.txt")
-    with open(config_log_path, "w", encoding="utf-8") as f:
-        f.write(f"Random Event ID: {random_eid}\n")
-        f.write(f"Similar Event IDs: {sids}\n")
-        f.write(f"Sections_Models mapping:\n{json.dumps(sections_models_safe, ensure_ascii=False, indent=2)}\n")
-
     # 3. CONSTRUCTION DU DICTIONNAIRE DE SIGNATURES
     signatures_summary = {
         "TARGET_EVENT": {
@@ -257,7 +329,7 @@ if __name__ == "__main__":
     with open(config_log_path, "w", encoding="utf-8") as f:
         f.write(f"Random Event ID: {random_eid}\n")
         f.write(f"Similar Event IDs: {sids}\n")
-        f.write(f"Sections_Models mapping:\n{json.dumps(Sections_Models, ensure_ascii=False, indent=2)}\n")
+        f.write(f"Sections_Models mapping:\n{json.dumps(sections_models_safe, ensure_ascii=False, indent=2)}\n")
         
         f.write("\n" + "="*50 + "\n")
         f.write("=== RAG PERFORMANCE CHECK (SIGNATURES) ===\n")
@@ -269,7 +341,7 @@ if __name__ == "__main__":
     print("Config written to:", config_log_path)
 
 
-    modules_to_debug = ["Event","OwnerPOS","EventDates","FeeDefinitions"]
+    modules_to_debug = ["PriceGroups","Prices","RightToSellAndFees"]
     manager.initialize_module(sections_models=Sections_Models, modules_list_to_init=modules_to_debug)
     
     with open("artefacts/policies.yaml", "r", encoding="utf-8") as f:
@@ -309,52 +381,4 @@ if __name__ == "__main__":
                     f.write(f"{stat_name}: {stat_value}\n")
                 f.write("\n")
 
-
-    '''    # creating folder
-    log_path = f"/logs/module_manager_test/event{random_eid}"
-    # for permission denied
-    try:
-        os.makedirs(log_path, exist_ok=True)
-    except PermissionError:
-        log_path = os.path.join(os.path.dirname(__file__), "logs", "module_manager_test", f"event{random_eid}")
-        os.makedirs(log_path, exist_ok=True)
-
-    # create perturbations_info log
-    with open(os.path.join(log_path, "perturbations_info.txt"), "w", encoding="utf-8") as f:
-        for module_id, (original, perturbed) in perturbations_info.items():
-            f.write(f"======================= Module: {module_id}\n")
-            f.write("Original Contribution Block:\n")
-            f.write(f"{original}\n\n")
-            f.write("Perturbed Contribution Block:\n")
-            f.write(f"{perturbed}\n\n")
-
-    with open(os.path.join(log_path, "response.txt"), "w", encoding="utf-8") as f:
-        for module_id, response in llm_responses.items():
-            f.write(f"======================= Module: {module_id}\n")
-            f.write(f"LLM Response:\n{response}\n\n")
-
-
-
     '''
-
-
-
-
-    # Write output to /logs/module_manager_test.txt.
-    # If creating /logs is not permitted, fall back to project-local ./logs/module_manager_test.txt.
-    '''log_path = f"/logs/module_manager_test/event{random_eid}.txt"
-    try:
-        os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    except PermissionError:
-        log_path = os.path.join(os.path.dirname(__file__), "logs/module_manager_test", f"event{random_eid}.txt")
-        os.makedirs(os.path.dirname(log_path), exist_ok=True)
-
-    with open(log_path, "w", encoding="utf-8") as f:
-        for module_id, contributions in contribution_details.items():
-            f.write(f"======================= Module: {module_id}\n")
-            for eid, contribution in contributions.items():
-                f.write(f"/// Event ID: {eid}\n")
-                f.write("  Contribution:\n")
-                f.write(f"{contribution}\n\n")
-
-    print(f"Wrote module manager output to {log_path}")'''

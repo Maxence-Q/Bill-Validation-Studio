@@ -23,10 +23,10 @@ SECTIONS = [
     "Event",
     "OwnerPOS",
     "EventDates",
-    #"PriceGroups",
-    #"Prices",
+    "PriceGroups",
+    "Prices",
     "FeeDefinitions",
-    #"RightToSellAndFees"
+    "RightToSellAndFees"
 ]
 
 

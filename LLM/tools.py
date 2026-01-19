@@ -35,49 +35,6 @@ IMPORTANT :
 """.strip()
 
 
-PROMPT_FORMAT_GROUPS_TEMPLATE = """
-Tu es un assistant qui aide à matcher les groupes (lignes de données) entre deux événements.
-
-Groupes reçus de l'événement CIBLE :
----
-{target_batch}
----
-
-Groupes disponibles dans l'événement SIMILAIRE {sim_event_id} :
----
-{sim_event_groups}
----
-
-FORMAT DES GROUPES :
-Chaque groupe est une ligne complète au format suivant :
-"[Model ID=XXXXX] NameFR='...', Favour=..., Consignment=..., Membership='...', AllowedPOS=[...], ChargeFees1=..., ChargeFees2=..., MinQty=..., MaxQty=..., HideOnStandardInternetSale=..., ..."
-
-Exemple :
-"[PriceGroupModel ID=45131] NameFR='Régulier', Favour=False, Consignment=False, Membership='00000000-0000-0000-0000-000000000000', AllowedPOS=[23, 120], ChargeFees1=True, ChargeFees2=False, MinQty=0, MaxQty=0, HideOnStandardInternetSale=False"
-
-Ta tâche :
-- POUR CHAQUE GROUPE reçu de l'événement CIBLE, trouver le groupe LE PLUS SIMILAIRE dans l'événement similaire.
-- La correspondance doit se baser sur les caractéristiques principales : NameFR, Favour, Consignment, Membership, AllowedPOS, etc.
-- Si tu trouves une correspondance valide (groupe similaire avec des caractéristiques comparables), inclus la LIGNE COMPLÈTE du groupe similaire dans le résultat.
-- Si tu ne trouves PAS de correspondance pertinente pour un groupe CIBLE, tu ne dois PAS inclure ce groupe manquant dans ta réponse (c'est acceptable).
-
-IMPORTANT - Points clés :
-- Le nombre de groupes retournés dépend du nombre de VRAIES correspondances trouvées (0 à N groupes).
-- Le lot CIBLE peut contenir moins de 5 groupes, ou un nombre variable (pas nécessairement 5).
-- Tu dois essayer de matcher chaque groupe CIBLE si une correspondance existe, mais sans forcer de correspondances artificielles.
-- Si aucun groupe du lot CIBLE ne trouve de correspondance dans l'événement similaire, tu peux retourner une liste vide (c'est acceptable).
-
-IMPORTANT - Comment utiliser `format_groups` :
-- Tu DOIS appeler la fonction `format_groups` pour renvoyer le résultat final.
-- Fournis une LISTE DES LIGNES COMPLÈTES (uniquement les groupes similaires qui matchent réellement un groupe CIBLE).
-- Exemples de réponses valides :
-  * Correspondances trouvées : {{"groups": ["[PriceGroupModel ID=45131] NameFR='Régulier', ...", "[PriceGroupModel ID=45132] NameFR='VIP', ..."]}}
-  * Correspondances partielles (3 sur 5) : {{"groups": ["[PriceGroupModel ID=45130] NameFR='Standard', ...", "[PriceGroupModel ID=45131] NameFR='Régulier', ...", "[PriceGroupModel ID=45134] NameFR='Premium', ..."]}}
-  * Aucune correspondance : {{"groups": []}}
-- Ne renvoie pas de texte libre, n'explique pas ton raisonnement : utilise seulement `format_groups`.
-""".strip()
-
-
 tool_report_step_issues = {
     "type": "function",
     "function": {
@@ -148,34 +105,6 @@ tool_format_paths = {
 }
 
 
-tool_format_groups = {
-    "type": "function",
-    "function": {
-        "name": "format_groups",
-        "description": (
-            "Sélectionne et renvoie jusqu'à 5 groupes pertinents pour l'événement similaire donné, "
-            "en fonction des groupes de l'événement cible. Retourne une liste des groupes sélectionnés."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "groups": {
-                    "type": "array",
-                    "description": (
-                        "Liste de groupes (chaînes de caractères complètes) sélectionnés pour cet événement similaire. "
-                        "Chaque élément est une ligne complète au format: [Model ID=XXXXX] NameFR='...', ..."
-                    ),
-                    "items": {
-                        "type": "string",
-                        "description": "Ligne complète du groupe au format: [Model ID=XXXXX] NameFR='...', ..."
-                    }
-                }
-            },
-            "required": ["groups"],
-        },
-    },
-}
-
 
 TOOLS_VALIDATOR: list = [
     tool_report_step_issues
@@ -183,5 +112,4 @@ TOOLS_VALIDATOR: list = [
 
 TOOLS_PROVIDER: list = [
     tool_format_paths,
-    tool_format_groups
 ]

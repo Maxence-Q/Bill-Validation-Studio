@@ -93,9 +93,19 @@ gathering-organisation:
 filtering-organisation:
 	@$(MAKE) run FILE=-m ARGS='utils.organisations.filter $(ARGS)'
 
+rag:
+	@$(MAKE) run FILE=-m ARGS='RAG.rag $(ARGS)'
+
 ## New rules:
 
-##
+dashboard: ## Run Streamlit dashboard
+	@$(call _ensure_venv)
+	@$(call _ensure_dotenv)
+	@bash -lc '$(_export_env); source "$(VENV)/bin/activate"; PYTHONPATH=$$(pwd) streamlit run dashboard.py'
+
+
+
+###
 
 debug: ## Run with debugger: make debug FILE=foo.py [ARGS="..."]
 	@$(call _ensure_venv)

@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
             ownerPOS = event_json["OwnerPOS"]
 
-            full_owner_name = ownerPOS["Name"]
+            full_owner_name = ownerPOS["Name"] 
             prefix_number = ownerPOS["PrefixNumber"]
             prefix = ownerPOS["Prefix"]
 
