@@ -1,0 +1,231 @@
+Event:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "Event" de configurations d'événements de billetterie.
+  checks:
+    - name: "Cohérence des noms et de l'artiste"
+      instruction: |
+        Les champs Event.NameFr / Event.NameEn / InternetNameFR / InternetNameEN doivent être cohérents entre eux et avec Event.ArtistName.
+        Le nom d'artiste (Event.ArtistName) doit être cohérent avec le type de représentation et les événements de référence.
+        Signaler toute divergence significative.
+
+    - name: "Type de représentation et activité"
+      instruction: |
+        RepresentationTypeId et RO_RepresentationType.* doivent être compatibles avec la nature de l'événement.
+        Comparer avec les événements de référence similaires.
+        Signaler toute incompatibilité.
+
+    - name: "Paramètres de vente et affichage"
+      instruction: |
+        Vérifier la cohérence de Event.DisplayOnTheInternet, Event.IsInSale, Event.IsHistory par rapport aux événements de référence.
+        Event.TicketLimitNumber doit être cohérent avec des événements comparables.
+        Signaler toute combinaison suspecte.
+
+    - name: "Modes de livraison / support"
+      instruction: |    
+        Comparer Event.SupportMailShipping / Event.SupportETicketShipping avec des événements de référence similaires.
+        Signaler les écarts flagrants (par exemple : tous les événements similaires supportent l'e-ticket, sauf le cible).
+
+    - name: "Fiscalité & comptes GL par défaut"
+      instruction: |    
+        Vérifier la cohérence de IsTaxableByDefault avec les références.
+        Signaler si les comptes GL diffèrent significativement des références comparables.
+
+    - name: "Métadonnées POS / Timezone"
+      instruction: |    
+        Vérifier la cohérence entre OwnerPOS.ID / Name / Region / Timezone.
+        Signaler les incohérences entre Timezone.TZDatabaseID et la région impliquée.
+
+OwnerPOS:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "OwnerPOS" de configurations d'événements de billetterie.
+  checks:
+    - name: "Activité et statut du point de vente"
+      instruction: |    
+        Si l'OwnerPOS du CIBLE a IsInactive = True, vérifier si cela est cohérent avec les références similaires.
+        Signaler les POS obsolètes ou archivés (nommés "... (ancien)", avec IsInactive=True).
+
+    - name: "Cohérence géographique et de fuseau horaire"
+      instruction: |
+        Vérifier la cohérence entre City, Province, Region, Country et TimeZoneID.
+        Signaler les incohérences entre ces champs et les références.
+
+    - name: "Configuration financière (GL accounts et fiscalité)"
+      instruction: |
+        Les GUIDs à 00000000-... indiquent une configuration incomplète ou inactive.
+        Signaler si le CIBLE a presque tous ses *GLAccountID à 00000000 alors que les références ont des GUID non nuls.
+
+    - name: "Numéros fiscaux et informations légales"
+      instruction: |
+        Pour des POS similaires, si tous les OwnerPOS de référence possèdent des numéros de taxes valides et que le CIBLE les a vides, signaler cette anomalie.
+
+    - name: "Frais de billetterie et préférences client"
+      instruction: |
+        Comparer les montants (OutletFees, HandlingFees, PhoneFees) avec les OwnerPOS de référence similaires.
+        Signaler les frais aberrants (excessivement élevés ou strictement à 0 alors que tous les autres sont non nuls).
+
+    - name: "Paiement et intégration web"
+      instruction: |    
+        Si le CIBLE a des PaymentProcessorID nuls alors que tous les POS comparables ont des IDs valides, signaler cette anomalie.
+
+EventDates:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "EventDates" de configurations d'événements de billetterie.
+  checks:
+    - name: "Cohérence date de représentation / fuseau horaire"
+      instruction: |
+        EventDateModelList[].Date doit être cohérente avec RO_Date_Local et le fuseau horaire indiqué.
+        Signaler tout décalage suspect (plusieurs heures ou jours sans justification).
+
+    - name: "Cohérence des fenêtres de vente (ordre et position par rapport à la date)"
+      instruction: |
+        Pour chaque canal, vérifier SalesStartDate* <= SalesEndDate*.
+        Les dates de fin de vente doivent être cohérentes avec la date de représentation (comparaison avec références).
+
+    - name: "Cohérence entre canaux de vente"
+      instruction: |
+        Vérifier les relations entre SalesStartDate / SalesEndDate par canal.
+        Signaler les décalages anormaux comparés aux références.
+
+    - name: "Flags de statut : Cancelled, IsSoldOut, HideOnInternet, DateToBeDeterminated"
+      instruction: |
+        Vérifier la cohérence des flags avec le reste de la configuration et les références.
+        Signaler les combinaisons contradictoires (DateToBeDeterminated=True + dates concrètes, Cancelled=True + ventes actives, etc).
+
+    - name: "Cohérence des informations de salle et d'ID"
+      instruction: |
+        EventDateModelList[].Venue.* doit être cohérent avec IDChain.VenueID, VenueModelID, PhysicalVenueID.
+        Signaler les mélanges incohérents entre Venue.Name et VenueID.
+
+    - name: "Champs descriptifs et liens"
+      instruction: |
+        DescriptionFR / DescriptionEN doivent être cohérents avec les références similaires.
+        BuyEventDateLink ne doit pas être complètement vide si les références ont des liens valides.
+
+PriceGroups:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "PriceGroups" de configurations d'événements de billetterie.
+  checks:
+    - name: "Présence de groupes 'publics' de base"
+      instruction: |
+        Pour un événement standard, il doit exister au moins un groupe public (Favour=False) comparable aux références.
+        Signaler si le CIBLE contient uniquement des groupes internes alors que les références similaires ont toujours des groupes publics.
+
+    - name: "Cohérence des groupes 'faveur' / internes"
+      instruction: |
+        Les groupes avec Favour=True doivent avoir AllowedPOS restreint et frais cohérents avec les références.
+        Signaler si AllowedPOS est trop large ou si ChargeFees1 est anormal pour ce type de groupe.
+
+    - name: "Cohérence des AllowedPOS entre groupes"
+      instruction: |
+        Les AllowedPOS doivent être cohérents entre groupes de même type.
+        Signaler les écarts significatifs par rapport aux références.
+
+    - name: "Frais appliqués (ChargeFees1 / ChargeFees2)"
+      instruction: |
+        Les patterns de frais doivent être cohérents entre groupes similaires et comparables aux références.
+        Signaler les configurations aberrantes.
+
+    - name: "Contraintes de quantité (MinQty / MaxQty)"
+      instruction: |
+        MinQty / MaxQty doivent être cohérents avec les références comparables.
+        Signaler les contraintes aberrantes (MinQty > 1 pour un groupe public standard, MaxQty trop bas).
+
+    - name: "Visibilité Internet : HideOnStandardInternetSale"
+      instruction: |
+        Ce flag doit être cohérent entre groupes similaires et comparables aux références.
+        Signaler les incohérences (groupe public caché alors que les références l'affichent).
+
+Prices:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "Prices" de configurations d'événements de billetterie.
+  checks:
+    - name: "Existence de prix non nuls pour les groupes publics"
+      instruction: |
+        Pour un événement standard, les groupes publics doivent avoir Price > 0.0.
+        Signaler si tous les groupes Favour=False ont Price=0.0 alors que les références ont des Prix non nuls.
+
+    - name: "Cohérence relative entre groupes (hiérarchie des prix)"
+      instruction: |
+        Vérifier que les hiérarchies de prix sont cohérentes (ADULTE >= Étudiant) et comparable aux références.
+        Signaler les inversions logiques ou les prix aberrants.
+
+    - name: "Cohérence des prix par section pour un même groupe"
+      instruction: |
+        Les prix par section doivent suivre un pattern logique et être cohérents avec les références.
+        Signaler les patterns inversés ou illogiques.
+
+    - name: "Cohérence entre Price, FakePriceOnTicket et FakePriceToShowOnTicket"
+      instruction: |
+        Vérifier la cohérence entre ces champs selon le type de groupe et les références.
+        Signaler les configurations incohérentes ou aberrantes.
+
+    - name: "Homogénéité des prix entre événements similaires"
+      instruction: |
+        Comparer les prix du CIBLE avec les références similaires.
+        Signaler les écarts de prix très importants (trop élevés, trop bas, ou nuls alors qu'attendus).
+
+FeeDefinitions:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "FeeDefinitions" de configurations d'événements de billetterie.
+    Validez que les définitions de frais sont correctement structurées et cohérentes avec les références.
+  checks:
+    - name: "Présence des définitions de frais de base"
+      instruction: |
+        Vérifier que FeeDefinitionModelList[] contient les définitions attendues.
+        Signaler si des frais de base essentiels (Fee1, Fee2) sont manquants comparé aux références.
+
+    - name: "Cohérence de EventID"
+      instruction: |
+        Les EventID dans FeeDefinitionModelList[] doivent correspondre à l'EventID du CIBLE.
+        Signaler les EventID incorrects ou non concordants.
+
+    - name: "Cohérence de PointOfSaleID"
+      instruction: |
+        Les PointOfSaleID doivent correspondre aux points de vente configurés pour l'événement.
+        Signaler les PointOfSaleID qui ne correspondent à aucun POS valide.
+
+    - name: "Cohérence des noms de définitions et unicité"
+      instruction: |
+        Les noms de définitions doivent être cohérents avec les références et éviter les doublons sans raison.
+        Signaler les noms manquants, vides ou dupliqués de façon inexplicable.
+
+    - name: "Flags ReadOnlyItem et RO_ShowEnglishFields"
+      instruction: |
+        Vérifier la cohérence de ces flags avec les références.
+        Signaler les configurations de flags qui divergent significativement des références.
+
+    - name: "ShowAddFeeDefinition"
+      instruction: |
+        Vérifier que ShowAddFeeDefinition est cohérent avec les références.
+        Signaler les configurations anormales par rapport aux événements similaires.
+
+
+RightToSellAndFees:
+  policy_intro: |
+    Tu es un assistant spécialisé dans la validation de la section "RightToSellAndFees" de configurations d'événements de billetterie.
+    Validez que les droits de vente et les frais sont correctement configurés et cohérents avec les références.
+  checks:
+    - name: "Cohérence des frais entre POS pour un même événement"
+      instruction: |
+        Vérifier que les frais sont cohérents entre les différents POS pour un même événement.
+        Signaler les écarts anormaux (par exemple, frais très élevés pour certains POS seulement).
+
+    - name: "Répartition Internal / POS (IncomeInternal vs IncomeForPOS)"
+      instruction: |
+        Vérifier que la répartition entre IncomeInternal et IncomeForPOS est cohérente avec les références.
+        Signaler les répartitions aberrantes ou incohérentes.
+
+    - name: "Droits de vente (IsSaleAutorized) par type de POS"
+      instruction: |
+        Vérifier que IsSaleAutorized est correctement configuré pour chaque POS.
+        Signaler si des POS clés ont IsSaleAutorized=False alors qu'ils devraient pouvoir vendre.
+
+    - name: "Cohérence des PriceGroupsForPOS"
+      instruction: |
+        Les PriceGroupsForPOS doivent être cohérents avec les groupes de prix définis et les références.
+        Signaler les PriceGroupsForPOS manquants ou incohérents.
+
+    - name: "Cohérence entre événements similaires (niveau global de frais)"
+      instruction: |
+        Comparer les frais du CIBLE avec les références similaires.
+        Signaler les écarts de frais très importants ou anormaux.

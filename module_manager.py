@@ -65,7 +65,7 @@ class ModuleManager:
         self.log_path = path
 
     # ---------- initialize modules ----------
-    def initialize_module(self, sections_models: Dict[str, Tuple[str, str]],modules_list_to_init: List[str] = []) -> None:
+    def initialize_module(self, sections_models: Dict[str, Tuple[str, str]],modules_list_to_init: List[str] = [], run_config:Dict[str, Any] = {}) -> None:
 
         for module_id, (model, key) in sections_models.items():
 
@@ -79,12 +79,13 @@ class ModuleManager:
 
             log_path = self.log_path + f"/{module_id}"
             module = LlmEventValidator(model=model,
-                                       api_key=key, 
+                                       api_key=key,
                                        module_id=module_id, 
                                        cible_id=self.eid, 
                                        sim_ids=self.sim_ids, 
                                        contributions=contributions,
-                                       log_path=log_path)
+                                       log_path=log_path,
+                                       run_config=run_config)
 
             self.modules[module_id] = module
 
@@ -209,7 +210,7 @@ class ModuleManager:
         return self.llm_responses
 
     # ---------- run multiple models on one module ----------
-    def run_multiple_model_on_one_module(self, module_id: str, policy: Dict[str,Any], models_keys: Dict[str,str]) -> Dict[str, Dict[str, Any]]:
+    def run_multiple_model_on_one_module(self, module_id: str, policy: Dict[str,Any], models_keys: Dict[str,str], run_config: Dict[str, Any] = {}) -> Dict[str, Dict[str, Any]]:
         """
         Exécute la validation LLM pour un module donné avec plusieurs (modèle, clé) pairs.
         Retourne un dictionnaire de réponses par modèle.
@@ -220,15 +221,15 @@ class ModuleManager:
             contributions[eid] = event_contribution_for_module(module_id, data)
         self.contribution_details[module_id] = contributions
 
-        log_path = self.log_path + f"/{module_id}"
         first_model, first_key = list(models_keys.items())[0]
         module = LlmEventValidator(model=first_model,
-                                    api_key=first_key, 
+                                    api_key=first_key,
                                     module_id=module_id, 
                                     cible_id=self.eid, 
                                     sim_ids=self.sim_ids, 
                                     contributions=contributions,
-                                    log_path=log_path)
+                                    log_path=self.log_path,
+                                    run_config=run_config)
         
         module.set_policy(policy=policy)
 
@@ -236,7 +237,57 @@ class ModuleManager:
 
         return output
 
+
+    def run_multiple_config_and_model_on_one_module(self, module_id: str, policies: Dict[str,Dict[str,Any]], models_keys: Dict[str,str], grid_search: List[Dict[str, Any]]) -> Dict[int, Dict[str, Any]]:
+        """
+        Exécute la validation LLM pour un module donné avec plusieurs (modèle, clé) pairs.
+        Retourne un dictionnaire de réponses par modèle.
+        """
+
+        contributions: Dict[int, str] = {}
+        for eid, data in self.events_cache.items():
+            contributions[eid] = event_contribution_for_module(module_id, data)
+        self.contribution_details[module_id] = contributions
+
+        first_model, first_key = list(models_keys.items())[0]
+        log_path = os.path.join(os.path.dirname(__file__), "logs", "module_manager_test_v5", module_id)
+        module = LlmEventValidator(model=first_model,
+                                    api_key=first_key,
+                                    module_id=module_id, 
+                                    cible_id=self.eid, 
+                                    sim_ids=self.sim_ids, 
+                                    contributions=contributions,
+                                    log_path=log_path,
+                                    run_config=grid_search[1])
+        
+        module.set_policy(policies=policies)
+
+        output = module.validate_section_with_multiple_configs_and_models(models_keys=models_keys, grid_search=grid_search)
+
+        return output
+
 if __name__ == "__main__":
+
+
+    grid_search = [
+        {"temperature": 0.0, "language": "fr", "num_references": 4, "policy": "strict"},
+        #{"temperature": 0.1, "language": "fr", "num_references": 4, "policy": "strict"},
+        #{"temperature": 0.0, "language": "en", "num_references": 4, "policy": "strict"},
+        #{"temperature": 0.1, "language": "en", "num_references": 4, "policy": "strict"},
+        #{"temperature": 0.0, "language": "fr", "num_references": 2, "policy": "strict"},
+        #{"temperature": 0.1, "language": "fr", "num_references": 2, "policy": "strict"},
+        #{"temperature": 0.0, "language": "en", "num_references": 2, "policy": "strict"},
+        #{"temperature": 0.1, "language": "en", "num_references": 2, "policy": "strict"},
+        #{"temperature": 0.0, "language": "fr", "num_references": 4, "policy": "soft"},
+        #{"temperature": 0.1, "language": "fr", "num_references": 4, "policy": "soft"},
+        #{"temperature": 0.0, "language": "en", "num_references": 4, "policy": "soft"},
+        #{"temperature": 0.1, "language": "en", "num_references": 4, "policy": "soft"},
+        #{"temperature": 0.0, "language": "fr", "num_references": 2, "policy": "soft"},
+        #{"temperature": 0.1, "language": "fr", "num_references": 2, "policy": "soft"},
+        {"temperature": 0.0, "language": "en", "num_references": 2, "policy": "soft"},
+        #{"temperature": 0.1, "language": "en", "num_references": 2, "policy": "soft"},
+    ]
+    module_to_test = "FeeDefinitions"
 
 
     print("==============================================================")
@@ -246,7 +297,41 @@ if __name__ == "__main__":
     print("==============================================================")
     print("\n\n\n")
 
+    manager = ModuleManager()
+    
+    random_eid = manager.pick_one_random_event()
+    sids, events_cache = manager.get_similar_events_for_id(random_eid, top_k=4, return_full_cache=True)
+
+    print("Picked random event ID:", random_eid)
+
+    with open("artefacts/policies.yaml", "r", encoding="utf-8") as f:
+        policies_data = yaml.safe_load(f)
+    with open("artefacts/soft_policies.yaml", "r", encoding="utf-8") as f:
+        soft_policies_data = yaml.safe_load(f)
+    policies = {"soft": soft_policies_data[module_to_test], "strict": policies_data[module_to_test]}
+    output = manager.run_multiple_config_and_model_on_one_module(module_to_test, policies, LLM_NAME_KEY, grid_search=grid_search)
+
+
+    # =================================
+    # CI_DESSOUS V3
+    # =================================
+    '''
+    grid_search = [
+        {"temperature": 0.0, "language": "fr"},
+        {"temperature": 0.25, "language": "fr"},
+        {"temperature": 0.0, "language": "en"},
+    ]
+    run_config = grid_search[2]
+
     module_to_test = "EventDates"
+
+
+    print("==============================================================")
+    print("==============================================================")
+    print("=== Module Manager Test ===")
+    print("==============================================================")
+    print("==============================================================")
+    print("\n\n\n")
 
     manager = ModuleManager()
     
@@ -254,11 +339,11 @@ if __name__ == "__main__":
     sids, events_cache = manager.get_similar_events_for_id(random_eid, top_k=4, return_full_cache=True)
 
     # in logs/module_manager_test, create folder event{random_eid}_{datetime} (year,month,date,hour,minute,second)
-    log_path = f"/logs/module_manager_test_v2/event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    log_path = f"/logs/module_manager_test_v3/{module_to_test}/event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     try:
         os.makedirs(log_path, exist_ok=True)
     except PermissionError:
-        log_path = os.path.join(os.path.dirname(__file__), "logs", "module_manager_test_v2", f"event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        log_path = os.path.join(os.path.dirname(__file__), "logs", "module_manager_test_v3", module_to_test, f"event{random_eid}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         os.makedirs(log_path, exist_ok=True)
 
     manager.set_log_path(log_path)
@@ -274,8 +359,8 @@ if __name__ == "__main__":
         signatures_summary["SIMILAR_EVENTS"][f"ID_{sid}"] = extract_signature(events_cache.get(sid, {}))
 
     # 4. ÉCRITURE DANS LE FICHIER DE CONFIG
-    config_log_path = os.path.join(log_path, "config.txt")
-    with open(config_log_path, "w", encoding="utf-8") as f:
+    overview_log_path = os.path.join(log_path, "overview.txt")
+    with open(overview_log_path, "w", encoding="utf-8") as f:
         f.write(f"Random Event ID: {random_eid}\n")
         f.write(f"Similar Event IDs: {sids}\n")
         
@@ -285,14 +370,25 @@ if __name__ == "__main__":
         f.write(json.dumps(signatures_summary, ensure_ascii=False, indent=2))
         f.write("\n")
 
-        
-    print("Config written to:", config_log_path)
+    print("Overview written to:", overview_log_path)
 
     with open("artefacts/policies.yaml", "r", encoding="utf-8") as f:
         policies_data = yaml.safe_load(f)
 
-    output = manager.run_multiple_model_on_one_module(module_to_test, policies_data[module_to_test], LLM_NAME_KEY)
+    config_log_path = os.path.join(log_path, "run_config.json")
+    with open(config_log_path, "w", encoding="utf-8") as f:
+        json.dump(run_config, f, ensure_ascii=False, indent=2)
+    print("Run config written to:", config_log_path)
+
+    output = manager.run_multiple_model_on_one_module(module_to_test, policies_data[module_to_test], LLM_NAME_KEY, run_config=run_config)
+
+    '''
  
+
+    # =================================
+    # CI_DESSOUS V2
+    # =================================
+
     '''
     # Create the mapping with shuffled sections and random (model, key) pairs
     Sections_Models = create_sections_models_mapping(SECTIONS, LLM_NAME_KEY)

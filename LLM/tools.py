@@ -1,4 +1,4 @@
-SYSTEM_MESSAGE = """
+SYSTEM_MESSAGE_FR = """
 Tu es un assistant expert en validation de configurations d'événements de billetterie.
 Ton rôle est d'exécuter une vérification précise sur un événement CIBLE en le comparant à des événements SIMILAIRES de référence.
 
@@ -10,7 +10,7 @@ Règles:
 """.strip()
 
 
-PROMPT_FORMAT_PATHS_TEMPLATE = """
+PROMPT_FORMAT_PATHS_TEMPLATE_FR = """
 Tu es un assistant qui aide à identifier les chemins (paths) pertinents dans une structure de données JSON complexe.
 
 Description de ce que nous cherchons à identifier :
@@ -34,6 +34,59 @@ IMPORTANT :
 - Ne renvoie pas de texte libre, n'explique pas ton raisonnement : utilise seulement `format_paths`.
 """.strip()
 
+VALIDATE_SECTION_PROMPT_FR = """
+CONTEXTE:
+{policy_intro}
+
+POINT À VÉRIFIER ({check_num}/{total_checks}): "{check_name}"
+
+INSTRUCTIONS SPÉCIFIQUES:
+{instruction}
+
+--------------------------------------------------
+DONNÉES DE L'ÉVÉNEMENT CIBLE (ID: {cible_id})
+--------------------------------------------------
+{target_content}
+
+--------------------------------------------------
+DONNÉES DES ÉVÉNEMENTS SIMILAIRES (RÉFÉRENCES)
+--------------------------------------------------
+{similar_content}
+
+--------------------------------------------------
+
+TACHE :
+Analyse les données fournies UNIQUEMENT par rapport au point à vérifier.
+Si tu détectes des anomalies, utilise l'outil `report_step_issues` pour les signaler.
+Si tout est correct, appelle `report_step_issues` avec une liste vide.
+""".strip()
+
+
+
+VALIDATE_SECTION_SPEC_PROMPT_FR = """
+CONTEXTE:
+
+Élément à valider ({element_num}/{total_elements}):
+
+{policy_intro}
+
+--------------------------------------------------
+DONNÉES DE L'ÉVÉNEMENT CIBLE (ID: {cible_id})
+--------------------------------------------------
+{data_element}
+
+--------------------------------------------------
+DONNÉES DES ÉVÉNEMENTS SIMILAIRES (RÉFÉRENCES)
+--------------------------------------------------
+PAS DE DONNÉES SIMILAIRES POUR CE MODULE
+
+--------------------------------------------------
+
+TACHE :
+Analyse les données fournies UNIQUEMENT par rapport au point à vérifier.
+Si tu détectes des anomalies, utilise l'outil `report_step_issues` pour les signaler.
+Si tout est correct, appelle `report_step_issues` avec une liste vide.
+""".strip()
 
 tool_report_step_issues = {
     "type": "function",
@@ -58,8 +111,8 @@ tool_report_step_issues = {
                             },
                             "severity": {
                                 "type": "string",
-                                "enum": ["error", "warning"],
-                                "description": "Utiliser 'error' pour une faute bloquante/évidente, 'warning' pour une incohérence suspecte."
+                                "enum": ["error", "warning", "info"],
+                                "description": "Utiliser 'error' pour une faute bloquante/évidente, 'warning' pour une incohérence suspecte, 'info' pour une observation."
                             },
                             "message": {
                                 "type": "string",
@@ -106,10 +159,16 @@ tool_format_paths = {
 
 
 
-TOOLS_VALIDATOR: list = [
+TOOLS_VALIDATOR_FR: list = [
     tool_report_step_issues
 ]
 
-TOOLS_PROVIDER: list = [
+TOOLS_PROVIDER_FR: list = [
     tool_format_paths,
 ]
+
+# For backwards compatibility
+SYSTEM_MESSAGE = SYSTEM_MESSAGE_FR
+PROMPT_FORMAT_PATHS_TEMPLATE = PROMPT_FORMAT_PATHS_TEMPLATE_FR
+TOOLS_VALIDATOR = TOOLS_VALIDATOR_FR
+TOOLS_PROVIDER = TOOLS_PROVIDER_FR

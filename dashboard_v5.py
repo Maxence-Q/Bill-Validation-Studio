@@ -9,12 +9,12 @@ from datetime import datetime
 # --- CONFIGURATION ---
 LOG_ROOT = "logs/module_manager_test_v5"
 
-st.set_page_config(page_title="LLM Validation Arena", layout="wide")
+st.set_page_config(page_title="LLM Validation Arena v5", layout="wide")
 
 # --- DATA LOADING & PARSING ---
 def parse_run_config(filepath):
     """
-    Parses the run_config.json file to extract temperature, language, and num_references.
+    Parses the run_config.json file to extract temperature, language, num_references, and policy.
     """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -22,7 +22,8 @@ def parse_run_config(filepath):
         return {
             "temperature": config.get("temperature", None),
             "language": config.get("language", None),
-            "num_references": config.get("num_references", None)
+            "num_references": config.get("num_references", None),
+            "policy": config.get("policy", "strict")  # Default to strict if not specified
         }
     except Exception as e:
         return None
@@ -49,14 +50,14 @@ def parse_performance_file(filepath):
     except Exception as e:
         return None
 
-def load_all_run_data(module_filter, config_filter=None):
+def load_all_run_data(module_filter):
     """
     Traverses the log directory structure:
-    logs/module_manager_test_v4/{module_id}/event{id}_{date}_{time}/
+    logs/module_manager_test_v5/{module_id}/event{id}_{date}_{time}_run{index}/
       - run_config.json
       - {model_name}/performance.txt
     
-    If config_filter is provided and not "all", filters by temperature and language.
+    Loads all runs and groups by configuration.
     """
     data = []
     
@@ -70,19 +71,23 @@ def load_all_run_data(module_filter, config_filter=None):
     for event_path in event_folders:
         folder_name = os.path.basename(event_path)
         
-        # Extract timestamp for "Last Run" logic
-        # Format: event102_20260119_094358
+        # Extract timestamp and run index for "Last Run" logic
+        # Format: event102_20260119_094358_run5
         try:
             parts = folder_name.split('_')
-            if len(parts) >= 3:
+            if len(parts) >= 4:  # event, YYYYMMDD, HHMMSS, run{index}
                 timestamp_str = '_'.join(parts[1:3])
+                run_part = parts[3]  # "run5" format
+                run_index = int(run_part.replace('run', '')) if run_part.startswith('run') else 0
                 timestamp = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
             else:
                 timestamp = datetime.min
+                run_index = 0
         except:
             timestamp = datetime.min
+            run_index = 0
 
-        # Read run_config.json to get temperature and language
+        # Read run_config.json to get configuration parameters
         config_file = os.path.join(event_path, "run_config.json")
         if not os.path.exists(config_file):
             continue
@@ -90,31 +95,6 @@ def load_all_run_data(module_filter, config_filter=None):
         run_config = parse_run_config(config_file)
         if not run_config:
             continue
-        
-        # Filter by config if needed
-        if config_filter and config_filter != "all":
-            config_parts = config_filter.split(" | ")  # Format: "temp=X.XX | lang=en | refs=4"
-            
-            # Extract expected values from filter string
-            expected_temp = None
-            expected_lang = None
-            expected_refs = None
-            
-            for part in config_parts:
-                if part.startswith("temp="):
-                    expected_temp = float(part.split("=")[1])
-                elif part.startswith("lang="):
-                    expected_lang = part.split("=")[1]
-                elif part.startswith("refs="):
-                    expected_refs = int(part.split("=")[1])
-            
-            # Check if this run matches the filter
-            if expected_temp is not None and run_config.get("temperature") != expected_temp:
-                continue
-            if expected_lang is not None and run_config.get("language") != expected_lang:
-                continue
-            if expected_refs is not None and run_config.get("num_references") != expected_refs:
-                continue
         
         # Find all model folders inside the event folder
         model_folders = [f for f in os.listdir(event_path) 
@@ -125,47 +105,23 @@ def load_all_run_data(module_filter, config_filter=None):
             if os.path.exists(perf_file):
                 metrics = parse_performance_file(perf_file)
                 if metrics:
-                    metrics['Model'] = model_safe_name
                     metrics['Date'] = timestamp
+                    metrics['RunIndex'] = run_index
                     metrics['RunID'] = folder_name
                     metrics['Temperature'] = run_config.get("temperature")
                     metrics['Language'] = run_config.get("language")
+                    metrics['NumReferences'] = run_config.get("num_references")
+                    metrics['Policy'] = run_config.get("policy", "strict")
+                    # Create config string for grouping and display
+                    metrics['Config'] = f"temp={run_config.get('temperature'):.2f} | lang={run_config.get('language')} | refs={run_config.get('num_references')} | policy={run_config.get('policy')}"
                     data.append(metrics)
                     
     return pd.DataFrame(data)
 
-def get_all_configs(module_filter):
-    """
-    Scans all event folders in a module and returns a list of unique configs.
-    Returns a list of config strings in format "temp=X.XX | lang=en | refs=4", plus "all".
-    """
-    configs = set()
-    configs.add("all")  # Always add "all" option
-    
-    module_path = os.path.join(LOG_ROOT, module_filter)
-    if not os.path.exists(module_path):
-        return list(configs)
-    
-    event_folders = glob.glob(os.path.join(module_path, "event*"))
-    
-    for event_path in event_folders:
-        config_file = os.path.join(event_path, "run_config.json")
-        if os.path.exists(config_file):
-            run_config = parse_run_config(config_file)
-            if run_config:
-                temp = run_config.get("temperature")
-                lang = run_config.get("language")
-                refs = run_config.get("num_references")
-                if temp is not None and lang is not None and refs is not None:
-                    config_str = f"temp={temp:.2f} | lang={lang} | refs={refs}"
-                    configs.add(config_str)
-    
-    return sorted(list(configs), key=lambda x: (x == "all", x))
-
 # --- UI LAYOUT ---
 
-st.title("🏆 LLM Validation Arena Leaderboard")
-st.markdown("Benchmarking model performance on module validation tasks.")
+st.title("🏆 LLM Validation Arena Leaderboard v5")
+st.markdown("Benchmarking configuration performance on module validation tasks (Single Model: gpt-oss-20b)")
 
 # 1. Sidebar Selector
 st.sidebar.header("Configuration")
@@ -180,10 +136,6 @@ else:
 
 selected_module = st.sidebar.selectbox("Select Module to Inspect", available_modules)
 
-# Get available configs for the selected module
-available_configs = get_all_configs(selected_module)
-selected_config = st.sidebar.selectbox("Select Configuration", available_configs)
-
 # 2. Load Data
 if not os.path.exists(LOG_ROOT):
     st.error(f"Log directory not found: {LOG_ROOT}")
@@ -193,25 +145,32 @@ if not available_modules:
     st.error(f"No modules found in: {LOG_ROOT}")
     st.stop()
 
-df = load_all_run_data(selected_module, config_filter=selected_config)
+df = load_all_run_data(selected_module)
 
 if df.empty:
-    st.warning(f"No performance logs found for module: **{selected_module}** with config: **{selected_config}**")
+    st.warning(f"No performance logs found for module: **{selected_module}**")
     st.stop()
 
 # 3. Process Data
-# Get Last Run Data
-latest_run_id = df.sort_values('Date', ascending=False).iloc[0]['RunID']
-df_last_run = df[df['RunID'] == latest_run_id].copy()
+# Get Last Run Data - find the most recent (Date, RunIndex) combination
+if not df.empty:
+    # Sort by Date descending, then RunIndex descending to get the very last run
+    df_sorted = df.sort_values(['Date', 'RunIndex'], ascending=[False, False])
+    latest_timestamp = df_sorted.iloc[0]['Date']
+    latest_run_index = df_sorted.iloc[0]['RunIndex']
+    
+    # Get all runs from the latest timestamp with the highest run index
+    df_last_run = df[(df['Date'] == latest_timestamp) & (df['RunIndex'] == latest_run_index)].copy()
+else:
+    df_last_run = pd.DataFrame()
 
-# Get Average Data
-df_avg = df.groupby('Model')[['Precision', 'Recall', 'Tokens']].mean().reset_index()
+# Get Average Data by Config
+df_avg = df.groupby('Config')[['Precision', 'Recall', 'Tokens']].mean().reset_index()
 
 # --- DISPLAY LEADERBOARDS ---
 
 st.markdown(f"### Results for Module: `{selected_module}`")
-config_display = "All Configurations" if selected_config == "all" else selected_config.replace(" | ", " • ")
-st.info(f"📊 Analyzing **{len(df['RunID'].unique())}** runs with configuration: **{config_display}** | **{len(df['Model'].unique())}** unique models")
+st.info(f"📊 Analyzing **{len(df['RunID'].unique())}** runs | **{len(df['Config'].unique())}** unique configurations")
 
 # Helper to style dataframes
 def style_leaderboard(dataframe, sort_by, asc=False):
@@ -219,14 +178,42 @@ def style_leaderboard(dataframe, sort_by, asc=False):
     sorted_df.index += 1 # Start rank at 1
     return sorted_df
 
+def format_config_display(config_str):
+    """
+    Formats config string for better display.
+    Input: "temp=0.00 | lang=fr | refs=4 | policy=strict"
+    Output: "🌡️ 0.00 | 🗣️ FR | 📚 4 | 📋 STRICT"
+    """
+    try:
+        parts = config_str.split(' | ')
+        formatted = []
+        for part in parts:
+            if 'temp=' in part:
+                temp = part.split('=')[1]
+                formatted.append(f"🌡️ {temp}")
+            elif 'lang=' in part:
+                lang = part.split('=')[1].upper()
+                formatted.append(f"🗣️ {lang}")
+            elif 'refs=' in part:
+                refs = part.split('=')[1]
+                formatted.append(f"📚 {refs}")
+            elif 'policy=' in part:
+                policy = part.split('=')[1].upper()
+                formatted.append(f"📋 {policy}")
+        return " | ".join(formatted)
+    except:
+        return config_str
+
 tab1, tab2, tab3 = st.tabs(["🧠 Recall", "🎯 Precision", "💰 Token Efficiency"])
 
 with tab1:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Last Run")
+        df_last_display = df_last_run[['Config', 'Recall', 'Policy']].copy()
+        df_last_display['Config'] = df_last_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_last_run[['Model', 'Recall']], 'Recall'),
+            style_leaderboard(df_last_display, 'Recall'),
             width='stretch',
             column_config={
                 "Recall": st.column_config.ProgressColumn(
@@ -236,8 +223,10 @@ with tab1:
         )
     with col2:
         st.subheader("Historical Average")
+        df_avg_display = df_avg[['Config', 'Recall']].copy()
+        df_avg_display['Config'] = df_avg_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_avg[['Model', 'Recall']], 'Recall'),
+            style_leaderboard(df_avg_display, 'Recall'),
             width='stretch',
             column_config={
                 "Recall": st.column_config.ProgressColumn(
@@ -250,8 +239,10 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Last Run")
+        df_last_display = df_last_run[['Config', 'Precision', 'Policy']].copy()
+        df_last_display['Config'] = df_last_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_last_run[['Model', 'Precision']], 'Precision'),
+            style_leaderboard(df_last_display, 'Precision'),
             width='stretch',
             column_config={
                 "Precision": st.column_config.ProgressColumn(
@@ -261,8 +252,10 @@ with tab2:
         )
     with col2:
         st.subheader("Historical Average")
+        df_avg_display = df_avg[['Config', 'Precision']].copy()
+        df_avg_display['Config'] = df_avg_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_avg[['Model', 'Precision']], 'Precision'),
+            style_leaderboard(df_avg_display, 'Precision'),
             width='stretch',
             column_config={
                 "Precision": st.column_config.ProgressColumn(
@@ -275,21 +268,38 @@ with tab3:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Last Run")
+        df_last_display = df_last_run[['Config', 'Tokens', 'Policy']].copy()
+        df_last_display['Config'] = df_last_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_last_run[['Model', 'Tokens']], 'Tokens', asc=True), # Lower tokens is better
+            style_leaderboard(df_last_display, 'Tokens', asc=True),
             width='stretch'
         )
     with col2:
         st.subheader("Historical Average")
+        df_avg_display = df_avg[['Config', 'Tokens']].copy()
+        df_avg_display['Config'] = df_avg_display['Config'].apply(lambda x: format_config_display(x))
         st.dataframe(
-            style_leaderboard(df_avg[['Model', 'Tokens']], 'Tokens', asc=True),
+            style_leaderboard(df_avg_display, 'Tokens', asc=True),
             width='stretch'
         )
 
 # Add a drill-down section
 st.divider()
-st.subheader("🔍 Detailed Run History")
-model_drilldown = st.selectbox("Select Model for details", df['Model'].unique())
-history_chart_data = df[df['Model'] == model_drilldown].sort_values('Date')
+st.subheader("🔍 Detailed Run History by Configuration")
+config_options = sorted(df['Config'].unique())
+config_drilldown = st.selectbox("Select Configuration for details", config_options, format_func=format_config_display)
+history_chart_data = df[df['Config'] == config_drilldown].sort_values('Date')
 
-st.line_chart(history_chart_data, x='Date', y=['Precision', 'Recall'])
+if not history_chart_data.empty:
+    st.line_chart(history_chart_data, x='Date', y=['Precision', 'Recall'])
+    
+    # Show summary stats for this config
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Avg Precision", f"{history_chart_data['Precision'].mean():.4f}")
+    with col2:
+        st.metric("Avg Recall", f"{history_chart_data['Recall'].mean():.4f}")
+    with col3:
+        st.metric("Avg Tokens", f"{history_chart_data['Tokens'].mean():.0f}")
+    with col4:
+        st.metric("Run Count", len(history_chart_data['RunID'].unique()))

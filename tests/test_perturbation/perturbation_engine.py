@@ -313,8 +313,8 @@ class PerturbationEngine:
             strategies = [
                 ("integer_to_empty", lambda v: ""),
                 ("integer_to_null", lambda v: "null"),
-                ("integer_random", lambda v: str(random.randint(-10000, 10000))),
-                ("integer_increment_decrement", lambda v: str(v + random.randint(-100, 100))),
+                ("integer_random", lambda v: str(random.choice([i for i in range(-10000, 10001) if i != v]))),
+                ("integer_increment_decrement", lambda v: str(v + random.choice([i for i in range(-100, 101) if i != 0]))),
                 ("integer_to_zero", lambda v: "0"),
             ]
             # Ici, on passe int_value (l'entier) à la lambda, pas la string
@@ -338,14 +338,14 @@ class PerturbationEngine:
             ("null_to_empty", lambda: ""),
             ("null_to_zero", lambda: "0"),
             ("null_to_false", lambda: "false"),
-            ("null_keep_null", lambda: "null"),
+            ("null_to_random_int", lambda: str(random.randint(1, 10000))),
         ]
         return self._apply_strategy(strategies)
 
     def _perturb_empty_string(self) -> str:
         strategies = [
-            ("empty_keep_empty", lambda: ""),
             ("empty_to_null", lambda: "null"),
+            ("empty_to_random_int", lambda: str(random.randint(1, 10000))),
             ("empty_to_random_string", lambda: "".join(random.choices("abcdefghijklmnopqrstuvwxyz", k=random.randint(1, 5)))),
         ]
         return self._apply_strategy(strategies)
