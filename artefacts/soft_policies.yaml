@@ -41,31 +41,32 @@ OwnerPOS:
   checks:
     - name: "Activité et statut du point de vente"
       instruction: |    
-        Si l'OwnerPOS du CIBLE a IsInactive = True, vérifier si cela est cohérent avec les références similaires.
-        Signaler les POS obsolètes ou archivés (nommés "... (ancien)", avec IsInactive=True).
+        Vérifier IsInactive de l'OwnerPOS du CIBLE si cela est cohérent avec les références similaires.
+        Signaler les POS obsolètes ou archivés (nommés "... (ancien)") et autres erreurs.
 
     - name: "Cohérence géographique et de fuseau horaire"
       instruction: |
         Vérifier la cohérence entre City, Province, Region, Country et TimeZoneID.
-        Signaler les incohérences entre ces champs et les références.
+        Signaler les incohérences entre ces champs et les références, et autres erreurs.
 
     - name: "Configuration financière (GL accounts et fiscalité)"
       instruction: |
         Les GUIDs à 00000000-... indiquent une configuration incomplète ou inactive.
-        Signaler si le CIBLE a presque tous ses *GLAccountID à 00000000 alors que les références ont des GUID non nuls.
+        Signaler si le CIBLE a presque tous ses *GLAccountID à 00000000 alors que les références ont des GUID non nuls. 
+        Signaler les erreurs de GUID incohérents.
 
     - name: "Numéros fiscaux et informations légales"
       instruction: |
-        Pour des POS similaires, si tous les OwnerPOS de référence possèdent des numéros de taxes valides et que le CIBLE les a vides, signaler cette anomalie.
+        Pour des POS similaires, si tous les OwnerPOS de référence possèdent des numéros de taxes valides et que le CIBLE les a vides ou incohérentes, signaler cette anomalie.
 
     - name: "Frais de billetterie et préférences client"
       instruction: |
         Comparer les montants (OutletFees, HandlingFees, PhoneFees) avec les OwnerPOS de référence similaires.
-        Signaler les frais aberrants (excessivement élevés ou strictement à 0 alors que tous les autres sont non nuls).
+        Signaler les frais aberrants (excessivement élevés ou strictement à 0 alors que tous les autres sont non nuls), ou les incohérences.
 
     - name: "Paiement et intégration web"
       instruction: |    
-        Si le CIBLE a des PaymentProcessorID nuls alors que tous les POS comparables ont des IDs valides, signaler cette anomalie.
+        Si le CIBLE a des PaymentProcessorID nuls ou incohérents alors que tous les POS comparables ont des IDs valides, signaler cette anomalie.
 
 EventDates:
   policy_intro: |
@@ -74,36 +75,46 @@ EventDates:
     - name: "Cohérence date de représentation / fuseau horaire"
       instruction: |
         EventDateModelList[].Date doit être cohérente avec RO_Date_Local et le fuseau horaire indiqué.
-        Signaler tout décalage suspect (plusieurs heures ou jours sans justification).
+        Signaler tout décalage suspect. En cas de doute, faire plusieurs signalements pour les attributs concernés.
+        Signaler toutes incohérences.
 
     - name: "Cohérence des fenêtres de vente (ordre et position par rapport à la date)"
       instruction: |
         Pour chaque canal, vérifier SalesStartDate* <= SalesEndDate*.
         Les dates de fin de vente doivent être cohérentes avec la date de représentation (comparaison avec références).
+        Signaler toutes incohérences
 
     - name: "Cohérence entre canaux de vente"
       instruction: |
         Vérifier les relations entre SalesStartDate / SalesEndDate par canal.
         Signaler les décalages anormaux comparés aux références.
+        Signaler toutes incohérences.
 
     - name: "Flags de statut : Cancelled, IsSoldOut, HideOnInternet, DateToBeDeterminated"
       instruction: |
         Vérifier la cohérence des flags avec le reste de la configuration et les références.
         Signaler les combinaisons contradictoires (DateToBeDeterminated=True + dates concrètes, Cancelled=True + ventes actives, etc).
+        Signaler toutes incohérences.
 
     - name: "Cohérence des informations de salle et d'ID"
       instruction: |
         EventDateModelList[].Venue.* doit être cohérent avec IDChain.VenueID, VenueModelID, PhysicalVenueID.
         Signaler les mélanges incohérents entre Venue.Name et VenueID.
+        Signaler toutes incohérences.
 
     - name: "Champs descriptifs et liens"
       instruction: |
         DescriptionFR / DescriptionEN doivent être cohérents avec les références similaires.
-        BuyEventDateLink ne doit pas être complètement vide si les références ont des liens valides.
+        BuyEventDateLink doit avoir un lien valide si les références ont des liens valides. 
+        Mettre un warning pour le lien est une bonne pratique si besoin.
+        Signaler toutes incohérences.
 
 PriceGroups:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "PriceGroups" de configurations d'événements de billetterie.
+    Tu es un expert chargé de valider la définition d'un "PriceGroup" (catégorie tarifaire) pour un événement cible. 
+    En comparant cet élément au "PriceGroup" de référence fourni (issu d'un événement passé similaire et portant le même nom), 
+    analyse la cohérence du nommage, des codes internes et des paramètres de configuration. 
+    Signale toute incohérence textuelle, différence de formatage suspecte ou erreur de paramétrage par rapport à la référence historique.
   checks:
     - name: "Présence de groupes 'publics' de base"
       instruction: |
@@ -137,7 +148,10 @@ PriceGroups:
 
 Prices:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "Prices" de configurations d'événements de billetterie.
+    Tu es un expert chargé de valider la configuration d'un "PriceGroup" individuel pour un événement cible. 
+    En comparant ce groupe au "PriceGroup" de référence fourni (issu d'un événement passé similaire), 
+    analyse la cohérence des prix, des taxes, des frais et des configurations techniques (champs booléens). 
+    Signale toute déviation illogique, omission ou erreur de saisie par rapport au standard historique.
   checks:
     - name: "Existence de prix non nuls pour les groupes publics"
       instruction: |
@@ -202,8 +216,9 @@ FeeDefinitions:
 
 RightToSellAndFees:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "RightToSellAndFees" de configurations d'événements de billetterie.
-    Validez que les droits de vente et les frais sont correctement configurés et cohérents avec les références.
+    Tu es un expert chargé de valider les règles de "RightToSellAndFees" (Droits de vente et Frais) pour un événement cible. 
+    En utilisant l'élément de référence issu d'un événement similaire, vérifie scrupuleusement l'alignement des canaux de vente, des montants des frais, des structures de taxes et des configurations logiques. 
+    Signale toute déviation financière critique, omission de frais ou erreur de configuration par rapport au standard établi par l'événement de référence.
   checks:
     - name: "Cohérence des frais entre POS pour un même événement"
       instruction: |

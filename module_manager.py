@@ -238,7 +238,8 @@ class ModuleManager:
         return output
 
 
-    def run_multiple_config_and_model_on_one_module(self, module_id: str, policies: Dict[str,Dict[str,Any]], models_keys: Dict[str,str], grid_search: List[Dict[str, Any]]) -> Dict[int, Dict[str, Any]]:
+    def run_multiple_config_and_model_on_one_module(self, module_id: str, policies: Dict[str,Dict[str,Any]], models_keys: Dict[str,str], 
+                                                    grid_search: List[Dict[str, Any]], grid_search_spec: List[Dict[str, Any]]) -> Dict[int, Dict[str, Any]]:
         """
         Exécute la validation LLM pour un module donné avec plusieurs (modèle, clé) pairs.
         Retourne un dictionnaire de réponses par modèle.
@@ -261,8 +262,10 @@ class ModuleManager:
                                     run_config=grid_search[1])
         
         module.set_policy(policies=policies)
-
-        output = module.validate_section_with_multiple_configs_and_models(models_keys=models_keys, grid_search=grid_search)
+        if module_id == "Prices" or module_id == "PriceGroups" or module_id == "RightToSellAndFees":
+            output = module.validate_section_spec_with_multiple_configs_and_models(models_keys=models_keys, grid_search_spec=grid_search_spec)
+        else:
+            output = module.validate_section_with_multiple_configs_and_models(models_keys=models_keys, grid_search=grid_search)
 
         return output
 
@@ -287,7 +290,11 @@ if __name__ == "__main__":
         {"temperature": 0.0, "language": "en", "num_references": 2, "policy": "soft"},
         #{"temperature": 0.1, "language": "en", "num_references": 2, "policy": "soft"},
     ]
-    module_to_test = "FeeDefinitions"
+    grid_search_spec = [
+        #{"num_references":2,"temperature":0.0,"language":"en"},
+        {"num_references":1,"temperature":0.0,"language":"en"},
+    ]
+    module_to_test = "RightToSellAndFees"
 
 
     print("==============================================================")
@@ -302,14 +309,15 @@ if __name__ == "__main__":
     random_eid = manager.pick_one_random_event()
     sids, events_cache = manager.get_similar_events_for_id(random_eid, top_k=4, return_full_cache=True)
 
-    print("Picked random event ID:", random_eid)
+    print("Picked random event ID:", random_eid, "\n")
+    print("Module to test:", module_to_test, "\n")
 
     with open("artefacts/policies.yaml", "r", encoding="utf-8") as f:
         policies_data = yaml.safe_load(f)
     with open("artefacts/soft_policies.yaml", "r", encoding="utf-8") as f:
         soft_policies_data = yaml.safe_load(f)
     policies = {"soft": soft_policies_data[module_to_test], "strict": policies_data[module_to_test]}
-    output = manager.run_multiple_config_and_model_on_one_module(module_to_test, policies, LLM_NAME_KEY, grid_search=grid_search)
+    output = manager.run_multiple_config_and_model_on_one_module(module_to_test, policies, LLM_NAME_KEY, grid_search=grid_search, grid_search_spec=grid_search_spec)
 
 
     # =================================

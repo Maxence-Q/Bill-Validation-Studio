@@ -3,6 +3,7 @@ Tu es un assistant expert en validation de configurations d'événements de bill
 Ton rôle est d'exécuter une vérification précise sur un événement CIBLE en le comparant à des événements SIMILAIRES de référence.
 
 Règles:
+- UTILISE les données des événements similaires fournies pour la comparaison.
 - Tu DOIS utiliser l'outil `report_step_issues` pour donner ta réponse.
 - Si des anomalies sont détectées : liste-les avec précision (chemin, sévérité, message explicatif).
 - Si AUCUNE anomalie n'est détectée : appelle `report_step_issues` avec une liste `issues` vide [].
@@ -56,7 +57,6 @@ DONNÉES DES ÉVÉNEMENTS SIMILAIRES (RÉFÉRENCES)
 --------------------------------------------------
 
 TACHE :
-Analyse les données fournies UNIQUEMENT par rapport au point à vérifier.
 Si tu détectes des anomalies, utilise l'outil `report_step_issues` pour les signaler.
 Si tout est correct, appelle `report_step_issues` avec une liste vide.
 """.strip()
@@ -83,7 +83,6 @@ PAS DE DONNÉES SIMILAIRES POUR CE MODULE
 --------------------------------------------------
 
 TACHE :
-Analyse les données fournies UNIQUEMENT par rapport au point à vérifier.
 Si tu détectes des anomalies, utilise l'outil `report_step_issues` pour les signaler.
 Si tout est correct, appelle `report_step_issues` avec une liste vide.
 """.strip()

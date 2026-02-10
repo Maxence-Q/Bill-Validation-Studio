@@ -3,7 +3,7 @@ import random
 from typing import List, Dict, Tuple, Mapping, Optional
 
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY") or ""
+GROQ_API_KEY = os.environ.get("GROQ_API_PAID_KEY") or ""
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY") or ""
 
 LLM_NAME_KEY: Dict[str,str] = {
@@ -23,9 +23,11 @@ SECTIONS = [
     "Event",
     "OwnerPOS",
     "EventDates",
+    "FeeDefinitions",
+
+
     "PriceGroups",
     "Prices",
-    "FeeDefinitions",
     "RightToSellAndFees"
 ]
 

@@ -157,7 +157,10 @@ EventDates:
 
 PriceGroups:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "PriceGroups" (groupes tarifaires) de configurations d'événements de billetterie.
+    Tu es un expert chargé de valider la définition d'un "PriceGroup" (catégorie tarifaire) pour un événement cible. 
+    En comparant cet élément au "PriceGroup" de référence fourni (issu d'un événement passé similaire et portant le même nom), 
+    analyse la cohérence du nommage, des codes internes et des paramètres de configuration. 
+    Signale toute incohérence textuelle, différence de formatage suspecte ou erreur de paramétrage par rapport à la référence historique.
   checks:
     - name: "Présence de groupes 'publics' de base"
       instruction: |
@@ -213,7 +216,10 @@ PriceGroups:
 
 Prices:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "Prices" (grille de prix par section) de configurations d'événements de billetterie.
+    Tu es un expert chargé de valider la configuration d'un "PriceGroup" individuel pour un événement cible. 
+    En comparant ce groupe au "PriceGroup" de référence fourni (issu d'un événement passé similaire), 
+    analyse la cohérence des prix, des taxes, des frais et des configurations techniques (champs booléens). 
+    Signale toute déviation illogique, omission ou erreur de saisie par rapport au standard historique.
   checks:
     - name: "Existence de prix non nuls pour les groupes publics"
       instruction: |
@@ -313,7 +319,10 @@ FeeDefinitions:
 
 RightToSellAndFees:
   policy_intro: |
-    Tu es un assistant spécialisé dans la validation de la section "RightToSellAndFees" (droits de vendre et structure de frais par point de vente) de configurations d'événements de billetterie. :contentReference[oaicite:0]{index=0}
+    Tu es un expert chargé de valider les règles de "RightToSellAndFees" (Droits de vente et Frais) pour un événement cible. 
+    En utilisant l'élément de référence issu d'un événement similaire, vérifie scrupuleusement l'alignement des canaux de vente, des montants des frais, des structures de taxes et des configurations logiques. 
+    Signale toute déviation financière critique, omission de frais ou erreur de configuration par rapport au standard établi par l'événement de référence.
+    Ne signale pas les variations mineures qui pourraient être justifiées par des choix commerciaux spécifiques, sauf si elles sont manifestement incohérentes avec les références.
   checks:
     - name: "Cohérence des frais entre POS pour un même événement"
       instruction: |

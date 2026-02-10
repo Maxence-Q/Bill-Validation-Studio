@@ -122,6 +122,8 @@ class PerturbationEngine:
             return self._perturb_date(value)
         elif self._is_boolean(value):
             return self._perturb_boolean(value)
+        elif self._is_float(value):
+            return self._perturb_float(value)
         elif self._is_integer(value):
             return self._perturb_integer(value)
         else:  # Treat as string
@@ -214,6 +216,14 @@ class PerturbationEngine:
     def _is_boolean(self, value: str) -> bool:
         """Check if value is a boolean."""
         return value.lower() in ["true", "false"]
+
+    def _is_float(self, value: str) -> bool:
+        """Check if value is a float (has decimal point)."""
+        try:
+            float(value)
+            return "." in value  # Must have decimal point to be considered float
+        except ValueError:
+            return False
 
     def _is_integer(self, value: str) -> bool:
         """Check if value is an integer."""
@@ -323,6 +333,45 @@ class PerturbationEngine:
             return func(int_value)
         except ValueError:
             self.stats["integer_parsing_error"] += 1
+            return ""
+
+    def _perturb_float(self, value: str) -> str:
+        """Perturb a float value with semantically significant changes."""
+        try:
+            float_value = float(value)
+            
+            # 1. Stratégies génériques (peuvent s'appliquer à tout le monde)
+            available_strategies = [
+                ("float_to_empty", lambda v: ""),
+                ("float_to_null", lambda v: "null"),
+                # On s'assure que l'offset n'est jamais 0 en forçant un minimum absolu
+                ("float_add_offset", lambda v: str(round(v + (1 if random.random() < 0.5 else -1) * random.uniform(0.1, 100), 2))),
+            ]
+            
+            # 2. Gestion des valeurs cibles spécifiques (0.0 et 1.0)
+            # On n'ajoute la stratégie "transformer en 0" QUE si la valeur n'est pas déjà 0
+            if float_value != 0.0:
+                available_strategies.append(("float_to_zero", lambda v: "0.0"))
+            
+            # Idem pour 1.0
+            if float_value != 1.0:
+                available_strategies.append(("float_to_one", lambda v: "1.0"))
+            
+            # 3. Stratégies mathématiques (inutiles si la valeur est 0)
+            if float_value != 0.0:
+                math_strategies = [
+                    ("float_negate", lambda v: str(round(-v, 2))),
+                    ("float_multiply", lambda v: str(round(v * random.choice([0.5, 2.0, 10.0, -1.0]), 2))),
+                ]
+                available_strategies.extend(math_strategies)
+            
+            # Pick a strategy
+            name, func = random.choice(available_strategies)
+            self.stats[name] += 1
+            return func(float_value)
+
+        except ValueError:
+            self.stats["float_parsing_error"] += 1
             return ""
 
     def _perturb_boolean(self, value: str) -> str:

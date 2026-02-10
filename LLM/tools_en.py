@@ -3,6 +3,7 @@ You are an expert assistant in validating ticketing event configurations.
 Your role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.
 
 Rules:
+- USE the similar event data provided for comparison.
 - You MUST use the `report_step_issues` tool to provide your response.
 - If anomalies are detected: list them with precision (path, severity, explanatory message).
 - If NO anomalies are detected: call `report_step_issues` with an empty issues list [].
@@ -56,33 +57,34 @@ SIMILAR EVENTS DATA (REFERENCES)
 --------------------------------------------------
 
 TASK:
-Analyze the provided data ONLY with respect to the point to verify.
 If you detect anomalies, use the `report_step_issues` tool to report them.
 If everything is correct, call `report_step_issues` with an empty list.
 """.strip()
 
+
 VALIDATE_SECTION_SPEC_PROMPT_EN = """
-CONTEXT:
-
-Element to validate ({element_num}/{total_elements}):
-
+GLOBAL INSTRUCTIONS:
 {policy_intro}
 
 --------------------------------------------------
-TARGET EVENT DATA (ID: {cible_id})
+VALIDATING {element_name} (ID: {cible_id})
 --------------------------------------------------
-{data_element}
+INSTRUCTIONS:
+The data below is presented in a side-by-side table format:
+- Column 1: PATH (The attribute name)
+- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.
+- Column 3: REFERENCE value (ID: {similar_id}, Strategy: {strategy_used}) -> Use this for comparison.
+
+If "REFERENCE" contains "<NO REFERENCE>", strictly ignore the comparison for this specific field and validate based on logic/policy only.
 
 --------------------------------------------------
-SIMILAR EVENTS DATA (REFERENCES)
+DATA TO VALIDATE
 --------------------------------------------------
-NO SIMILAR EVENTS DATA FOR THIS MODULE
+{comparison_data}
 
 --------------------------------------------------
-
-TASK:
-Analyze the provided data ONLY with respect to the point to verify.
-If you detect anomalies, use the `report_step_issues` tool to report them.
+OUTPUT INSTRUCTIONS
+If you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.
 If everything is correct, call `report_step_issues` with an empty list.
 """.strip()
 
