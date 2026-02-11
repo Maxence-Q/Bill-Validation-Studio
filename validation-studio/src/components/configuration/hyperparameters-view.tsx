@@ -13,7 +13,7 @@ import {
 import { ConfigCard } from "@/components/configuration/config-card"
 import { ConfigForm } from "@/components/configuration/config-form"
 import { Configuration } from "@/types/configuration"
-import { CookieManager } from "@/lib/cookie-manager"
+import { CookieManager } from "@/lib/configuration/cookie-manager"
 
 export function HyperparametersView() {
     const [configs, setConfigs] = useState<Configuration[]>([])

@@ -21,6 +21,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { Badge } from "@/components/ui/badge"
+
 const navItems = [
     { name: "Validation Studio", href: "/" },
     { name: "Configuration", href: "/configuration" },
@@ -38,8 +40,9 @@ export function Navbar() {
                 <div className="mr-4 hidden md:flex">
                     <Link href="/" className="mr-6 flex items-center space-x-2">
                         <span className="hidden font-bold sm:inline-block">
-                            Bill <span className="text-primary">LLM</span> Manager
+                            Bill <span className="text-primary">Validation</span> Studio
                         </span>
+                        <Badge variant="secondary" className="text-xs">v0.1.0</Badge>
                     </Link>
                     <NavigationMenu>
                         <NavigationMenuList>

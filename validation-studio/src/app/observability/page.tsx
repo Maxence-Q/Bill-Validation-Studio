@@ -13,7 +13,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { ValidationRecord } from "@/lib/validation-storage"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { IssuesDisplay } from "@/components/validation/issues-display"
 import { cn } from "@/lib/utils"
 
@@ -182,92 +183,94 @@ export default function ObservabilityPage() {
                 </Card>
             </div>
 
-            {selectedRecord && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-background w-full max-w-[95vw] h-[90vh] rounded-lg shadow-lg flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                        {/* Header */}
-                        <div className="p-4 border-b flex justify-between items-center shrink-0">
-                            <div>
-                                <h2 className="text-xl font-bold">Validation Details</h2>
-                                <p className="text-muted-foreground text-sm">
-                                    {selectedRecord.eventName} (ID: {selectedRecord.eventId}) - {formatDate(selectedRecord.timestamp)}
-                                </p>
-                            </div>
-                            <Button variant="ghost" onClick={() => setSelectedRecord(null)}>Close</Button>
-                        </div>
-
-                        {/* Controls */}
-                        <div className="border-b bg-muted/30 p-2 flex flex-col gap-2 shrink-0">
-                            {/* Module Selector */}
-                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                {selectedRecord.prompts && Object.keys(selectedRecord.prompts).map(module => (
-                                    <Button
-                                        key={module}
-                                        variant={activeModule === module ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => { setActiveModule(module); setPromptIndex(0); }}
-                                    >
-                                        {module}
-                                    </Button>
-                                ))}
+            <Dialog open={!!selectedRecord} onOpenChange={(open) => !open && setSelectedRecord(null)}>
+                <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
+                    {selectedRecord && (
+                        <>
+                            {/* Header */}
+                            <div className="p-4 border-b flex justify-between items-center shrink-0">
+                                <div>
+                                    <DialogTitle className="text-xl font-bold">Validation Details</DialogTitle>
+                                    <p className="text-muted-foreground text-sm">
+                                        {selectedRecord.eventName} (ID: {selectedRecord.eventId}) - {formatDate(selectedRecord.timestamp)}
+                                    </p>
+                                </div>
+                                <Button variant="ghost" onClick={() => setSelectedRecord(null)}>Close</Button>
                             </div>
 
-                            {/* Pagination (if needed) */}
-                            {getTotalPrompts() > 1 && (
-                                <div className="flex items-center justify-center gap-4 py-1">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        disabled={promptIndex === 0}
-                                        onClick={() => setPromptIndex(prev => prev - 1)}
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </Button>
-                                    <span className="text-sm font-medium">
-                                        Prompt {promptIndex + 1} of {getTotalPrompts()}
-                                    </span>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        disabled={promptIndex >= getTotalPrompts() - 1}
-                                        onClick={() => setPromptIndex(prev => prev + 1)}
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Button>
+                            {/* Controls */}
+                            <div className="border-b bg-muted/30 p-2 flex flex-col gap-2 shrink-0">
+                                {/* Module Selector */}
+                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                    {selectedRecord.prompts && Object.keys(selectedRecord.prompts).map(module => (
+                                        <Button
+                                            key={module}
+                                            variant={activeModule === module ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => { setActiveModule(module); setPromptIndex(0); }}
+                                        >
+                                            {module}
+                                        </Button>
+                                    ))}
                                 </div>
-                            )}
-                        </div>
 
-                        {/* Split View */}
-                        <div className="flex-1 flex overflow-hidden">
-                            {/* Left: Prompt */}
-                            <div className="w-1/2 flex flex-col border-r">
-                                <div className="p-3 border-b bg-muted/10 font-medium text-sm text-muted-foreground">
-                                    Prompt Content
-                                </div>
-                                <div className="flex-1 overflow-auto p-4 bg-muted/5 font-mono text-xs whitespace-pre-wrap">
-                                    {getCurrentPrompt()}
-                                </div>
+                                {/* Pagination (if needed) */}
+                                {getTotalPrompts() > 1 && (
+                                    <div className="flex items-center justify-center gap-4 py-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            disabled={promptIndex === 0}
+                                            onClick={() => setPromptIndex(prev => prev - 1)}
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
+                                        <span className="text-sm font-medium">
+                                            Prompt {promptIndex + 1} of {getTotalPrompts()}
+                                        </span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            disabled={promptIndex >= getTotalPrompts() - 1}
+                                            onClick={() => setPromptIndex(prev => prev + 1)}
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
 
-                            {/* Right: Issues */}
-                            <div className="w-1/2 flex flex-col">
-                                <div className="p-3 border-b bg-muted/10 font-medium text-sm text-muted-foreground flex justify-between">
-                                    <span>Issues Found</span>
-                                    <span className={cn("text-xs px-2 py-0.5 rounded-full",
-                                        getFilteredIssues().length > 0 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
-                                    )}>
-                                        {getFilteredIssues().length} issues
-                                    </span>
+                            {/* Split View */}
+                            <div className="flex-1 flex overflow-hidden">
+                                {/* Left: Prompt */}
+                                <div className="w-1/2 flex flex-col border-r">
+                                    <div className="p-3 border-b bg-muted/10 font-medium text-sm text-muted-foreground">
+                                        Prompt Content
+                                    </div>
+                                    <div className="flex-1 overflow-auto p-4 bg-muted/5 font-mono text-xs whitespace-pre-wrap">
+                                        {getCurrentPrompt()}
+                                    </div>
                                 </div>
-                                <div className="flex-1 overflow-auto p-4">
-                                    <IssuesDisplay issues={getFilteredIssues()} />
+
+                                {/* Right: Issues */}
+                                <div className="w-1/2 flex flex-col">
+                                    <div className="p-3 border-b bg-muted/10 font-medium text-sm text-muted-foreground flex justify-between">
+                                        <span>Issues Found</span>
+                                        <span className={cn("text-xs px-2 py-0.5 rounded-full",
+                                            getFilteredIssues().length > 0 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+                                        )}>
+                                            {getFilteredIssues().length} issues
+                                        </span>
+                                    </div>
+                                    <div className="flex-1 overflow-auto p-4">
+                                        <IssuesDisplay issues={getFilteredIssues()} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

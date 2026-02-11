@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getEventContributionForModule } from "@/lib/module-contribution";
-import { formatCsvComparison } from "@/lib/format_csv_comparison";
-import { LlmClient } from "@/lib/llm-client";
+import { getEventContributionForModule } from "@/lib/validation/module-contribution";
+import { formatCsvComparison } from "@/lib/validation/format_csv_comparison";
+import { LlmClient } from "@/lib/validation/llm-client";
 
 // Modules to process
 const MODULES = [
@@ -133,8 +133,8 @@ export async function POST(request: NextRequest) {
 
                         // Case 1: Simple Object
                         if (!Array.isArray(targetContribution)) {
-                            const similarContribution = (refContributionsByModule[module][0] as string) || "";
-                            csvPrompts.push(formatCsvComparison(targetContribution as string, similarContribution));
+                            const similarContributions = refContributionsByModule[module].map(c => (c as string) || "");
+                            csvPrompts.push(formatCsvComparison(targetContribution as string, similarContributions));
                         }
                         // Case 2: Lists
                         else {
@@ -144,44 +144,47 @@ export async function POST(request: NextRequest) {
                             else if (module === "RightToSellAndFees") marker = "RO_PointOfSaleName: ";
 
                             (targetContribution as string[]).forEach((targetElementStr) => {
-                                let foundSimilarStr = "";
+                                const similarStrs: string[] = [];
                                 const targetName = extractSpecElementName(marker, targetElementStr);
 
-                                if (targetName) {
-                                    // 1. Exact Match
-                                    for (let i = 0; i < refs.length; i++) {
-                                        const refList = refContributionsByModule[module][i] as string[];
-                                        if (!Array.isArray(refList)) continue;
-                                        for (const simElementStr of refList) {
-                                            if (extractSpecElementName(marker, simElementStr) === targetName) {
-                                                foundSimilarStr = simElementStr;
-                                                break;
-                                            }
-                                        }
-                                        if (foundSimilarStr) break;
-                                    }
-                                }
+                                // For each reference, find the best match
+                                for (let i = 0; i < refs.length; i++) {
+                                    let foundSimilarStr = "";
+                                    const refList = refContributionsByModule[module][i] as string[];
 
-                                // 2. Fuzzy Match
-                                if (!foundSimilarStr && refs.length > 0) {
-                                    const firstRefList = refContributionsByModule[module][0] as string[];
-                                    if (Array.isArray(firstRefList) && firstRefList.length > 0 && targetName) {
-                                        let bestMatch = "";
-                                        let bestScore = 0.0;
-                                        for (const simElementStr of firstRefList) {
-                                            const simName = extractSpecElementName(marker, simElementStr);
-                                            if (simName) {
-                                                const score = similarity(targetName.toLowerCase(), simName.toLowerCase());
-                                                if (score > bestScore) {
-                                                    bestScore = score;
-                                                    bestMatch = simElementStr;
+                                    if (Array.isArray(refList) && refList.length > 0) {
+                                        // 1. Exact Match
+                                        if (targetName) {
+                                            for (const simElementStr of refList) {
+                                                if (extractSpecElementName(marker, simElementStr) === targetName) {
+                                                    foundSimilarStr = simElementStr;
+                                                    break;
                                                 }
                                             }
                                         }
-                                        if (bestMatch) foundSimilarStr = bestMatch;
+
+                                        // 2. Fuzzy Match (if no exact match found)
+                                        if (!foundSimilarStr && targetName) {
+                                            let bestMatch = "";
+                                            let bestScore = 0.0;
+                                            for (const simElementStr of refList) {
+                                                const simName = extractSpecElementName(marker, simElementStr);
+                                                if (simName) {
+                                                    const score = similarity(targetName.toLowerCase(), simName.toLowerCase());
+                                                    if (score > bestScore) {
+                                                        bestScore = score;
+                                                        bestMatch = simElementStr;
+                                                    }
+                                                }
+                                            }
+                                            if (bestMatch) foundSimilarStr = bestMatch;
+                                        }
                                     }
+
+                                    similarStrs.push(foundSimilarStr);
                                 }
-                                csvPrompts.push(formatCsvComparison(targetElementStr, foundSimilarStr));
+
+                                csvPrompts.push(formatCsvComparison(targetElementStr, similarStrs));
                             });
                         }
 

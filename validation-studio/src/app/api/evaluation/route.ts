@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationRecord } from "@/lib/configuration/storage-core";
-import { ValidationStorage } from "@/lib/validation/storage";
+import { EvaluationStorage } from "@/lib/evaluation/storage";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
     try {
-        const history = await ValidationStorage.getHistory();
+        const history = await EvaluationStorage.getHistory();
         return NextResponse.json(history);
     } catch (error) {
-        console.error("Failed to fetch history:", error);
-        return NextResponse.json({ error: "Failed to fetch history" }, { status: 500 });
+        console.error("Failed to fetch evaluation history:", error);
+        return NextResponse.json({ error: "Failed to fetch evaluation history" }, { status: 500 });
     }
 }
 
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { eventId, eventName, status, issues, prompts } = body;
 
+        // Note: looser validation for initial creation if needed, but keeping consistent
         if (!eventId || !status) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
@@ -33,12 +34,12 @@ export async function POST(request: NextRequest) {
             prompts: prompts || {}
         };
 
-        await ValidationStorage.saveValidation(record);
+        await EvaluationStorage.saveEvaluation(record);
 
         return NextResponse.json({ success: true, id: record.id });
     } catch (error) {
-        console.error("Failed to save validation:", error);
-        return NextResponse.json({ error: "Failed to save validation" }, { status: 500 });
+        console.error("Failed to save evaluation:", error);
+        return NextResponse.json({ error: "Failed to save evaluation" }, { status: 500 });
     }
 }
 
@@ -51,11 +52,11 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: "Missing id parameter" }, { status: 400 });
         }
 
-        await ValidationStorage.deleteValidation(id);
+        await EvaluationStorage.deleteEvaluation(id);
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("Failed to delete validation:", error);
-        return NextResponse.json({ error: "Failed to delete validation" }, { status: 500 });
+        console.error("Failed to delete evaluation:", error);
+        return NextResponse.json({ error: "Failed to delete evaluation" }, { status: 500 });
     }
 }
