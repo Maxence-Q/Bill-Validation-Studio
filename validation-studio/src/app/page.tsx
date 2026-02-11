@@ -10,6 +10,8 @@ import { Configuration } from "@/types/configuration"
 import { FileUpload } from "@/components/validation/file-upload"
 import { EventPreview } from "@/components/validation/event-preview"
 import { ValidationProgress, ValidationStep } from "@/components/validation/validation-progress"
+import { IssuesDisplay, ValidationIssue } from "@/components/validation/issues-display"
+import { HomeIssuesDisplay } from "@/components/validation/home-issues-display"
 import { cn } from "@/lib/utils"
 
 export default function Home() {
@@ -17,11 +19,16 @@ export default function Home() {
   const [eventData, setEventData] = useState<any | null>(null)
   const [isValidationStarted, setIsValidationStarted] = useState(false)
   const [validationSteps, setValidationSteps] = useState<ValidationStep[]>([])
+  const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([])
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const startValidation = async () => {
     setIsValidationStarted(true)
     setValidationSteps([])
+    setValidationIssues([])
+
+    let systemMessage = ""
+    let userPrompt = ""
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -51,6 +58,8 @@ export default function Home() {
     const step2: ValidationStep = { id: "configs", label: "Configs and Tools correctly fetched", status: "loading" }
     setValidationSteps(prev => [...prev, step2])
 
+    let activeRefCount = 0; // Store ref count for Step 3
+
     await delay(1000)
 
     try {
@@ -66,10 +75,10 @@ export default function Home() {
 
       // Extract Prompts
       const fullPromptContent = promptsData.content || ""
-      const systemMessageMatch = fullPromptContent.split("SYSTEM_MESSAGE =")[1]?.split("USER_PROMPT =")[0]?.trim()
-      const userPromptMatch = fullPromptContent.split("USER_PROMPT =")[1]?.trim()
+      systemMessage = fullPromptContent.split("SYSTEM_MESSAGE =")[1]?.split("USER_PROMPT =")[0]?.trim()
+      userPrompt = fullPromptContent.split("USER_PROMPT =")[1]?.trim()
 
-      if (!systemMessageMatch || !userPromptMatch) {
+      if (!systemMessage || !userPrompt) {
         setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "error", error: "Failed to parse SYSTEM_MESSAGE or USER_PROMPT from prompts_en.md" } : s))
         return
       }
@@ -80,11 +89,23 @@ export default function Home() {
         return
       }
 
+      // Validate User Configuration (Cookie)
+      const savedConfigs = CookieManager.get("llm_configurations")
+      if (!savedConfigs) throw new Error("No configurations found. Go to 'Configuration' page.")
+
+      const parsedConfigs = JSON.parse(savedConfigs) as Configuration[]
+      if (!parsedConfigs || parsedConfigs.length === 0) throw new Error("Configuration list is empty. Create a configuration first.")
+
+      const activeConfig = parsedConfigs[0]
+      if (typeof activeConfig.references !== 'number' || activeConfig.references < 1) {
+        throw new Error("Invalid reference count in configuration")
+      }
+
       setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "success" } : s))
 
     } catch (error) {
       console.error(error)
-      setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "error", error: "Network error fetching configurations" } : s))
+      setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "error", error: error instanceof Error ? error.message : "Network error fetching configurations" } : s))
       return
     }
 
@@ -92,45 +113,248 @@ export default function Home() {
     const step3: ValidationStep = { id: "context", label: "Retrieving context references...", status: "loading" }
     setValidationSteps(prev => [...prev, step3])
 
+    let contextDataResult: any = null;
+
     await delay(1000)
 
     try {
-        const savedConfigs = CookieManager.get("llm_configurations")
-        if (!savedConfigs) {
-             throw new Error("No configurations found")
-        }
+      const savedConfigs = CookieManager.get("llm_configurations")
+      if (!savedConfigs) throw new Error("No configurations found")
 
-        const parsedConfigs = JSON.parse(savedConfigs) as Configuration[]
-        if (!parsedConfigs || parsedConfigs.length === 0) {
-            throw new Error("Configuration list is empty")
-        }
+      const parsedConfigs = JSON.parse(savedConfigs) as Configuration[]
+      if (!parsedConfigs || parsedConfigs.length === 0) throw new Error("Configuration list is empty")
 
-        const activeConfig = parsedConfigs[0] // Assume first config for now
-        const refCount = activeConfig.references
+      const activeConfig = parsedConfigs[0]
+      const refCount = activeConfig.references
 
-        if (typeof refCount !== 'number' || refCount < 1) {
-             throw new Error("Invalid reference count in configuration")
-        }
+      // Get Event ID from uploaded data
+      const targetEventId = eventData.Event?.Event?.ID
 
-        setValidationSteps(prev => prev.map(s => 
-            s.id === "context" 
-                ? { ...s, status: "success", label: `Found ${refCount} references for the target event` } 
-                : s
-        ))
+      if (!targetEventId) {
+        throw new Error("Target event ID not found")
+      }
+
+      // Call Context API
+      const contextRes = await fetch("/api/validation/context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: targetEventId,
+          refCount: refCount
+        })
+      })
+
+      if (!contextRes.ok) {
+        const errorData = await contextRes.json()
+        throw new Error(errorData.error || "Failed to retrieve context")
+      }
+
+      const contextResult = await contextRes.json()
+      contextDataResult = contextResult
+
+      if (!contextResult.similarIds || contextResult.similarIds.length === 0) {
+        throw new Error("No similar events found in vector database")
+      }
+
+      if (contextResult.similarIds.length < refCount) {
+        console.warn(`Requested ${refCount} references but only found ${contextResult.similarIds.length}`)
+      }
+
+      setValidationSteps(prev => prev.map(s =>
+        s.id === "context"
+          ? { ...s, status: "success", label: `Found ${contextResult.similarIds.length} references for the target event` }
+          : s
+      ))
 
     } catch (error) {
-        console.error(error)
-        setValidationSteps(prev => prev.map(s => 
-            s.id === "context" 
-                ? { ...s, status: "error", error: error instanceof Error ? error.message : "Failed to retrieve context" } 
-                : s
-        ))
-        return
+      console.error(error)
+      setValidationSteps(prev => prev.map(s =>
+        s.id === "context"
+          ? { ...s, status: "error", error: error instanceof Error ? error.message : "Failed to retrieve context" }
+          : s
+      ))
+      return
     }
 
-    // --- STEP 4: LLM (Placeholder) ---
-    const step4: ValidationStep = { id: "llm", label: "Sending Prompts to LLM...", status: "pending" }
+    // --- STEP 4: LLM Processing ---
+    const MODULES = [
+      "Event",
+      "EventDates",
+      "OwnerPOS",
+      "FeeDefinitions",
+      "Prices",
+      "PriceGroups",
+      "RightToSellAndFees"
+    ];
+
+    const step4: ValidationStep = {
+      id: "llm",
+      label: "Building prompts and sending them to LLM...",
+      status: "loading",
+      subSteps: MODULES.map(m => ({
+        id: `llm-${m}`,
+        label: m,
+        status: "pending"
+      }))
+    }
     setValidationSteps(prev => [...prev, step4])
+
+    // Wait for Context Retrieval to finish and store result
+    if (!contextDataResult) {
+      setValidationSteps(prev => prev.map(s => s.id === "llm" ? { ...s, status: "error", error: "Context data missing" } : s))
+      return
+    }
+
+    try {
+      let allIssues: ValidationIssue[] = [];
+      let promptsLog: any = {};
+
+      for (const module of MODULES) {
+        // Update sub-step to loading
+        setValidationSteps(prev => prev.map(s => {
+          if (s.id === "llm") {
+            return {
+              ...s,
+              subSteps: s.subSteps?.map(sub => sub.id === `llm-${module}` ? { ...sub, status: "loading" } : sub)
+            }
+          }
+          return s;
+        }));
+
+        try {
+          const llmRes = await fetch("/api/validation/llm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              targetEvent: eventData,
+              referenceEvents: contextDataResult,
+              module: module, // Request specific module
+              systemMessage: systemMessage,
+              userPromptTemplate: userPrompt
+            })
+          })
+
+          if (!llmRes.ok) throw new Error(`Failed to validate ${module}`)
+          if (!llmRes.body) throw new Error("No response body")
+
+          const reader = llmRes.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ""
+
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split("\n")
+            buffer = lines.pop() || ""
+
+            for (const line of lines) {
+              if (!line.trim()) continue
+              try {
+                const msg = JSON.parse(line)
+
+                if (msg.type === "progress") {
+                  setValidationSteps(prev => prev.map(s => {
+                    if (s.id === "llm") {
+                      return {
+                        ...s,
+                        subSteps: s.subSteps?.map(sub =>
+                          sub.id === `llm-${module}`
+                            ? { ...sub, progress: { current: msg.current, total: msg.total } }
+                            : sub
+                        )
+                      }
+                    }
+                    return s;
+                  }));
+                } else if (msg.type === "result") {
+                  if (msg.issues) {
+                    allIssues = [...allIssues, ...msg.issues];
+                  }
+                  if (msg.prompts) {
+                    promptsLog = { ...promptsLog, ...msg.prompts };
+                  }
+                }
+              } catch (e) {
+                console.error("Error parsing stream line", e)
+              }
+            }
+          }
+
+          // Update sub-step to success
+          setValidationSteps(prev => prev.map(s => {
+            if (s.id === "llm") {
+              return {
+                ...s,
+                subSteps: s.subSteps?.map(sub => sub.id === `llm-${module}` ? { ...sub, status: "success" } : sub)
+              }
+            }
+            return s;
+          }));
+
+
+
+        } catch (moduleError) {
+          console.error(`Error validating module ${module}:`, moduleError);
+          // Mark sub-step as error but continue
+          setValidationSteps(prev => prev.map(s => {
+            if (s.id === "llm") {
+              return {
+                ...s,
+                subSteps: s.subSteps?.map(sub => sub.id === `llm-${module}` ? { ...sub, status: "error", error: "Validation failed" } : sub)
+              }
+            }
+            return s;
+          }));
+        }
+      }
+
+      console.log("--------------------------------------------------")
+      console.log("GENERATED PROMPTS (CSV FORMAT):")
+      console.log(promptsLog)
+      console.log("--------------------------------------------------")
+      console.log("LLM DETECTED ISSUES:")
+      console.log(allIssues)
+      console.log("--------------------------------------------------")
+
+      const issueCount = allIssues.length;
+      setValidationIssues(allIssues);
+
+      setValidationSteps(prev => prev.map(s =>
+        s.id === "llm"
+          ? { ...s, status: "success", label: `Analysis Complete. Found ${issueCount} issues`, subSteps: [] }
+          : s
+      ))
+      setIsValidationStarted(false)
+
+      // --- SAVE TO OBSERVABILITY ---
+      try {
+        await fetch("/api/observability", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventId: eventData.Event?.Event?.ID || "unknown",
+            eventName: eventData.Event?.Event?.NameFr || "Unknown Event",
+            status: "success",
+            issues: allIssues,
+            prompts: promptsLog
+          })
+        });
+        console.log("Validation saved to history");
+      } catch (saveError) {
+        console.error("Failed to save validation history:", saveError);
+      }
+
+    } catch (error) {
+      console.error(error)
+      setValidationSteps(prev => prev.map(s =>
+        s.id === "llm"
+          ? { ...s, status: "error", error: "LLM validation failed" }
+          : s
+      ))
+      setIsValidationStarted(false)
+    }
   }
 
   useEffect(() => {
@@ -226,6 +450,13 @@ export default function Home() {
                     {isValidationStarted ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
                     Start Validation
                   </Button>
+                  {validationSteps.some(s => s.id === "llm" && s.status === "success") && (
+                    <Button asChild size="lg" className="px-8 bg-purple-600 hover:bg-purple-700">
+                      <Link href="/observability">
+                        Go to Observability <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
@@ -239,8 +470,8 @@ export default function Home() {
                   <CardTitle>Validation Output</CardTitle>
                   <CardDescription>Results will appear here once validation starts.</CardDescription>
                 </CardHeader>
-                <CardContent className={cn("h-[300px]", !isValidationStarted && "flex flex-col items-center justify-center text-muted-foreground text-center")}>
-                  {!isValidationStarted ? (
+                <CardContent className={cn("min-h-[300px]", (!isValidationStarted && validationSteps.length === 0) && "flex flex-col items-center justify-center text-muted-foreground text-center")}>
+                  {!isValidationStarted && validationSteps.length === 0 ? (
                     <>
                       <div className="p-4 rounded-full bg-muted mb-4">
                         <Play className="h-8 w-8 text-muted-foreground/50" />
@@ -251,7 +482,14 @@ export default function Home() {
                       </p>
                     </>
                   ) : (
-                    <ValidationProgress steps={validationSteps} />
+                    <div className="w-full">
+                      <ValidationProgress steps={validationSteps} />
+                      {validationSteps.some(s => s.id === "llm" && s.status === "success") && (
+                        <div className="flex justify-center mt-6 border-t pt-4">
+                          <HomeIssuesDisplay issues={validationIssues} />
+                        </div>
+                      )}
+                    </div>
                   )}
                 </CardContent>
               </Card>

@@ -24,8 +24,6 @@ SECTIONS = [
     "OwnerPOS",
     "EventDates",
     "FeeDefinitions",
-
-
     "PriceGroups",
     "Prices",
     "RightToSellAndFees"
