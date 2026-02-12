@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { ValidationStep } from "@/components/validation/validation-progress"
 import { ValidationIssue } from "@/components/validation/issues-display"
 import { CookieManager } from "@/lib/configuration/cookie-manager"
@@ -10,14 +10,27 @@ export function useValidationRunner() {
     const [isValidationStarted, setIsValidationStarted] = useState(false)
     const [validationSteps, setValidationSteps] = useState<ValidationStep[]>([])
     const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([])
+    const abortControllerRef = useRef<AbortController | null>(null)
 
     const resetValidation = useCallback(() => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+            abortControllerRef.current = null
+        }
         setIsValidationStarted(false)
         setValidationSteps([])
         setValidationIssues([])
     }, [])
 
     const startValidation = useCallback(async (eventData: any) => {
+        // Cancel any previous validation
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+        }
+        const controller = new AbortController()
+        abortControllerRef.current = controller
+        const signal = controller.signal
+
         setIsValidationStarted(true)
         setValidationSteps([])
         setValidationIssues([])
@@ -57,8 +70,8 @@ export function useValidationRunner() {
 
         try {
             const [promptsRes, toolsRes] = await Promise.all([
-                fetch("/api/tools/prompts?lang=en"),
-                fetch("/api/tools/definitions?lang=en")
+                fetch("/api/tools/prompts?lang=en", { signal }),
+                fetch("/api/tools/definitions?lang=en", { signal })
             ])
 
             if (!promptsRes.ok || !toolsRes.ok) throw new Error("Failed to fetch configuration files")
@@ -94,6 +107,7 @@ export function useValidationRunner() {
             setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "success" } : s))
 
         } catch (error) {
+            if (signal.aborted) return
             console.error(error)
             setValidationSteps(prev => prev.map(s => s.id === "configs" ? { ...s, status: "error", error: error instanceof Error ? error.message : "Network error fetching configurations" } : s))
             return
@@ -128,7 +142,8 @@ export function useValidationRunner() {
                 body: JSON.stringify({
                     eventId: targetEventId,
                     refCount: refCount
-                })
+                }),
+                signal
             })
 
             if (!contextRes.ok) {
@@ -154,6 +169,7 @@ export function useValidationRunner() {
             ))
 
         } catch (error) {
+            if (signal.aborted) return
             console.error(error)
             setValidationSteps(prev => prev.map(s =>
                 s.id === "context"
@@ -196,6 +212,7 @@ export function useValidationRunner() {
             let promptsLog: any = {};
 
             for (const module of MODULES) {
+                if (signal.aborted) break
                 setValidationSteps(prev => prev.map(s => {
                     if (s.id === "llm") {
                         return {
@@ -216,7 +233,8 @@ export function useValidationRunner() {
                             module: module,
                             systemMessage: systemMessage,
                             userPromptTemplate: userPrompt
-                        })
+                        }),
+                        signal
                     })
 
                     if (!llmRes.ok) throw new Error(`Failed to validate ${module}`)
@@ -278,6 +296,7 @@ export function useValidationRunner() {
                     }));
 
                 } catch (moduleError) {
+                    if (signal.aborted) throw moduleError // Re-throw to be caught by outer catch
                     console.error(`Error validating module ${module}:`, moduleError);
                     setValidationSteps(prev => prev.map(s => {
                         if (s.id === "llm") {
@@ -328,6 +347,10 @@ export function useValidationRunner() {
             }
 
         } catch (error) {
+            if (signal.aborted) {
+                console.log("Validation cancelled by user")
+                return
+            }
             console.error(error)
             setValidationSteps(prev => prev.map(s =>
                 s.id === "llm"

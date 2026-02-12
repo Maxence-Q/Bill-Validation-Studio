@@ -3,7 +3,7 @@ import fs from "fs/promises"
 import path from "path"
 
 const ARTEFACTS_DIR = path.join(process.cwd(), "artefacts")
-const FILENAME = "description_donnee.md"
+const FILENAME = "general_description.md"
 const FILE_PATH = path.join(ARTEFACTS_DIR, FILENAME)
 
 export async function GET(request: NextRequest) {

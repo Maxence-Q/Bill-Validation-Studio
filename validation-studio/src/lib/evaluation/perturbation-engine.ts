@@ -36,10 +36,11 @@ export class PerturbationEngine {
      * Same as injectPerturbations, but also returns the list of paths that were perturbed.
      * Used for computing precision/recall metrics.
      */
-    public injectPerturbationsWithTracking(prompt: string, config?: PerturbationConfig): { prompt: string; perturbedPaths: string[] } {
+    public injectPerturbationsWithTracking(prompt: string, config?: PerturbationConfig): { prompt: string; perturbedPaths: string[]; perturbationDetails: { path: string; original: string; perturbed: string }[] } {
         const lines = prompt.split('\n');
         const perturbedLines: string[] = [];
         const perturbedPaths: string[] = [];
+        const perturbationDetails: { path: string; original: string; perturbed: string }[] = [];
         let insideTable = false;
         let tableHeaderIndex = -1;
         let targetColIndex = -1;
@@ -103,6 +104,11 @@ export class PerturbationEngine {
                         if (perturbedValue !== originalValue) {
                             parts[targetColIndex] = ` ${perturbedValue} `;
                             perturbedPaths.push(pathValue);
+                            perturbationDetails.push({
+                                path: pathValue,
+                                original: originalValue,
+                                perturbed: perturbedValue
+                            });
                         }
                     }
                 }
@@ -112,7 +118,7 @@ export class PerturbationEngine {
             }
         }
 
-        return { prompt: perturbedLines.join('\n'), perturbedPaths };
+        return { prompt: perturbedLines.join('\n'), perturbedPaths, perturbationDetails };
     }
 
     private _shouldPerturb(path: string, value: string, config?: PerturbationConfig): boolean {

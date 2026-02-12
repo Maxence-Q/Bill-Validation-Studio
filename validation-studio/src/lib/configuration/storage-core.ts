@@ -10,6 +10,21 @@ export interface ValidationRecord {
     issuesCount: number;
     issues: any[];
     prompts: any;
+    perturbations?: Record<string, { path: string; original: string; perturbed: string }[][]>;
+    metrics?: {
+        precision: number;
+        recall: number;
+        tp: number;
+        fp: number;
+        fn: number;
+    };
+    moduleMetrics?: Record<string, {
+        precision: number;
+        recall: number;
+        tp: number;
+        fp: number;
+        fn: number;
+    }>;
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');

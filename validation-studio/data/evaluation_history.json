@@ -1,0 +1,2376 @@
+[
+  {
+    "id": "8d3e4762-13a3-4997-8b59-67454b81a4ef",
+    "timestamp": "2026-02-12T05:11:21.280Z",
+    "eventId": 453,
+    "eventName": "Coup de coeur",
+    "status": "success",
+    "issuesCount": 187,
+    "issues": [
+      {
+        "message": "Target EventID (453) does not match reference EventIDs (97, 1984).",
+        "path": "EventID",
+        "severity": "error",
+        "suggestion": "Verify EventID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target EventDateID (1174) does not match reference IDs (249, 5722).",
+        "path": "EventDateModelList[].IDChain.EventDateID",
+        "severity": "error",
+        "suggestion": "Verify EventDateID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target EventID (453) does not match reference EventIDs (97, 1984).",
+        "path": "EventDateModelList[].IDChain.EventID",
+        "severity": "error",
+        "suggestion": "Verify EventID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target ProducerID (0) does not match reference IDs (379, 395).",
+        "path": "EventDateModelList[].IDChain.ProducerID",
+        "severity": "error",
+        "suggestion": "Verify ProducerID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target RepresentationTypeID (12) does not match reference IDs (7, 8).",
+        "path": "EventDateModelList[].IDChain.RepresentationTypeID",
+        "severity": "error",
+        "suggestion": "Verify RepresentationTypeID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target VenueModelID (546) does not match reference IDs (145, 2207).",
+        "path": "EventDateModelList[].IDChain.VenueModelID",
+        "severity": "error",
+        "suggestion": "Verify VenueModelID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target VenueID (83) does not match reference IDs (54, 95).",
+        "path": "EventDateModelList[].IDChain.VenueID",
+        "severity": "error",
+        "suggestion": "Verify VenueID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target PhysicalVenueID (32) does not match reference IDs (12, 50).",
+        "path": "EventDateModelList[].IDChain.PhysicalVenueID",
+        "severity": "error",
+        "suggestion": "Verify PhysicalVenueID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target OwnerPOSID (21) does not match reference IDs (37, 62).",
+        "path": "EventDateModelList[].IDChain.OwnerPOSID",
+        "severity": "error",
+        "suggestion": "Verify OwnerPOSID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target TimeZoneID (1) does not match reference ID (2).",
+        "path": "EventDateModelList[].IDChain.TimeZoneID",
+        "severity": "error",
+        "suggestion": "Verify TimeZoneID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target OwnerPointOfSaleID (21) does not match reference IDs (37, 62).",
+        "path": "EventDateModelList[].OwnerPointOfSaleID",
+        "severity": "error",
+        "suggestion": "Verify OwnerPointOfSaleID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Venue.ID (83) does not match reference IDs (54, 95).",
+        "path": "EventDateModelList[].Venue.ID",
+        "severity": "error",
+        "suggestion": "Verify Venue.ID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Venue.Name ('RN-Salle Pierrette-Gaudreault') does not match reference names ('AA-Salle Michel-Côté (Aud. Alma)', 'SAV-Savoy Theatre').",
+        "path": "EventDateModelList[].Venue.Name",
+        "severity": "error",
+        "suggestion": "Verify Venue.Name consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Venue.DisplayName is empty, but reference values are 'Auditorium d'Alma' and 'Savoy Theatre'.",
+        "path": "EventDateModelList[].Venue.DisplayName",
+        "severity": "error",
+        "suggestion": "Provide appropriate DisplayName.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target Venue.PhysicalVenueID (-5383) does not match reference IDs (12, 50).",
+        "path": "EventDateModelList[].Venue.PhysicalVenueID",
+        "severity": "error",
+        "suggestion": "Verify Venue.PhysicalVenueID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target VenueModelID (546) does not match reference IDs (145, 2207).",
+        "path": "EventDateModelList[].VenueModelID",
+        "severity": "error",
+        "suggestion": "Verify VenueModelID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target VenueID (83) does not match reference IDs (54, 95).",
+        "path": "EventDateModelList[].VenueID",
+        "severity": "error",
+        "suggestion": "Verify VenueID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target PhysicalVenueID (32) does not match reference IDs (12, 50).",
+        "path": "EventDateModelList[].PhysicalVenueID",
+        "severity": "error",
+        "suggestion": "Verify PhysicalVenueID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_Date_Local (2004-05-30T20:00:00) does not match reference dates (2002-12-01T08:00:00, 2008-04-28T21:00:00).",
+        "path": "EventDateModelList[].RO_Date_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_Date_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_SalesStartDateBoxOffice_Local (2003-10-08T00:00:00) does not match reference dates (2002-08-16T00:00:00, 2007-09-11T09:00:00).",
+        "path": "EventDateModelList[].RO_SalesStartDateBoxOffice_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesStartDateBoxOffice_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_SalesStartDateNetwork_Local is null, but reference dates are (2002-08-16T00:00:00, 2005-01-01T09:00:00).",
+        "path": "EventDateModelList[].RO_SalesStartDateNetwork_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesStartDateNetwork_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target RO_SalesStartDateInternet_Local (2003-10-07T00:00:00) does not match reference dates (2002-08-16T00:00:00, 2005-01-01T09:00:00).",
+        "path": "EventDateModelList[].RO_SalesStartDateInternet_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesStartDateInternet_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_SalesEndDateBoxOffice_Local (2003-11-28T00:00:00) does not match reference dates (2002-12-01T08:00:00, 2009-01-01T17:00:00).",
+        "path": "EventDateModelList[].RO_SalesEndDateBoxOffice_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesEndDateBoxOffice_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_SalesEndDateNetwork_Local (2003-10-07T00:00:00) does not match reference dates (2002-12-01T08:00:00, 2005-12-31T17:00:00).",
+        "path": "EventDateModelList[].RO_SalesEndDateNetwork_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesEndDateNetwork_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_SalesEndDateInternet_Local (2003-10-07T00:00:00) does not match reference dates (2002-12-01T08:00:00, 2005-12-31T17:00:00).",
+        "path": "EventDateModelList[].RO_SalesEndDateInternet_Local",
+        "severity": "error",
+        "suggestion": "Verify RO_SalesEndDateInternet_Local consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target StandardTimeAbbreviationFr is empty, but reference values are 'HNE' and 'HNA'.",
+        "path": "EventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationFr",
+        "severity": "error",
+        "suggestion": "Provide appropriate StandardTimeAbbreviationFr.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target StandardTimeAbbreviationEn ('E') does not match reference values ('EST', 'AST').",
+        "path": "EventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationEn",
+        "severity": "error",
+        "suggestion": "Provide appropriate StandardTimeAbbreviationEn.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target WindowsTimezoneID ('emiT dradnatS nretsaE') does not match reference values ('Eastern Standard Time', 'Atlantic Standard Time').",
+        "path": "EventDateModelList[].RO_EventTSTimeZone.WindowsTimezoneID",
+        "severity": "error",
+        "suggestion": "Provide correct WindowsTimezoneID.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target ID (1174) does not match reference IDs (249, 5722).",
+        "path": "EventDateModelList[].ID",
+        "severity": "error",
+        "suggestion": "Verify ID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target EventID (452) does not match reference EventIDs (97, 1984).",
+        "path": "EventDateModelList[].EventID",
+        "severity": "error",
+        "suggestion": "Verify EventID consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Code ('COEUR040530') does not match reference codes ('DEMO', 'sav0109').",
+        "path": "EventDateModelList[].Code",
+        "severity": "error",
+        "suggestion": "Verify Code consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RepresentationNameFR ('Coup de coeur') does not match reference names ('DEMO CREPS', 'Z SAVOY MEMBER SEAT').",
+        "path": "EventDateModelList[].RepresentationNameFR",
+        "severity": "error",
+        "suggestion": "Verify RepresentationNameFR consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RepresentationNameEN ('Coup de coeur') does not match reference names ('DEMO CREPS', 'savoy member seat').",
+        "path": "EventDateModelList[].RepresentationNameEN",
+        "severity": "error",
+        "suggestion": "Verify RepresentationNameEN consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Date (2004-05-31T00:00:00Z) does not match reference dates (2002-12-01T13:00:00Z, 2008-04-29T00:00:00Z).",
+        "path": "EventDateModelList[].Date",
+        "severity": "error",
+        "suggestion": "Verify Date consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target SalesStartDateBoxOffice (2003-10-08T04:00:00Z) does not match reference dates (2002-08-16T04:00:00Z, 2007-09-11T12:00:00Z).",
+        "path": "EventDateModelList[].SalesStartDateBoxOffice",
+        "severity": "error",
+        "suggestion": "Verify SalesStartDateBoxOffice consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target SalesEndDateBoxOffice (2003-11-28T05:00:00Z) does not match reference dates (2002-12-01T13:00:00Z, 2009-01-01T21:00:00Z).",
+        "path": "EventDateModelList[].SalesEndDateBoxOffice",
+        "severity": "error",
+        "suggestion": "Verify SalesEndDateBoxOffice consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target SalesStartDateNetwork (2003-10-07T04:00:00Z) does not match reference dates (2002-08-16T04:00:00Z, 2005-01-01T13:00:00Z).",
+        "path": "EventDateModelList[].SalesStartDateNetwork",
+        "severity": "error",
+        "suggestion": "Verify SalesStartDateNetwork consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target SalesEndDateNetwork (2003-10-07T04:00:00Z) does not match reference dates (2002-12-01T13:00:00Z, 2005-12-31T21:00:00Z).",
+        "path": "EventDateModelList[].SalesEndDateNetwork",
+        "severity": "error",
+        "suggestion": "Verify SalesEndDateNetwork consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target SalesStartDateInternet (2003-10-18T04:00:00.000Z) does not match reference dates (2002-08-16T04:00:00Z, 2005-01-01T13:00:00Z).",
+        "path": "EventDateModelList[].SalesStartDateInternet",
+        "severity": "error",
+        "suggestion": "Verify SalesStartDateInternet consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target SalesEndDateInternet (2003-10-07T04:00:00Z) does not match reference dates (2002-12-01T13:00:00Z, 2005-12-31T21:00:00Z).",
+        "path": "EventDateModelList[].SalesEndDateInternet",
+        "severity": "error",
+        "suggestion": "Verify SalesEndDateInternet consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target IsAutoClient (false) does not match reference values (true).",
+        "path": "EventDateModelList[].IsAutoClient",
+        "severity": "error",
+        "suggestion": "Verify IsAutoClient setting.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target HideOnInternet is empty, but reference values are false.",
+        "path": "EventDateModelList[].HideOnInternet",
+        "severity": "error",
+        "suggestion": "Set HideOnInternet appropriately.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target BuyEventDateLink ('http://www.reservatech.net/SelectTickets.aspx?EventDateId=1174') does not match reference links ('...EventDateId=249', '...EventDateId=5722').",
+        "path": "EventDateModelList[].BuyEventDateLink",
+        "severity": "error",
+        "suggestion": "Verify BuyEventDateLink consistency.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RevenueSharing is null, but reference values are 0.",
+        "path": "EventDateModelList[].RevenueSharing",
+        "severity": "error",
+        "suggestion": "Set RevenueSharing appropriately.",
+        "module": "EventDates",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value '21' does not match reference values '37' and '62'.",
+        "path": "ID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'Réservatech.net (administration)' does not match reference values 'Ville d'Alma SPECTACLES' and 'Savoy Theatre'.",
+        "path": "Name",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'RN' does not match reference values 'AA' and 'SAV'.",
+        "path": "PrefixNumber",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'RN' does not match reference values 'AA' and 'SAV'.",
+        "path": "Prefix",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '159' does not match reference values '1310' and '17'.",
+        "path": "InvoiceNumber",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '0000' does not match reference values '0000' and '000000'.",
+        "path": "InvoiceFormat",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '39' does not match reference values '558' and '1'.",
+        "path": "ReservationNumber",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '0000' does not match reference values '0' and '000000'.",
+        "path": "ReservationFormat",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '930, rue Jacques-Cartier Est' does not match reference values '850, avenue Bégin Sud' and '116 commercial street'.",
+        "path": "Address",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'imituocihC' does not match reference values 'Alma' and 'Glace Bay'.",
+        "path": "City",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'QC' does not match reference values 'QC' and 'NS'.",
+        "path": "Province",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'G7H 7K9' does not match reference values 'G8B 2K8' and 'G1A 3C1'.",
+        "path": "PostalCode",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '(418) 545-3330' does not match reference values '(418) 669-5135' and '(902) 842-1577'.",
+        "path": "Phone",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values '(418) 669-5125' and '(902) 849-3460'.",
+        "path": "Fax",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'info@reservatech.net' does not match reference values 'info@alma.com' and 'boxoffice@savoytheatre.com'.",
+        "path": "Email",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '1' does not match reference values '1' and '2'.",
+        "path": "TimeZoneID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values 'false' and 'true'.",
+        "path": "IsInactive",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'Saguenay-Lac-St-Jean' does not match reference values 'Saguenay-Lac-St-Jean' and 'Cape Breton'.",
+        "path": "Region",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'false' does not match reference values 'true' and 'false'.",
+        "path": "DisplayWebsite",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values 'false' and 'false'.",
+        "path": "HasAChartOfAccounts",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'elaSfOtnioP' does not match reference values 'PointOfSale' and 'PointOfSale'.",
+        "path": "EntityType",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'null' does not match reference values 'false' and 'false'.",
+        "path": "HasFiscalYearEnd",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'b8a0bb70-cb0a-4bc4-ad6e-7904e7712e6e' does not match reference values 'ff56930b-6ded-44de-bea9-d5170bdb28c2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "AccountReceivableGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '441ec52f-e7af-45e0-a57d-41b9d7f5d661' does not match reference values '60cd7e25-7773-4f40-8aaf-bd454a579e9d' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "AccountPayableGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'febfa87e-2e21-4d78-868b-66f25d1a425d' does not match reference values '03d44a6d-aa08-439b-befc-67aa02cf3490' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "TaxDue1GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values 'e2e89e45-975c-4df1-9d87-501e9003df15' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "TaxDue2GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'null' does not match reference values '1bd267f8-3758-4d8d-a576-3d537c5af9af' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "TaxReceivable1GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'null' does not match reference values '1bd267f8-3758-4d8d-a576-3d537c5af9af' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "TaxReceivable2GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value '29e2104e-264d-4600-aaae-c4b36c448a44' does not match reference values '24234186-e93c-4884-8e95-5a6503a70583' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "HandlingFeesGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'e91fe6f4-69ba-4bca-968d-2082bcf7ac84' does not match reference values '24234186-e93c-4884-8e95-5a6503a70583' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "PhoneFeesGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'ded0be76-32fd-4ec3-8fab-cbe5ade45dc2' does not match reference values '1bd267f8-3758-4d8d-a576-3d537c5af9af' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge1GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'fb8f8217-3bbd-444d-a526-68cbaafe0a91' does not match reference values '1bd267f8-3758-4d8d-a576-3d537c5af9af' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge2GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '13da308f-7e2a-44a5-ad01-e9d5d4063e91' does not match reference values '86167fdc-edd0-4486-baee-2c13421855a7' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "CommissionIncome1GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values '86167fdc-edd0-4486-baee-2c13421855a7' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "CommissionIncome2GLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'f02771c2-1ec3-43bd-9679-69bbeb1ee14c' does not match reference values '5d409458-162d-4eda-9a59-e616785231f1' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "SalesRevenueGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '386cd5a4-6b4a-4ebe-ae4f-c5534a0bc62d' does not match reference values 'f5e71499-f0fc-49ed-97da-09fb9de9bb40' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "BankGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'eb6d2fe8-a84d-48de-a64b-75732f31bc47' does not match reference values 'de086988-3633-422d-bc4b-59ced3930130' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "RoyaltyGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'd5f9c0d9-9572-40cf-bcc6-8e5f834469b7' does not match reference values '2e616bd0-e899-4721-91a7-040161479cc2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge1IncomeFromPOSGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '775dc245-9866-4d6b-a959-0c29c40150c7' does not match reference values '2e616bd0-e899-4721-91a7-040161479cc2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge2IncomeFromPOSGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '64d90867-49ff-4474-baca-0a8b4a7febf1' does not match reference values '2e616bd0-e899-4721-91a7-040161479cc2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge1IncomeInternalGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '0a6d5ef7-6a88-4f34-b72b-9f8c5d1edf50' does not match reference values '2e616bd0-e899-4721-91a7-040161479cc2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ServiceCharge2IncomeInternalGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'c6f0a31c-ff07-444d-ad81-3f191e61d778' does not match reference values '03bde345-91d6-492a-a904-d0aa10a48320' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "ClientAccountPaymentModeGLAccountID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'false' does not match reference values 'true' and 'true'.",
+        "path": "IsClientPhoneMandatory",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'cb910da3-9b76-4e0a-8555-9eb698aa6cdc' does not match reference values 'cb910da3-9b76-4e0a-8555-9eb698aa6cdc' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "PaymentProcessorIDAdminSales",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'cb910da3-9b76-4e0a-8555-9eb698aa6cdc' does not match reference values '6b62d753-8a53-430e-b8ad-f41bc012ece2' and '00000000-0000-0000-0000-000000000000'.",
+        "path": "PaymentProcessorIDInternetSales",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values 'false' and 'false'.",
+        "path": "CanViewClientSearchOnProductSearchPage",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value '12710' does not match reference values '24466' and '0'.",
+        "path": "ShippingProductEventDateID",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 'false' does not match reference values 'true' and 'true'.",
+        "path": "SendPDFWithETicketsEnabled",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value '' does not match reference values 'true' and 'false'.",
+        "path": "EventReminderEnabled",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 'hcetavreser' does not match reference values 'reservatech' and '<NO REFERENCE>'.",
+        "path": "EventReminderTemplate",
+        "severity": "error",
+        "suggestion": "Verify if the target value is intentional; otherwise align with reference.",
+        "module": "OwnerPOS",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "EventID is null but should be a valid integer matching the target event ID.",
+        "path": "EventID",
+        "severity": "error",
+        "suggestion": "Set EventID to 453.",
+        "module": "FeeDefinitions",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "FeeDefinitionModelList[].ID differs from reference IDs; ensure it is a unique identifier for this fee definition.",
+        "path": "FeeDefinitionModelList[].ID",
+        "severity": "error",
+        "suggestion": "Use a new unique ID or match the reference if intended.",
+        "module": "FeeDefinitions",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "FeeDefinitionModelList[].EventID (453) does not match reference EventIDs (97, 1984).",
+        "path": "FeeDefinitionModelList[].EventID",
+        "severity": "error",
+        "suggestion": "Set FeeDefinitionModelList[].EventID to 453 to match the target event.",
+        "module": "FeeDefinitions",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target ID 0 does not match any reference IDs (239, 15939).",
+        "path": "PriceGroup.ID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target EventID 453 does not match any reference EventIDs (97, 1984).",
+        "path": "PriceGroup.EventID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference EventID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'Régulier' does not match any reference names (REG, MEMBERSEAT2005).",
+        "path": "PriceGroup.PriceGroupNameFr",
+        "severity": "error",
+        "suggestion": "Use a reference name.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'Régulier' does not match any reference displays (REGULIER, MEMBERSEAT2005).",
+        "path": "PriceGroup.TicketingDisplay_Fr",
+        "severity": "error",
+        "suggestion": "Use a reference display.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'ralugeR' does not match any reference displays (REGULIER, MEMBERSEAT2005).",
+        "path": "PriceGroup.TicketingDisplay_En",
+        "severity": "error",
+        "suggestion": "Use a reference display.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 'Régulier' does not match any reference names (REGULIER, MEMBERSEAT2005).",
+        "path": "PriceGroup.InternetName_Fr",
+        "severity": "error",
+        "suggestion": "Use a reference name.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'Regular' does not match any reference names (REGULIER, MEMBERSEAT2005).",
+        "path": "PriceGroup.InternetName_En",
+        "severity": "error",
+        "suggestion": "Use a reference name.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target -1 does not match any reference SeasonTicketIDs (0).",
+        "path": "PriceGroup.SeasonTicketID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference SeasonTicketID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 'RE' does not match reference code 'MS'.",
+        "path": "PriceGroup.PriceGroupCode",
+        "severity": "error",
+        "suggestion": "Use reference code 'MS'.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'R' does not match reference letter 'S'.",
+        "path": "PriceGroup.Letter",
+        "severity": "error",
+        "suggestion": "Use reference letter 'S'.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 'Regular' does not match any reference names (REG, MEMBERSEAT2005).",
+        "path": "PriceGroupNameEn",
+        "severity": "error",
+        "suggestion": "Use a reference name.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target is empty but reference expects false.",
+        "path": "HideOnStandardInternetSale",
+        "severity": "error",
+        "suggestion": "Set to false.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 2590 does not match any reference IDs (257, 16768).",
+        "path": "MainPrice.Price.ID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 18 does not match any reference prices (21, 100).",
+        "path": "MainPrice.Price.Price",
+        "severity": "error",
+        "suggestion": "Use a reference price.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 0 does not match any reference tax rates (0.07, 0.14).",
+        "path": "MainPrice.Price.Tax1Rate",
+        "severity": "error",
+        "suggestion": "Use a reference tax rate.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 0 does not match any reference amounts (1.47, 14).",
+        "path": "MainPrice.Price.Tax1Amount",
+        "severity": "error",
+        "suggestion": "Use a reference tax amount.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target null does not match any reference IDs (239, 15939).",
+        "path": "MainPrice.Price.EventPriceGroupID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 2591 does not match any reference IDs (0).",
+        "path": "MainPrice.Price.EventPrintPriceID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target true does not match any reference values (false).",
+        "path": "MainPrice.Price.FakeFeesOnTicket",
+        "severity": "error",
+        "suggestion": "Set to false.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target false does not match any reference values (true).",
+        "path": "MainPriceShowHereAndSubSections",
+        "severity": "error",
+        "suggestion": "Set to true.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 13756 does not match any reference SectionIDs (4755, 46722).",
+        "path": "Prices[].Price.SectionID",
+        "severity": "error",
+        "suggestion": "Use a reference SectionID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 2541 does not match any reference IDs (239, 15939).",
+        "path": "Prices[].Price.EventPriceGroupID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target 1 does not match any reference IDs (0).",
+        "path": "Prices[].Price.EventPrintPriceID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target is empty but reference expects false.",
+        "path": "Prices[].Price.FakePriceOnTicket",
+        "severity": "error",
+        "suggestion": "Set to false.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target true does not match any reference values (false).",
+        "path": "Prices[].Price.FakeFeesOnTicket",
+        "severity": "error",
+        "suggestion": "Set to false.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target is empty but reference expects true.",
+        "path": "Prices[].ShowHereAndSubSections",
+        "severity": "error",
+        "suggestion": "Set to true.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target is empty but reference expects REG or MEMBERSEAT2005.",
+        "path": "RO_Name",
+        "severity": "error",
+        "suggestion": "Set to a reference name.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target 2541 does not match any reference IDs (239, 15939).",
+        "path": "PriceGroupID",
+        "severity": "error",
+        "suggestion": "Set to a valid reference ID.",
+        "module": "Prices",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 10626 does not match reference values 738, 61698",
+        "path": "AllowedPointOfSales[].ID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value null does not match reference values 0, 0",
+        "path": "AllowedPointOfSales[].EventPriceID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 21 does not match reference values 42, 62",
+        "path": "AllowedPointOfSales[].PointOfSaleID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 2541 does not match reference values 240, 15939",
+        "path": "AllowedPointOfSales[].EventPriceGroupID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 83 does not match reference values 54, 95",
+        "path": "RO_VenueID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 1 does not match reference values 0, 0",
+        "path": "RO_FeeDefinition1.PointOfSaleID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value is missing but reference values are present",
+        "path": "RO_FeeDefinition1.CreatedDate",
+        "severity": "error",
+        "suggestion": "Provide a creation date.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 2026-02-11T22:28:33.799156Z does not match reference values 2026-02-11T22:28:38.89886Z, 2026-02-11T22:28:38.90363Z",
+        "path": "RO_FeeDefinition1.UpdatedDate",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 2026-02-11T22:28:33.799156Z does not match reference values 2026-02-11T22:28:38.898861Z, 2026-02-11T22:28:38.90363Z",
+        "path": "RO_FeeDefinition2.CreatedDate",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 2026-02-11T22:28:33.799156Z does not match reference values 2026-02-11T22:28:38.898861Z, 2026-02-11T22:28:38.90363Z",
+        "path": "RO_FeeDefinition2.UpdatedDate",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 1 does not match reference values 1, 2",
+        "path": "RO_EventTSTimeZone.ID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value (GMT-05:00) Est (É.-U. et Canada) does not match reference values (GMT-05:00) Est (É.-U. et Canada), (GMT-04:00) Heure Atlantique (Canada)",
+        "path": "RO_EventTSTimeZone.NameFr",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value (GMT-05:00) Eastern does not match reference values (GMT-05:00) Eastern Time (US & Canada), (GMT-04:00) Atlantic Time (Canada)",
+        "path": "RO_EventTSTimeZone.NameEn",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value HNE does not match reference values HNE, HNA",
+        "path": "RO_EventTSTimeZone.StandardTimeAbbreviationFr",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value is missing but reference values are EST, AST",
+        "path": "RO_EventTSTimeZone.StandardTimeAbbreviationEn",
+        "severity": "error",
+        "suggestion": "Provide standard time abbreviation.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value is missing but reference values are -5, -4",
+        "path": "RO_EventTSTimeZone.StandardTimeOffsetHour",
+        "severity": "error",
+        "suggestion": "Provide standard time offset hour.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value HAE does not match reference values HAE, HAA",
+        "path": "RO_EventTSTimeZone.DaylightSavingTimeAbbreviationFr",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value EDT does not match reference values EDT, ADT",
+        "path": "RO_EventTSTimeZone.DaylightSavingTimeAbbreviationEn",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value -4 does not match reference values -4, -3",
+        "path": "RO_EventTSTimeZone.DaylightSavingTimeOffsetHour",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value America/Toronto does not match reference values America/Toronto, America/Halifax",
+        "path": "RO_EventTSTimeZone.TZDatabaseID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value emiT dradnatS nretsaE does not match reference values Eastern Standard Time, Atlantic Standard Time",
+        "path": "RO_EventTSTimeZone.WindowsTimezoneID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 2541 does not match reference values 240, 15939",
+        "path": "ID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 453 does not match reference values 97, 1984",
+        "path": "EventID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Régulier does not match reference values ETU, MEMBERSEAT2005",
+        "path": "Name",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value Régulier does not match reference values ETU, MEMBERSEAT2005",
+        "path": "NameFR",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value is missing but reference values are ETU, MEMBERSEAT2005",
+        "path": "NameEN",
+        "severity": "error",
+        "suggestion": "Provide English name.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Régulier does not match reference values ETUDIANT, MEMBERSEAT2005",
+        "path": "TicketingNameFR",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Regular does not match reference values ETUDIANT, MEMBERSEAT2005",
+        "path": "TicketingNameEN",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Régulier does not match reference values ETUDIANT, MEMBERSEAT2005",
+        "path": "InternetNameFR",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Regular does not match reference values ETUDIANT, MEMBERSEAT2005",
+        "path": "InternetNameEN",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Régulier does not match reference values ETU, MEMBERSEAT2005",
+        "path": "NameOnTicketFR",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value Regular does not match reference values ETU, MEMBERSEAT2005",
+        "path": "NameOnTicketEN",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value false does not match reference values true, false",
+        "path": "ChargeFees1",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 0000c008-0000-0100-0000-700000000000 does not match reference values 00000000-0000-0000-0000-000000000000, 00000000-0000-0000-0000-000000000000",
+        "path": "Fee1DefinitionID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value 297a89bf-8dc4-4dfd-a61d-2255a0bc6255 does not match reference values 00000000-0000-0000-0000-000000000000, 00000000-0000-0000-0000-000000000000",
+        "path": "Fee2DefinitionID",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value (¤0.00) does not match reference values (¤3.00, ¤0.00), (¤0.00)",
+        "path": "PossibleFees1",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value www.test.ca does not match reference values https://www.reservatech.net, <NO REFERENCE>",
+        "path": "PromoWebSaleLink",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value true does not match reference values false, false",
+        "path": "IsMinimumQtyActivated",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value 1 does not match reference values 0, 0",
+        "path": "MaximumTicketQty",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target value false does not match reference values false, true",
+        "path": "Favour",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target value -1 does not match reference values -1, 0, 0",
+        "path": "PassValidityFrequency",
+        "severity": "error",
+        "suggestion": "Align with reference or adjust policy.",
+        "module": "PriceGroups",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target ID 3964 differs from reference IDs 239 and 21227.",
+        "path": "EventPointOfSale.ID",
+        "severity": "error",
+        "suggestion": "Verify correct EventPointOfSale ID.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target EventID 453 differs from reference IDs 97 and 1984.",
+        "path": "EventPointOfSale.EventID",
+        "severity": "error",
+        "suggestion": "Check EventID mapping.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target PointOfSaleID 21 differs from reference IDs 37 and 62.",
+        "path": "EventPointOfSale.PointOfSaleID",
+        "severity": "error",
+        "suggestion": "Confirm correct PointOfSaleID.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Fee1Amount 0 differs from reference 2.61.",
+        "path": "EventPointOfSale.Fee1Amount",
+        "severity": "error",
+        "suggestion": "Validate Fee1Amount calculation.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Fee1Tax1Amount 0 differs from reference 0.18.",
+        "path": "EventPointOfSale.Fee1Tax1Amount",
+        "severity": "error",
+        "suggestion": "Check tax amount computation.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Fee1Tax2Amount 0 differs from reference 0.21.",
+        "path": "EventPointOfSale.Fee1Tax2Amount",
+        "severity": "error",
+        "suggestion": "Verify tax amount calculation.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target Fee2Amount -6932 differs from reference 0.",
+        "path": "EventPointOfSale.Fee2Amount",
+        "severity": "error",
+        "suggestion": "Investigate negative fee value.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target Fee2Tax2Amount is empty but reference is 0.",
+        "path": "EventPointOfSale.Fee2Tax2Amount",
+        "severity": "error",
+        "suggestion": "Ensure tax amount is recorded.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target IsSaleAutorized false differs from reference true.",
+        "path": "EventPointOfSale.IsSaleAutorized",
+        "severity": "error",
+        "suggestion": "Confirm sale authorization status.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target UserID 229 differs from reference IDs 0 and 277.",
+        "path": "EventPointOfSale.UserID",
+        "severity": "error",
+        "suggestion": "Verify user association.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target AutorisationDate 2003-10-08T19:17:14 differs from reference dates.",
+        "path": "EventPointOfSale.AutorisationDate",
+        "severity": "error",
+        "suggestion": "Check authorization timestamp.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_FeeAmountTotal 1 differs from reference 0.",
+        "path": "RightToSellFees[].RO_FeeAmountTotal",
+        "severity": "error",
+        "suggestion": "Validate total fee amount.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target RO_IncomeInternalTotal 1 differs from reference 0.",
+        "path": "RightToSellFees[].RO_IncomeInternalTotal",
+        "severity": "error",
+        "suggestion": "Verify internal income total.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target RO_ChargeTax2 null differs from reference true.",
+        "path": "RightToSellFees[].RO_ChargeTax2",
+        "severity": "error",
+        "suggestion": "Confirm tax charging flag.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target Tax1Rate -1.09 differs from reference rates 0.07 and 0.14.",
+        "path": "RightToSellFees[].Tax1Rate",
+        "severity": "error",
+        "suggestion": "Check tax rate configuration.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target ChargeTax2 true differs from reference false.",
+        "path": "RightToSellFees[].ChargeTax2",
+        "severity": "error",
+        "suggestion": "Verify tax charging setting.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target IncomeForPOS null differs from reference 0.",
+        "path": "RightToSellFees[].IncomeForPOS",
+        "severity": "error",
+        "suggestion": "Ensure income for POS is recorded.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target ReadOnlyItem null differs from reference false.",
+        "path": "RightToSellFees[].ReadOnlyItem",
+        "severity": "error",
+        "suggestion": "Check read-only status.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      },
+      {
+        "message": "Target ID 3bb2feef-f280-4032-87fb-9be9848083a4 differs from reference IDs.",
+        "path": "RightToSellFees[].ID",
+        "severity": "error",
+        "suggestion": "Validate fee record ID.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target EventPointOfSaleID 3964 differs from reference IDs 239 and 21227.",
+        "path": "RightToSellFees[].EventPointOfSaleID",
+        "severity": "error",
+        "suggestion": "Confirm association with EventPointOfSale.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "FP"
+      },
+      {
+        "message": "Target RO_PointOfSaleName ')noitartsinimda( ten.hcetavreséR' differs from reference names.",
+        "path": "RightToSellFees[].RO_PointOfSaleName",
+        "severity": "error",
+        "suggestion": "Verify point of sale name.",
+        "module": "RightToSellAndFees",
+        "itemIndex": 0,
+        "classification": "TP"
+      }
+    ],
+    "prompts": {
+      "Event": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING Event Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nEvent.ID | 0 | 97 | 1984\nEvent.NameFr | Coup de coeur | DEMO CREPS | member seat\nEvent.NameEn | rueoc ed puoC | DEMO CREPS | member seat\nEvent.InternetName_Fr | Coup de coeur | <NO REFERENCE> | member seat\nEvent.InternetName_En | Coup de coeur | <NO REFERENCE> | member seat\nEvent.VenueModelId | 546 | 145 | 2207\nEvent.DisplayOnTheInternet | false | false | false\nEvent.TicketLimitNumber | 500 | 10 | 600\nEvent.SupportMailShipping | false | false | false\nEvent.SupportETicketShipping | false | false | false\nEvent.RepresentationTypeId | 11 | 7 | 8\nEvent.InternetDetail_Fr | Coup de coeur | DEMO CREPS | member seat\nEvent.InternetDetail_En | Coup de coeur | DEMO CREPS | member seat\nEvent.IsHistory | false | true | true\nEvent.PendingModificationID | 0 | 0 | 0\nEvent.IsGeneralAdmission | false | false | false\nEvent.IsInSale | true | true | true\nEvent.ProducerID | 372 | 379 | 395\nEvent.IsDemoEvent | false | false | false\nEvent.NotToMiss | false | false | false\nEvent.ProductType |  | Ticket | Ticket\nEvent.ProductGUID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEvent.SalesRevenueGLAccountID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEvent.RoyaltyGLAccountID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEvent.ActivityTypeID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEvent.MembershipPresaleDurationHours | 0 | 0 | 0\nEvent.IsShippingMandatory | false | false | false\nEvent.HasAnImage | false | false | false\nEvent.ProgramID | 07000000-0000-0000-0020-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEvent.EnableAdditionalDateNotificationList | false | false | false\nEvent.SuggestedTicketQty | 0 | 0 | 0\nEvent.InternetTicketQTYMultipleOf | 8809 | 0 | 0\nEvent.IsGuestClientAuthorized | false | false | false\nEvent.IsTaxableByDefault | true | true | true\nEvent.HasNoSpecificDate | null | false | false\nEvent.DisplayFrequency | 1 | 1 | 1\nEvent.AskCustomerForEmailAddressSharing | false | false | false\nEvent.ShowAvailablePlacesOnInternet | null | false | false\nEvent.ShowBestTicketFirstOnInternet | false | false | false\nEvent.AlwaysAskForPriceOnTicketSelection | false | false | false\nIDChain.EventID | 453 | 97 | 1984\nIDChain.ProducerID | 372 | 379 | 395\nIDChain.RepresentationTypeID | 12 | 7 | 8\nIDChain.ActivityTypeID |  | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nIDChain.VenueModelID | 546 | 145 | 2207\nIDChain.VenueID | 83 | 54 | 95\nIDChain.PhysicalVenueID | 32 | 12 | 50\nIDChain.OwnerPOSID | 21 | 37 | 62\nIDChain.TimeZoneID | 1 | 1 | 2\nIDChain.TaxDefinitionID |  | 1 | 2\nRO_ShowEnglishFields | false | false | false\nRO_FullEventNameFR | Coup de coeur | DEMO CREPS | member seat\nRO_FullEventNameEN | Coup de coeur | DEMO CREPS | member seat\nRO_HasPicture | false | false | false\nRO_DefaultSalesRevenueGLAccountName | 6000 Revenus - Vente billet | 0114170 Vente de billets - Ville d'Alma Spectacles | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccountName | 9X99 À classer | 999 À classer | <NO REFERENCE>\nRO_RepresentationType.ID | 12 | 7 | 8\nRO_RepresentationType.NameFr | Chanson française | Rock / Pop | Ballet / Danse\nRO_RepresentationType.NameEn | French Songs | Rock / Pop | Ballet / Dance\nRO_RepresentationType.ParentID | 17 | 17 | 17\nOwnerPOS.ID | 22 | 37 | 62\nOwnerPOS.Name | Réservatech.net (administration) | Ville d'Alma SPECTACLES | Savoy Theatre\nOwnerPOS.PrefixNumber | RN | AA | SAV\nOwnerPOS.Prefix |  | AA | SAV\nOwnerPOS.InvoiceNumber | 159 | 1310 | 17\nOwnerPOS.InvoiceFormat | 4640 | 0000 | 000000\nOwnerPOS.ReservationNumber | 39 | 558 | 1\nOwnerPOS.ReservationFormat | 3519 | 0 | 000000\nOwnerPOS.Address | 930, rue Jacques-Cartier Est | 850, avenue Bégin Sud | 116 commercial street\nOwnerPOS.City | Chico | Alma | Glace Bay\nOwnerPOS.Province |  | QC | NS\nOwnerPOS.PostalCode | G7H 7K9 | G8B 2K8 | G1A 3C1\nOwnerPOS.Phone | (418) 545-3330 | (418) 669-5135 | (902) 842-1577\nOwnerPOS.Country | Canada | Canada | Canada\nOwnerPOS.Fax | (418) 545-2312 | (418) 669-5125 | (902) 849-3460\nOwnerPOS.Email | info@reser | info@alma.com | boxoffice@savoytheatre.com\nOwnerPOS.EmailSignatureFr | ten.hcetavreseR epiuqé'L | <NO REFERENCE> | <NO REFERENCE>\nOwnerPOS.EmailSignatureEn | Reservatech.net Team | <NO REFERENCE> | <NO REFERENCE>\nOwnerPOS.TimeZoneID | 1 | 1 | 2\nOwnerPOS.IsInactive | false | false | true\nOwnerPOS.Region | Saguenay-Lac-St-Jean | Saguenay-Lac-St-Jean | Cape Breton\nOwnerPOS.DisplayWebsite | false | true | false\nOwnerPOS.OutletFees | 0 | 0 | 0\nOwnerPOS.HandlingFees | 0 | 0 | 0\nOwnerPOS.PhoneFees |  | 0 | 0\nOwnerPOS.TicketModel | 0 | 0 | 0\nOwnerPOS.PointOfSaleTypeID | 0 | 0 | 0\nOwnerPOS.FiscalYearLastDay | 1 | 0 | 0\nOwnerPOS.FiscalYearLastMonth | null | 0 | 0\nOwnerPOS.HasAChartOfAccounts | false | false | false\nOwnerPOS.GLExportFormat | None | None | None\nOwnerPOS.EntityType | PointOfSale | PointOfSale | PointOfSale\nOwnerPOS.PresenterID | 0 | 0 | 0\nOwnerPOS.HasFiscalYearEnd | false | false | false\nOwnerPOS.AccountReceivableGLAccountID | b8a0bb70-cb0a-4bc4-ad6e-7904e7712e6e | ff56930b-6ded-44de-bea9-d5170bdb28c2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.AccountPayableGLAccountID | null | 60cd7e25-7773-4f40-8aaf-bd454a579e9d | 00000000-0000-0000-0000-000000000000\nOwnerPOS.TaxDue1GLAccountID | 3d0a20f0-1e45-4907-9b6f-cf31e133eed0 | 03d44a6d-aa08-439b-befc-67aa02cf3490 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.TaxDue2GLAccountID |  | e2e89e45-975c-4df1-9d87-501e9003df15 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.TaxReceivable1GLAccountID | a3af3ef0-1e11-452f-93e1-2b3c6d1e0adf | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nOwnerPOS.TaxReceivable2GLAccountID | null | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nOwnerPOS.HandlingFeesGLAccountID | 29e2104e-264d-4600-aaae-c4b36c448a44 | 24234186-e93c-4884-8e95-5a6503a70583 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.PhoneFeesGLAccountID | e91fe6f4-69ba-4bca-968d-2082bcf7ac84 | 24234186-e93c-4884-8e95-5a6503a70583 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ServiceCharge1GLAccountID | 9ce1371a-c996-4093-a234-64c149fa98ac | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ServiceCharge2GLAccountID | fb8f8217-3bbd-444d-a526-68cbaafe0a91 | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nOwnerPOS.CommissionIncome1GLAccountID | 13da308f-7e2a-44a5-ad01-e9d5d4063e91 | 86167fdc-edd0-4486-baee-2c13421855a7 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.CommissionIncome2GLAccountID | 7d407f5f-ff03-49f6-8f99-fef3d6ac2eb6 | 86167fdc-edd0-4486-baee-2c13421855a7 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.SalesRevenueGLAccountID | f02771c2-1ec3-43bd-9679-69bbeb1ee14c | 5d409458-162d-4eda-9a59-e616785231f1 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.BankGLAccountID | 386cd5a4-6b4a-4ebe-ae4f-c5534a0bc62d | f5e71499-f0fc-49ed-97da-09fb9de9bb40 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.RoyaltyGLAccountID | eb6d2fe8-a84d-48de-a64b-75732f31bc47 | de086988-3633-422d-bc4b-59ced3930130 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ShippingManagementPointOfSaleID | 21 | 21 | 21\nOwnerPOS.ServiceCharge1IncomeFromPOSGLAccountID | d5f9c0d9-9572-40cf-bcc1-8e5fc34469b7 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ServiceCharge2IncomeFromPOSGLAccountID | 775dc245-9866-4d6b-a959-0c29c40150c7 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ServiceCharge1IncomeInternalGLAccountID | 64d90867-49ff-4474-baca-0a8b4a7febf1 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ServiceCharge2IncomeInternalGLAccountID | 0a6d5ef7-6a88-4f34-b72b-9f8c5d1edf50 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.ClientAccountPaymentModeGLAccountID | c6f0a11c-ff07-4e4d-a981-3f691e61d778 | 03bde345-91d6-492a-a904-d0aa10a48320 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.IsClientPhoneMandatory | false | true | true\nOwnerPOS.IsClientPostalCodeMandatory | false | false | false\nOwnerPOS.Preference_SearchProductOfAllPOS | false | false | false\nOwnerPOS.PaymentProcessorIDAdminSales | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | 00000000-0000-0000-0000-000000000000\nOwnerPOS.PaymentProcessorIDInternetSales | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | 6b62d753-8a53-430e-b8ad-f41bc012ece2 | 00000000-0000-0000-0000-000000000000\nOwnerPOS.CanViewClientSearchOnProductSearchPage | false | false | false\nOwnerPOS.Preference_AutoCheckAutoClient | false | false | false\nOwnerPOS.BuyEventLink | http://www.reservatech.net/RepresentationDetails.aspx?EventID={EventID} | <NO REFERENCE> | <NO REFERENCE>\nOwnerPOS.BuyEventDateLink | http://www.reservatech.net/SelectTickets.aspx?EventDateId={EventDateID} | <NO REFERENCE> | <NO REFERENCE>\nOwnerPOS.ShippingProductEventDateID | 12710 | 24466 | 0\nOwnerPOS.SendPDFWithETicketsEnabled | false | true | true\nOwnerPOS.EventReminderEnabled | true | true | false\nOwnerPOS.EventReminderTemplate | reservatech | reservatech | <NO REFERENCE>\nOwnerPOS.EventReminderDaysBefore | 2 | 2 | 2\nOwnerPOS.BuyPackageLink | }DIEGAKCAP{/segakcap/ten.hcetavreser.vediv//:ptth | <NO REFERENCE> | <NO REFERENCE>\nTimezone.ID | 1 | 1 | 2\nTimezone.NameFr | (GMT-05:00) Est (É.-U. et Canada) | (GMT-05:00) Est (É.-U. et Canada) | (GMT-04:00) Heure Atlantique (Canada)\nTimezone.NameEn | (GMT-05:00) Eastern Time (US & Canada) | (GMT-05:00) Eastern Time (US & Canada) | (GMT-04:00) Atlantic Time (Canada)\nTimezone.StandardTimeAbbreviationFr | HNE | HNE | HNA\nTimezone.StandardTimeAbbreviationEn | EST | EST | AST\nTimezone.StandardTimeOffsetHour | -6 | -5 | -4\nTimezone.DaylightSavingTimeAbbreviationFr | HAE | HAE | HAA\nTimezone.DaylightSavingTimeAbbreviationEn | E | EDT | ADT\nTimezone.DaylightSavingTimeOffsetHour | -4 | -4 | -3\nTimezone.TZDatabaseID | otnoroT/aciremA | America/Toronto | America/Halifax\nTimezone.WindowsTimezoneID | Eastern Standard Time | Eastern Standard Time | Atlantic Standard Time\nRO_Producer.ID | 372 | 379 | 395\nRO_Producer.Name | Aucun | Zinc Productions | Aucun\nRO_Producer.Email | peter.perron@solutionstlm.com | peter.perron@solutionstlm.com | peter.perron@solutionstlm.com\nRO_Producer.SendReportByMail | false | true | false\nRO_Producer.PointOfSaleID | 21 | 37 | 62\nRO_Producer.ReportFrequency | DAILY | DAILY | DAILY\nRO_DefaultRoyaltyGLAccount.ID | eb6d2fe8-a84d-48de-a64b-75732f31bc47 | de086988-3633-422d-bc4b-59ced3930130 | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.PointOfSaleID | 21 | 37 | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.Number | 9999 | 999 | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.Description | À classer | À classer | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.CreatedDate | 2012-03-09T20:36:42.527Z | 2013-01-18T13:47:42.127Z | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.UpdatedDate | 2012-03-04T20:36:42.527Z | 2013-01-18T13:47:42.127Z | <NO REFERENCE>\nRO_DefaultRoyaltyGLAccount.IsDeleted | false | false | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.ID | f02771c2-1ec3-43bd-9679-69bbeb1ee14c | 5d409458-162d-4eda-9a59-e616785231f1 | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.PointOfSaleID | 21 | 37 | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.Number | 6000 | 0114170 | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.Description | Revenus - Vente billet | Vente de billets - Ville d'Alma Spectacles | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.CreatedDate | null | 2013-01-18T13:48:15.543Z | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.UpdatedDate |  | 2014-05-06T17:24:33.597Z | <NO REFERENCE>\nRO_DefaultSalesRevenueGLAccount.IsDeleted |  | false | <NO REFERENCE>\nID | 453 | 97 | 1984\nBaseVenueModelID | 0 | 0 | 0\nEventNameYearFR |  | 0 | 0\nEventNameFR | Coup de coeur | DEMO CREPS | member seat\nEventNameYearEN | 0 | 0 | 0\nEventNameEN | Coup de coeur | DEMO CREPS | member seat\nInternetNameFR | Coup de coeur | <NO REFERENCE> | member seat\nInternetNameEN | Coup de coeur | <NO REFERENCE> | member seat\nInternetDetailFR | Coup de coeur | DEMO CREPS | member seat\nInternetDetailEN | Coup de coeur | DEMO CREPS | member seat\nRepresentationTypeId | 12 | 7 | 8\nProducerID | 372 | 379 | 395\nActivityTypeID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nMaxTicketsPerCommand | 500 | 10 | 600\nMembershipPresaleDurationHours | null | 0 | 0\nSalesRevenueGLAccountID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nRoyaltyGLAccountID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nIsInSale | true | true | true\nIsGeneralAdmission | false | false | false\nDisplayOnTheInternet | false | false | false\nShowAvailablePlacesOnInternet |  | false | false\nIsDeliveryMandatory | false | false | false\nIsMailDeliveryAvailable | false | false | false\nIsETicketDeliveryAvailable | false | false | false\nIsHistory | null | true | true\nIsDemoEvent | false | false | false\nEnableAdditionalDateNotificationList | false | false | false\nBuyEventLink | http://www.reservatech.net/RepresentationDetails.aspx?EventID=453 | http://www.reservatech.net/RepresentationDetails.aspx?EventID=97 | http://www.reservatech.net/RepresentationDetails.aspx?EventID=1984\nProductType | TickeX | Ticket | Ticket\nProductGUID |  | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nSuggestedTicketQty | 1 | 0 | 0\nInternetTicketQTYMultipleOf | 0 | 0 | 0\nIsTaxableByDefault | true | true | true\nIsGuestClientAuthorized | false | false | false\nDisplayFrequency | 1 | 1 | 1\nHasNoSpecificDate | false | false | false\nAskCustomerForEmailAddressSharing | false | false | false\nShowBestTicketFirstOnInternet | false | false | false\nAlwaysAskForPriceOnTicketSelection | true | false | false\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "EventDates": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING EventDates Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nEventID | 453 | 97 | 1984\nEventDateModelList[].IDChain.EventDateID | 1174 | 249 | 5722\nEventDateModelList[].IDChain.EventID | 453 | 97 | 1984\nEventDateModelList[].IDChain.ProducerID | 0 | 379 | 395\nEventDateModelList[].IDChain.RepresentationTypeID | 12 | 7 | 8\nEventDateModelList[].IDChain.ActivityTypeID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nEventDateModelList[].IDChain.VenueModelID | 546 | 145 | 2207\nEventDateModelList[].IDChain.VenueID | 83 | 54 | 95\nEventDateModelList[].IDChain.PhysicalVenueID | 32 | 12 | 50\nEventDateModelList[].IDChain.OwnerPOSID | 21 | 37 | 62\nEventDateModelList[].IDChain.TimeZoneID | 1 | 1 | 2\nEventDateModelList[].IDChain.TaxDefinitionID | 1 | 1 | 2\nEventDateModelList[].OwnerPointOfSaleID | 21 | 37 | 62\nEventDateModelList[].Venue.ID | 83 | 54 | 95\nEventDateModelList[].Venue.Name | RN-Salle Pierrette-Gaudreault | AA-Salle Michel-Côté (Aud. Alma) | SAV-Savoy Theatre\nEventDateModelList[].Venue.DisplayName |  | Auditorium d'Alma | Savoy Theatre\nEventDateModelList[].Venue.TaxDefinitionID | 1 | 1 | 2\nEventDateModelList[].Venue.PhysicalVenueID | -5383 | 12 | 50\nEventDateModelList[].Venue.EventReminderState | Unset | Unset | Unset\nEventDateModelList[].VenueModelID | 546 | 145 | 2207\nEventDateModelList[].VenueID | 83 | 54 | 95\nEventDateModelList[].PhysicalVenueID | 32 | 12 | 50\nEventDateModelList[].RO_ShowEnglishFields | true | true | true\nEventDateModelList[].RO_Date_Local | 2004-05-30T20:00:00 | 2002-12-01T08:00:00 | 2008-04-28T21:00:00\nEventDateModelList[].RO_SalesStartDateBoxOffice_Local | 2003-10-08T00:00:00 | 2002-08-16T00:00:00 | 2007-09-11T09:00:00\nEventDateModelList[].RO_SalesStartDateNetwork_Local | null | 2002-08-16T00:00:00 | 2005-01-01T09:00:00\nEventDateModelList[].RO_SalesStartDateInternet_Local | 2003-10-07T00:00:00 | 2002-08-16T00:00:00 | 2005-01-01T09:00:00\nEventDateModelList[].RO_SalesEndDateBoxOffice_Local | 2003-11-28T00:00:00 | 2002-12-01T08:00:00 | 2009-01-01T17:00:00\nEventDateModelList[].RO_SalesEndDateNetwork_Local | 2003-10-07T00:00:00 | 2002-12-01T08:00:00 | 2005-12-31T17:00:00\nEventDateModelList[].RO_SalesEndDateInternet_Local | 2003-10-07T00:00:00 | 2002-12-01T08:00:00 | 2005-12-31T17:00:00\nEventDateModelList[].RO_EventTSTimeZone.ID | 1 | 1 | 2\nEventDateModelList[].RO_EventTSTimeZone.NameFr | (GMT-05:00) Est (É.-U. et Canada) | (GMT-05:00) Est (É.-U. et Canada) | (GMT-04:00) Heure Atlantique (Canada)\nEventDateModelList[].RO_EventTSTimeZone.NameEn | (GMT-05:00) Eastern Time (US & Canada) | (GMT-05:00) Eastern Time (US & Canada) | (GMT-04:00) Atlantic Time (Canada)\nEventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationFr |  | HNE | HNA\nEventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationEn | E | EST | AST\nEventDateModelList[].RO_EventTSTimeZone.StandardTimeOffsetHour | -5 | -5 | -4\nEventDateModelList[].RO_EventTSTimeZone.DaylightSavingTimeAbbreviationFr | HAE | HAE | HAA\nEventDateModelList[].RO_EventTSTimeZone.DaylightSavingTimeAbbreviationEn | EDT | EDT | ADT\nEventDateModelList[].RO_EventTSTimeZone.DaylightSavingTimeOffsetHour | -4 | -4 | -3\nEventDateModelList[].RO_EventTSTimeZone.TZDatabaseID | America/Toronto | America/Toronto | America/Halifax\nEventDateModelList[].RO_EventTSTimeZone.WindowsTimezoneID | emiT dradnatS nretsaE | Eastern Standard Time | Atlantic Standard Time\nEventDateModelList[].ID | 1174 | 249 | 5722\nEventDateModelList[].EventID | 452 | 97 | 1984\nEventDateModelList[].Code | COEUR040530 | DEMO | sav0109\nEventDateModelList[].RepresentationNameFR | Coup de coeur | DEMO CREPS | Z SAVOY MEMBER SEAT\nEventDateModelList[].RepresentationNameEN | Coup de coeur | DEMO CREPS | savoy member seat\nEventDateModelList[].Date | 2004-05-31T00:00:00Z | 2002-12-01T13:00:00Z | 2008-04-29T00:00:00Z\nEventDateModelList[].SalesStartDateBoxOffice | 2003-10-08T04:00:00Z | 2002-08-16T04:00:00Z | 2007-09-11T12:00:00Z\nEventDateModelList[].SalesEndDateBoxOffice | 2003-11-28T05:00:00Z | 2002-12-01T13:00:00Z | 2009-01-01T21:00:00Z\nEventDateModelList[].SalesStartDateNetwork | 2003-10-07T04:00:00Z | 2002-08-16T04:00:00Z | 2005-01-01T13:00:00Z\nEventDateModelList[].SalesEndDateNetwork | 2003-10-07T04:00:00Z | 2002-12-01T13:00:00Z | 2005-12-31T21:00:00Z\nEventDateModelList[].SalesStartDateInternet | 2003-10-18T04:00:00.000Z | 2002-08-16T04:00:00Z | 2005-01-01T13:00:00Z\nEventDateModelList[].SalesEndDateInternet | 2003-10-07T04:00:00Z | 2002-12-01T13:00:00Z | 2005-12-31T21:00:00Z\nEventDateModelList[].IsAutoClient | false | true | true\nEventDateModelList[].DateToBeDeterminated | false | false | false\nEventDateModelList[].Cancelled | false | false | false\nEventDateModelList[].IsSoldOut | false | false | false\nEventDateModelList[].HideOnInternet |  | false | false\nEventDateModelList[].BuyEventDateLink | http://www.reservatech.net/SelectTickets.aspx?EventDateId=1174 | http://www.reservatech.net/SelectTickets.aspx?EventDateId=249 | http://www.reservatech.net/SelectTickets.aspx?EventDateId=5722\nEventDateModelList[].ArtistFees | 0 | 0 | 0\nEventDateModelList[].DistributorExpenses | 0 | 0 | 0\nEventDateModelList[].RevenueSharing | null | 0 | 0\nEventDateModelList[].EventReminderState | Unset | Unset | Unset\nEventDateModelList[].SendPDFWithETicketsState | Unset | Unset | Unset\nShowAddEventDate | true | true | true\nShowAddEventDateSerie | true | true | true\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "OwnerPOS": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING OwnerPOS Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nID | 21 | 37 | 62\nName | Réservatech.net (administration) | Ville d'Alma SPECTACLES | Savoy Theatre\nPrefixNumber | RN | AA | SAV\nPrefix | RN | AA | SAV\nInvoiceNumber | 159 | 1310 | 17\nInvoiceFormat | 0000 | 0000 | 000000\nReservationNumber | 39 | 558 | 1\nReservationFormat | 0000 | 0 | 000000\nAddress | 930, rue Jacques-Cartier Est | 850, avenue Bégin Sud | 116 commercial street\nCity | imituocihC | Alma | Glace Bay\nProvince | QC | QC | NS\nPostalCode | G7H 7K9 | G8B 2K8 | G1A 3C1\nPhone | (418) 545-3330 | (418) 669-5135 | (902) 842-1577\nCountry | Canada | Canada | Canada\nFax |  | (418) 669-5125 | (902) 849-3460\nEmail | info@reservatech.net | info@alma.com | boxoffice@savoytheatre.com\nEmailSignatureFr | L'équipe Reservatech.net | <NO REFERENCE> | <NO REFERENCE>\nEmailSignatureEn | Reservatech.net Team | <NO REFERENCE> | <NO REFERENCE>\nTimeZoneID | 1 | 1 | 2\nIsInactive |  | false | true\nRegion | Saguenay-Lac-St-Jean | Saguenay-Lac-St-Jean | Cape Breton\nDisplayWebsite | false | true | false\nOutletFees | 0 | 0 | 0\nHandlingFees | 0 | 0 | 0\nPhoneFees | 0 | 0 | 0\nTicketModel | 0 | 0 | 0\nPointOfSaleTypeID | 0 | 0 | 0\nFiscalYearLastDay | 0 | 0 | 0\nFiscalYearLastMonth | 0 | 0 | 0\nHasAChartOfAccounts |  | false | false\nGLExportFormat | None | None | None\nEntityType | elaSfOtnioP | PointOfSale | PointOfSale\nPresenterID | 0 | 0 | 0\nHasFiscalYearEnd | null | false | false\nAccountReceivableGLAccountID | b8a0bb70-cb0a-4bc4-ad6e-7904e7712e6e | ff56930b-6ded-44de-bea9-d5170bdb28c2 | 00000000-0000-0000-0000-000000000000\nAccountPayableGLAccountID | 441ec52f-e7af-45e0-a57d-41b9d7f5d661 | 60cd7e25-7773-4f40-8aaf-bd454a579e9d | 00000000-0000-0000-0000-000000000000\nTaxDue1GLAccountID | febfa87e-2e21-4d78-868b-66f25d1a425d | 03d44a6d-aa08-439b-befc-67aa02cf3490 | 00000000-0000-0000-0000-000000000000\nTaxDue2GLAccountID |  | e2e89e45-975c-4df1-9d87-501e9003df15 | 00000000-0000-0000-0000-000000000000\nTaxReceivable1GLAccountID | null | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nTaxReceivable2GLAccountID | null | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nHandlingFeesGLAccountID | 29e2104e-264d-4600-aaae-c4b36c448a44 | 24234186-e93c-4884-8e95-5a6503a70583 | 00000000-0000-0000-0000-000000000000\nPhoneFeesGLAccountID | e91fe6f4-69ba-4bca-968d-2082bcf7ac84 | 24234186-e93c-4884-8e95-5a6503a70583 | 00000000-0000-0000-0000-000000000000\nServiceCharge1GLAccountID | ded0be76-32fd-4ec3-8fab-cbe5ade45dc2 | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nServiceCharge2GLAccountID | fb8f8217-3bbd-444d-a526-68cbaafe0a91 | 1bd267f8-3758-4d8d-a576-3d537c5af9af | 00000000-0000-0000-0000-000000000000\nCommissionIncome1GLAccountID | 13da308f-7e2a-44a5-ad01-e9d5d4063e91 | 86167fdc-edd0-4486-baee-2c13421855a7 | 00000000-0000-0000-0000-000000000000\nCommissionIncome2GLAccountID |  | 86167fdc-edd0-4486-baee-2c13421855a7 | 00000000-0000-0000-0000-000000000000\nSalesRevenueGLAccountID | f02771c2-1ec3-43bd-9679-69bbeb1ee14c | 5d409458-162d-4eda-9a59-e616785231f1 | 00000000-0000-0000-0000-000000000000\nBankGLAccountID | 386cd5a4-6b4a-4ebe-ae4f-c5534a0bc62d | f5e71499-f0fc-49ed-97da-09fb9de9bb40 | 00000000-0000-0000-0000-000000000000\nRoyaltyGLAccountID | eb6d2fe8-a84d-48de-a64b-75732f31bc47 | de086988-3633-422d-bc4b-59ced3930130 | 00000000-0000-0000-0000-000000000000\nShippingManagementPointOfSaleID | 21 | 21 | 21\nServiceCharge1IncomeFromPOSGLAccountID | d5f9c0d9-9572-40cf-bcc6-8e5f834469b7 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nServiceCharge2IncomeFromPOSGLAccountID | 775dc245-9866-4d6b-a959-0c29c40150c7 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nServiceCharge1IncomeInternalGLAccountID | 64d90867-49ff-4474-baca-0a8b4a7febf1 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nServiceCharge2IncomeInternalGLAccountID | 0a6d5ef7-6a88-4f34-b72b-9f8c5d1edf50 | 2e616bd0-e899-4721-91a7-040161479cc2 | 00000000-0000-0000-0000-000000000000\nClientAccountPaymentModeGLAccountID | c6f0a31c-ff07-444d-ad81-3f191e61d778 | 03bde345-91d6-492a-a904-d0aa10a48320 | 00000000-0000-0000-0000-000000000000\nIsClientPhoneMandatory | false | true | true\nIsClientPostalCodeMandatory | false | false | false\nPreference_SearchProductOfAllPOS | false | false | false\nPaymentProcessorIDAdminSales | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | 00000000-0000-0000-0000-000000000000\nPaymentProcessorIDInternetSales | cb910da3-9b76-4e0a-8555-9eb698aa6cdc | 6b62d753-8a53-430e-b8ad-f41bc012ece2 | 00000000-0000-0000-0000-000000000000\nCanViewClientSearchOnProductSearchPage |  | false | false\nPreference_AutoCheckAutoClient | false | false | false\nBuyEventLink | http://www.reservatech.net/RepresentationDetails.aspx?EventID={EventID} | <NO REFERENCE> | <NO REFERENCE>\nBuyEventDateLink | http://www.reservatech.net/SelectTi | <NO REFERENCE> | <NO REFERENCE>\nShippingProductEventDateID | 12710 | 24466 | 0\nSendPDFWithETicketsEnabled | false | true | true\nEventReminderEnabled |  | true | false\nEventReminderTemplate | hcetavreser | reservatech | <NO REFERENCE>\nEventReminderDaysBefore | 2 | 2 | 2\nBuyPackageLink | http://videv.reservatech.net/packages/{PACKAGEID} | <NO REFERENCE> | <NO REFERENCE>\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "FeeDefinitions": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING FeeDefinitions Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nEventID | null | 97 | 1984\nFeeDefinitionModelList[].RO_ShowEnglishFields | false | false | false\nFeeDefinitionModelList[].ID | 67ef1c67-5cf3-42fc-8bfd-d903f37a08cf | b8f1c4c2-9b8b-42d7-958e-813512f00f84 | f3889ef0-3139-4fca-b05e-2b89b66fd8a8\nFeeDefinitionModelList[].EventID | 453 | 97 | 1984\nFeeDefinitionModelList[].PointOfSaleID | 0 | 0 | 0\nFeeDefinitionModelList[].Name | Fee2 | Fee2 | Fee2\nFeeDefinitionModelList[].ReadOnlyItem | true | true | true\nShowAddFeeDefinition | true | true | true\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "Prices": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING Prices Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nPriceGroup.ID | 0 | 239 | 15939\nPriceGroup.EventID | 453 | 97 | 1984\nPriceGroup.PriceGroupNameFr | Régulier | REG | MEMBERSEAT2005\nPriceGroup.TicketingDisplay_Fr | Régulier | REGULIER | MEMBERSEAT2005\nPriceGroup.TicketingDisplay_En | ralugeR | REGULIER | MEMBERSEAT2005\nPriceGroup.InternetName_Fr | Régulier | REGULIER | MEMBERSEAT2005\nPriceGroup.InternetName_En | Regular | REGULIER | MEMBERSEAT2005\nPriceGroup.InternetDefault | true | true | false\nPriceGroup.ChargeFees1 | false | true | false\nPriceGroup.Fee1DefinitionID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nPriceGroup.ChargeFees2 | false | false | false\nPriceGroup.Fee2DefinitionID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nPriceGroup.PackageDealID | 0 | 0 | 0\nPriceGroup.SeasonTicketID | -1 | 0 | 0\nPriceGroup.PriceGroupCode | RE | <NO REFERENCE> | MS\nPriceGroup.Favour | false | false | true\nPriceGroup.Consignment | false | false | false\nPriceGroup.Letter | R | <NO REFERENCE> | S\nPriceGroup.PriceGroupActive | true | true | true\nPriceGroup.EventPriceGroupReferenceID | 0 | 0 | 0\nPriceGroup.PriceGroupNameEn | Regular | REG | MEMBERSEAT2005\nPriceGroup.MembershipTypeID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nPriceGroup.HasMaximumTicketSoldPerEventDate | false | false | false\nPriceGroup.MaximumTicketSoldPerEventDate | 0 | 0 | 0\nPriceGroup.HideOnStandardInternetSale |  | false | false\nPriceGroup.PrintPriceOnTicket | true | true | true\nPriceGroup.CreditCardConditionID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nPriceGroup.OrderIndex | 0 | 0 | 0\nPriceGroup.RequiredTicketQTYMultipleOf | 0 | 0 | 0\nPriceGroup.MinimumTicketQty | 0 | 0 | 0\nPriceGroup.MaximumTicketQty | 0 | 0 | 0\nPriceGroup.IsMinimumQtyActivated | false | false | false\nPriceGroup.IsMaximumQtyActivated | false | false | false\nPriceGroup.ServiceFeesTotal | 0 | 0 | 0\nPriceGroup.TextOnTicketLineNumber | 0 | 0 | 0\nPriceGroup.PassValidForNumberOfPeople | 0 | 0 | 0\nPriceGroup.PassValidityFrequency | 0 | 0 | 0\nMainPrice.Price.ID | 2590 | 257 | 16768\nMainPrice.Price.SectionID | 0 | 0 | 0\nMainPrice.Price.Price | 18 | 21 | 100\nMainPrice.Price.Tax1Rate | 0 | 0.07 | 0.14\nMainPrice.Price.Tax2Rate | 0 | 0.075 | 0\nMainPrice.Price.Tax1Amount | 0 | 1.47 | 14\nMainPrice.Price.Tax2Amount | 0 | 1.69 | 0\nMainPrice.Price.EventPriceGroupID | null | 239 | 15939\nMainPrice.Price.Hidden | false | false | false\nMainPrice.Price.EventPrintPriceID | 2591 | 0 | 0\nMainPrice.Price.Royalty | 0 | 0 | 0\nMainPrice.Price.RoyaltyTax1 | 0 | 0 | 0\nMainPrice.Price.RoyaltyTax2 | 0 | 0 | 0\nMainPrice.Price.FakePriceOnTicket | false | false | false\nMainPrice.Price.FakePriceToShowOnTicket | 0 | 0 | 0\nMainPrice.Price.FakeFeesOnTicket | true | false | false\nMainPrice.Price.FakeFeesToShowOnTicket | 0 | 0 | 0\nMainPrice.Price.ServiceFeesTotal | 0 | 0 | 0\nMainPrice.ShowHereAndSubSections | true | true | true\nMainPrice.PriceBeforeTaxes | 18 | 21 | 100\nMainPrice.IsRealPricePresent | true | true | true\nMainPrice.RO_PriceBeforeTaxesAndRoyalties | 18 | 21 | 100\nMainPriceShowHereAndSubSections | false | true | true\nPrices[].Price.ID | 0 | 0 | 0\nPrices[].Price.SectionID | 13756 | 4755 | 46722\nPrices[].Price.Price | 0 | 0 | 0\nPrices[].Price.Tax1Rate | 0.05 | 0.05 | 0.13\nPrices[].Price.Tax2Rate | 0.09975 | 0.09975 | 0\nPrices[].Price.Tax1Amount | 0 | 0 | 0\nPrices[].Price.Tax2Amount | 0 | 0 | 0\nPrices[].Price.EventPriceGroupID | 2541 | 239 | 15939\nPrices[].Price.Hidden | false | false | false\nPrices[].Price.EventPrintPriceID | 1 | 0 | 0\nPrices[].Price.Royalty | 0 | 0 | 0\nPrices[].Price.RoyaltyTax1 | 0 | 0 | 0\nPrices[].Price.RoyaltyTax2 | 0 | 0 | 0\nPrices[].Price.FakePriceOnTicket |  | false | false\nPrices[].Price.FakePriceToShowOnTicket | 0 | 0 | 0\nPrices[].Price.FakeFeesOnTicket | true | false | false\nPrices[].Price.FakeFeesToShowOnTicket | 0 | 0 | 0\nPrices[].Price.ServiceFeesTotal | 0 | 0 | 0\nPrices[].ShowHereAndSubSections |  | true | true\nPrices[].PriceBeforeTaxes | 0 | 0 | 0\nPrices[].IsRealPricePresent | false | false | false\nPrices[].RO_PriceBeforeTaxesAndRoyalties | 0 | 0 | 0\nRO_Name |  | REG | MEMBERSEAT2005\nRO_DisplayOrder | 0 | 0 | 0\nPriceGroupID | 2541 | 239 | 15939\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "PriceGroups": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING PriceGroups Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nAllowedPointOfSales[].ID | 10626 | 738 | 61698\nAllowedPointOfSales[].EventPriceID | null | 0 | 0\nAllowedPointOfSales[].PointOfSaleID | 21 | 42 | 62\nAllowedPointOfSales[].EventPriceGroupID | 2541 | 240 | 15939\nRO_VenueID | 83 | 54 | 95\nRO_FeeDefinition1.ID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nRO_FeeDefinition1.Name | Frais 1 | Frais 1 | Frais 1\nRO_FeeDefinition1.EventID | 0 | 0 | 0\nRO_FeeDefinition1.PackageID | 0 | 0 | 0\nRO_FeeDefinition1.PointOfSaleID | 1 | 0 | 0\nRO_FeeDefinition1.CreatedDate |  | 2026-02-11T22:28:38.89886Z | 2026-02-11T22:28:38.90363Z\nRO_FeeDefinition1.UpdatedDate | 2026-02-11T22:28:33.799156Z | 2026-02-11T22:28:38.89886Z | 2026-02-11T22:28:38.90363Z\nRO_FeeDefinition1.IsDeleted | false | false | false\nRO_FeeDefinition2.ID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nRO_FeeDefinition2.Name | Frais 2 | Frais 2 | Frais 2\nRO_FeeDefinition2.EventID | 0 | 0 | 0\nRO_FeeDefinition2.PackageID | 0 | 0 | 0\nRO_FeeDefinition2.PointOfSaleID | 0 | 0 | 0\nRO_FeeDefinition2.CreatedDate | 2026-02-11T22:28:33.799156Z | 2026-02-11T22:28:38.898861Z | 2026-02-11T22:28:38.90363Z\nRO_FeeDefinition2.UpdatedDate | 2026-02-11T22:28:33.799156Z | 2026-02-11T22:28:38.898861Z | 2026-02-11T22:28:38.90363Z\nRO_FeeDefinition2.IsDeleted | false | false | false\nRO_EventTSTimeZone.ID | 1 | 1 | 2\nRO_EventTSTimeZone.NameFr | (GMT-05:00) Est (É.-U. et Canada) | (GMT-05:00) Est (É.-U. et Canada) | (GMT-04:00) Heure Atlantique (Canada)\nRO_EventTSTimeZone.NameEn | (GMT-05:00) Eastern | (GMT-05:00) Eastern Time (US & Canada) | (GMT-04:00) Atlantic Time (Canada)\nRO_EventTSTimeZone.StandardTimeAbbreviationFr | HNE | HNE | HNA\nRO_EventTSTimeZone.StandardTimeAbbreviationEn |  | EST | AST\nRO_EventTSTimeZone.StandardTimeOffsetHour |  | -5 | -4\nRO_EventTSTimeZone.DaylightSavingTimeAbbreviationFr | HAE | HAE | HAA\nRO_EventTSTimeZone.DaylightSavingTimeAbbreviationEn | EDT | EDT | ADT\nRO_EventTSTimeZone.DaylightSavingTimeOffsetHour | -4 | -4 | -3\nRO_EventTSTimeZone.TZDatabaseID | America/Toronto | America/Toronto | America/Halifax\nRO_EventTSTimeZone.WindowsTimezoneID | emiT dradnatS nretsaE | Eastern Standard Time | Atlantic Standard Time\nIsForPackage | false | false | false\nID | 2541 | 240 | 15939\nEventID | 453 | 97 | 1984\nPackageDealID | 0 | 0 | 0\nName | Régulier | ETU | MEMBERSEAT2005\nNameFR | Régulier | ETU | MEMBERSEAT2005\nNameEN |  | ETU | MEMBERSEAT2005\nTicketingNameFR | Régulier | ETUDIANT | MEMBERSEAT2005\nTicketingNameEN | Regular | ETUDIANT | MEMBERSEAT2005\nInternetNameFR | Régulier | ETUDIANT | MEMBERSEAT2005\nInternetNameEN | Regular | ETUDIANT | MEMBERSEAT2005\nNameOnTicketFR | Régulier | ETU | MEMBERSEAT2005\nNameOnTicketEN | Regular | ETU | MEMBERSEAT2005\nCode | RE | <NO REFERENCE> | MS\nLetter | R | <NO REFERENCE> | S\nDisplayOrder | 0 | 0 | 0\nChargeFees1 | false | true | false\nFee1DefinitionID | 0000c008-0000-0100-0000-700000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nChargeFees2 | false | false | false\nFee2DefinitionID | 297a89bf-8dc4-4dfd-a61d-2255a0bc6255 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nPossibleFees1 | (¤0.00) | (¤3.00, ¤0.00) | (¤0.00)\nPossibleFees2 | (¤0.00) | (¤0.00) | (¤0.00)\nHasMaximumTicketSoldPerEventDate | false | false | false\nPromoWebSaleLink | www.test.ca | https://www.reservatech.net | <NO REFERENCE>\nMaximumTicketSoldPerEventDate | 0 | 0 | 0\nIsMinimumQtyActivated | true | false | false\nMinimumTicketQty | 0 | 0 | 0\nIsMaximumQtyActivated | false | false | false\nMaximumTicketQty | 1 | 0 | 0\nMembershipTypeID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nCreditCardConditionID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nDefault | false | false | false\nPrintPriceOnTicket | true | true | true\nFavour | false | false | true\nConsignment | false | false | false\nActive | true | true | true\nHideOnStandardInternetSale | false | false | false\nRequiredTicketQTYMultipleOf | 0 | 0 | 0\nPassValidForNumberOfPeople | 0 | 0 | 0\nPassValidityFrequency | -1 | 0 | 0\nTextOnTicketLineNumber | 0 | 0 | 0\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ],
+      "RightToSellAndFees": [
+        "=== SYSTEM MESSAGE ===\nYou are an expert assistant in validating ticketing event configurations.\r\nYour role is to perform precise verification on a TARGET event by comparing it to SIMILAR reference events.\r\n\r\nRules:\r\n- USE the similar event data provided for comparison.\r\n- You MUST use the `report_step_issues` tool to provide your response.\r\n- If anomalies are detected: list them with precision (path, severity, explanatory message).\r\n- If NO anomalies are detected: call `report_step_issues` with an empty issues list [].\r\n- Never provide text or comments outside of the tool call.\n\n=== USER MESSAGE ===\nGLOBAL INSTRUCTIONS:\r\n\r\n\r\n--------------------------------------------------\r\nVALIDATING RightToSellAndFees Validation - Item 1 (ID: 453)\r\n--------------------------------------------------\r\nINSTRUCTIONS:\r\nThe data below is presented in a side-by-side table format:\r\n- Column 1: PATH (The attribute name)\r\n- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.\r\n- Column 3: REFERENCE value (ID: 97, 1984, Strategy: Similarity Search) -> Use this for comparison.\r\n\r\nIf \"REFERENCE\" contains \"<NO REFERENCE>\", strictly ignore the comparison for this specific field and validate based on logic/policy only.\r\n\r\n--------------------------------------------------\r\nDATA TO VALIDATE\r\n--------------------------------------------------\r\nPATH | TARGET | REF 1 | REF 2\n--- | --- | --- | ---\nEventPointOfSale.ID | 3964 | 239 | 21227\nEventPointOfSale.EventID | 453 | 97 | 1984\nEventPointOfSale.PointOfSaleID | 21 | 37 | 62\nEventPointOfSale.Fee1Amount | 0 | 2.61 | 0\nEventPointOfSale.Fee1Tax1Rate | 0.07 | 0.07 | 0.14\nEventPointOfSale.Fee1Tax1Amount | 0 | 0.18 | 0\nEventPointOfSale.Fee1Tax2Rate | 0.075 | 0.075 | 0\nEventPointOfSale.Fee1Tax2Amount | 0 | 0.21 | 0\nEventPointOfSale.Fee1IncomeInternal | 0 | 0 | 0\nEventPointOfSale.Fee1IncomeInternalTax1 | 0 | 0 | 0\nEventPointOfSale.Fee1IncomeInternalTax2 | 0 | 0 | 0\nEventPointOfSale.Fee1IncomeForPOS | 0 | 0 | 0\nEventPointOfSale.Fee1IncomeForPOSTax1 | 0 | 0 | 0\nEventPointOfSale.Fee1IncomeForPOSTax2 | 0 | 0 | 0\nEventPointOfSale.Fee2Amount | -6932 | 0 | 0\nEventPointOfSale.Fee2Tax1Rate | 0.07 | 0.07 | 0.14\nEventPointOfSale.Fee2Tax1Amount | 0 | 0 | 0\nEventPointOfSale.Fee2Tax2Rate | 0.075 | 0.075 | 0\nEventPointOfSale.Fee2Tax2Amount |  | 0 | 0\nEventPointOfSale.Fee2IncomeInternal | 0 | 0 | 0\nEventPointOfSale.Fee2IncomeInternalTax1 | 0 | 0 | 0\nEventPointOfSale.Fee2IncomeInternalTax2 | 0 | 0 | 0\nEventPointOfSale.Fee2IncomeForPOS | 0 | 0 | 0\nEventPointOfSale.Fee2IncomeForPOSTax1 | 0 | 0 | 0\nEventPointOfSale.Fee2IncomeForPOSTax2 | 0 | 0 | 0\nEventPointOfSale.IsSaleAutorized | false | true | true\nEventPointOfSale.UserID | 229 | 0 | 277\nEventPointOfSale.AutorisationDate | 2003-10-08T19:17:14 | 2003-03-07T05:00:00 | 2005-01-06T16:04:56\nEventPointOfSale.SeasonTicketID | 0 | 0 | 0\nEventPointOfSale.EventPointOfSaleReferenceID | 0 | 0 | 0\nRightToSellFees[].Emulated | false | false | false\nRightToSellFees[].RO_ShowEnglishFields | false | false | false\nRightToSellFees[].RO_FeeAmountTotal | 1 | 0 | 0\nRightToSellFees[].RO_IncomeInternalTotal | 1 | 0 | 0\nRightToSellFees[].RO_IncomeForPOSTotal | 0 | 0 | 0\nRightToSellFees[].RO_ChargeTax1 | true | true | true\nRightToSellFees[].RO_ChargeTax2 | null | true | false\nRightToSellFees[].ID | 3bb2feef-f280-4032-87fb-9be9848083a4 | 13f233ba-232b-4bef-a852-5acb77d7f7c2 | dfb6b092-b4cf-4519-b298-1e51a2aded4e\nRightToSellFees[].FeeType | BaseFee2 | BaseFee2 | BaseFee2\nRightToSellFees[].FeeDefinitionID | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000\nRightToSellFees[].EventPointOfSaleID | 3964 | 239 | 21227\nRightToSellFees[].Name | Fee 2 | Fee 2 | Fee 2\nRightToSellFees[].FeeAmount | 0 | 0 | 0\nRightToSellFees[].FeeTax1 | 0 | 0 | 0\nRightToSellFees[].FeeTax2 | 0 | 0 | 0\nRightToSellFees[].Tax1Rate | -1.09 | 0.07 | 0.14\nRightToSellFees[].Tax2Rate | 0.075 | 0.075 | 0\nRightToSellFees[].ChargeTax1 | true | true | true\nRightToSellFees[].ChargeTax2 | true | true | false\nRightToSellFees[].IncomeInternal | 0 | 0 | 0\nRightToSellFees[].IncomeInternalTax1 | 0 | 0 | 0\nRightToSellFees[].IncomeInternalTax2 | 0 | 0 | 0\nRightToSellFees[].IncomeForPOS | null | 0 | 0\nRightToSellFees[].IncomeForPOSTax1 | 0 | 0 | 0\nRightToSellFees[].IncomeForPOSTax2 | 0 | 0 | 0\nRightToSellFees[].ReadOnlyItem | null | false | false\nRO_ShowEnglishFields | false | false | false\nRO_PointOfSaleName | )noitartsinimda( ten.hcetavreséR | Ville d'Alma SPECTACLES | Savoy Theatre\nID | 3964 | 239 | 21227\nEventID | 453 | 97 | 1984\nIsSaleAutorized | true | true | true\nPointOfSaleID | 21 | 37 | 62\nPOSPriceGroups.2541.ID | 4367 | <NO REFERENCE> | <NO REFERENCE>\nPOSPriceGroups.2541.EventPriceID | 0 | <NO REFERENCE> | <NO REFERENCE>\nPOSPriceGroups.2541.PointOfSaleID | 21 | <NO REFERENCE> | <NO REFERENCE>\nPOSPriceGroups.2541.EventPriceGroupID | 2541 | <NO REFERENCE> | <NO REFERENCE>\nFeeType | Fee | Fee | Fee\r\n\r\n--------------------------------------------------\r\nOUTPUT INSTRUCTIONS\r\nIf you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.\r\nIf everything is correct, call `report_step_issues` with an empty list.\r\n\"\"\".strip()"
+      ]
+    },
+    "perturbations": {
+      "Event": [
+        [
+          {
+            "path": "Event.ID",
+            "original": "453",
+            "perturbed": "0"
+          },
+          {
+            "path": "Event.NameEn",
+            "original": "Coup de coeur",
+            "perturbed": "rueoc ed puoC"
+          },
+          {
+            "path": "Event.RepresentationTypeId",
+            "original": "12",
+            "perturbed": "11"
+          },
+          {
+            "path": "Event.IsHistory",
+            "original": "true",
+            "perturbed": "false"
+          },
+          {
+            "path": "Event.ProductType",
+            "original": "Ticket",
+            "perturbed": ""
+          },
+          {
+            "path": "Event.ProgramID",
+            "original": "00000000-0000-0000-0000-000000000000",
+            "perturbed": "07000000-0000-0000-0020-000000000000"
+          },
+          {
+            "path": "Event.InternetTicketQTYMultipleOf",
+            "original": "0",
+            "perturbed": "8809"
+          },
+          {
+            "path": "Event.HasNoSpecificDate",
+            "original": "false",
+            "perturbed": "null"
+          },
+          {
+            "path": "Event.ShowAvailablePlacesOnInternet",
+            "original": "false",
+            "perturbed": "null"
+          },
+          {
+            "path": "IDChain.ActivityTypeID",
+            "original": "00000000-0000-0000-0000-000000000000",
+            "perturbed": ""
+          },
+          {
+            "path": "IDChain.TaxDefinitionID",
+            "original": "1",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_DefaultRoyaltyGLAccountName",
+            "original": "9999 À classer",
+            "perturbed": "9X99 À classer"
+          },
+          {
+            "path": "OwnerPOS.ID",
+            "original": "21",
+            "perturbed": "22"
+          },
+          {
+            "path": "OwnerPOS.Prefix",
+            "original": "RN",
+            "perturbed": ""
+          },
+          {
+            "path": "OwnerPOS.InvoiceFormat",
+            "original": "0000",
+            "perturbed": "4640"
+          },
+          {
+            "path": "OwnerPOS.ReservationFormat",
+            "original": "0000",
+            "perturbed": "3519"
+          },
+          {
+            "path": "OwnerPOS.City",
+            "original": "Chicoutimi",
+            "perturbed": "Chico"
+          },
+          {
+            "path": "OwnerPOS.Province",
+            "original": "QC",
+            "perturbed": ""
+          },
+          {
+            "path": "OwnerPOS.Email",
+            "original": "info@reservatech.net",
+            "perturbed": "info@reser"
+          },
+          {
+            "path": "OwnerPOS.EmailSignatureFr",
+            "original": "L'équipe Reservatech.net",
+            "perturbed": "ten.hcetavreseR epiuqé'L"
+          },
+          {
+            "path": "OwnerPOS.PhoneFees",
+            "original": "0",
+            "perturbed": ""
+          },
+          {
+            "path": "OwnerPOS.FiscalYearLastDay",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "OwnerPOS.FiscalYearLastMonth",
+            "original": "0",
+            "perturbed": "null"
+          },
+          {
+            "path": "OwnerPOS.AccountPayableGLAccountID",
+            "original": "441ec52f-e7af-45e0-a57d-41b9d7f5d661",
+            "perturbed": "null"
+          },
+          {
+            "path": "OwnerPOS.TaxDue1GLAccountID",
+            "original": "febfa87e-2e21-4d78-868b-66f25d1a425d",
+            "perturbed": "3d0a20f0-1e45-4907-9b6f-cf31e133eed0"
+          },
+          {
+            "path": "OwnerPOS.TaxDue2GLAccountID",
+            "original": "4d846625-6bf0-4b42-ace2-e4c604d2cd1e",
+            "perturbed": ""
+          },
+          {
+            "path": "OwnerPOS.TaxReceivable2GLAccountID",
+            "original": "26c16ada-699d-40c7-adc0-59867ae53199",
+            "perturbed": "null"
+          },
+          {
+            "path": "OwnerPOS.ServiceCharge1GLAccountID",
+            "original": "ded0be76-32fd-4ec3-8fab-cbe5ade45dc2",
+            "perturbed": "9ce1371a-c996-4093-a234-64c149fa98ac"
+          },
+          {
+            "path": "OwnerPOS.CommissionIncome2GLAccountID",
+            "original": "7c409f5f-ff03-49f6-8f99-f9f3d6ac28b6",
+            "perturbed": "7d407f5f-ff03-49f6-8f99-fef3d6ac2eb6"
+          },
+          {
+            "path": "OwnerPOS.ServiceCharge1IncomeFromPOSGLAccountID",
+            "original": "d5f9c0d9-9572-40cf-bcc6-8e5f834469b7",
+            "perturbed": "d5f9c0d9-9572-40cf-bcc1-8e5fc34469b7"
+          },
+          {
+            "path": "OwnerPOS.ClientAccountPaymentModeGLAccountID",
+            "original": "c6f0a31c-ff07-444d-ad81-3f191e61d778",
+            "perturbed": "c6f0a11c-ff07-4e4d-a981-3f691e61d778"
+          },
+          {
+            "path": "OwnerPOS.BuyPackageLink",
+            "original": "http://videv.reservatech.net/packages/{PACKAGEID}",
+            "perturbed": "}DIEGAKCAP{/segakcap/ten.hcetavreser.vediv//:ptth"
+          },
+          {
+            "path": "Timezone.StandardTimeOffsetHour",
+            "original": "-5",
+            "perturbed": "-6"
+          },
+          {
+            "path": "Timezone.DaylightSavingTimeAbbreviationEn",
+            "original": "EDT",
+            "perturbed": "E"
+          },
+          {
+            "path": "Timezone.TZDatabaseID",
+            "original": "America/Toronto",
+            "perturbed": "otnoroT/aciremA"
+          },
+          {
+            "path": "RO_DefaultRoyaltyGLAccount.CreatedDate",
+            "original": "2012-03-18T19:36:42.527Z",
+            "perturbed": "2012-03-09T20:36:42.527Z"
+          },
+          {
+            "path": "RO_DefaultRoyaltyGLAccount.UpdatedDate",
+            "original": "2012-03-18T19:36:42.527Z",
+            "perturbed": "2012-03-04T20:36:42.527Z"
+          },
+          {
+            "path": "RO_DefaultSalesRevenueGLAccount.CreatedDate",
+            "original": "2012-02-14T13:42:10.72Z",
+            "perturbed": "null"
+          },
+          {
+            "path": "RO_DefaultSalesRevenueGLAccount.UpdatedDate",
+            "original": "2012-02-14T13:42:10.72Z",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_DefaultSalesRevenueGLAccount.IsDeleted",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "EventNameYearFR",
+            "original": "0",
+            "perturbed": ""
+          },
+          {
+            "path": "MembershipPresaleDurationHours",
+            "original": "0",
+            "perturbed": "null"
+          },
+          {
+            "path": "ShowAvailablePlacesOnInternet",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "IsHistory",
+            "original": "true",
+            "perturbed": "null"
+          },
+          {
+            "path": "ProductType",
+            "original": "Ticket",
+            "perturbed": "TickeX"
+          },
+          {
+            "path": "ProductGUID",
+            "original": "00000000-0000-0000-0000-000000000000",
+            "perturbed": ""
+          },
+          {
+            "path": "SuggestedTicketQty",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "AlwaysAskForPriceOnTicketSelection",
+            "original": "false",
+            "perturbed": "true"
+          }
+        ]
+      ],
+      "EventDates": [
+        [
+          {
+            "path": "EventDateModelList[].IDChain.ProducerID",
+            "original": "372",
+            "perturbed": "0"
+          },
+          {
+            "path": "EventDateModelList[].Venue.DisplayName",
+            "original": "Salle Pierrette-Gaudreault",
+            "perturbed": ""
+          },
+          {
+            "path": "EventDateModelList[].Venue.PhysicalVenueID",
+            "original": "32",
+            "perturbed": "-5383"
+          },
+          {
+            "path": "EventDateModelList[].RO_SalesStartDateNetwork_Local",
+            "original": "2003-10-07T00:00:00",
+            "perturbed": "null"
+          },
+          {
+            "path": "EventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationFr",
+            "original": "HNE",
+            "perturbed": ""
+          },
+          {
+            "path": "EventDateModelList[].RO_EventTSTimeZone.StandardTimeAbbreviationEn",
+            "original": "EST",
+            "perturbed": "E"
+          },
+          {
+            "path": "EventDateModelList[].RO_EventTSTimeZone.WindowsTimezoneID",
+            "original": "Eastern Standard Time",
+            "perturbed": "emiT dradnatS nretsaE"
+          },
+          {
+            "path": "EventDateModelList[].EventID",
+            "original": "453",
+            "perturbed": "452"
+          },
+          {
+            "path": "EventDateModelList[].SalesStartDateInternet",
+            "original": "2003-10-07T04:00:00Z",
+            "perturbed": "2003-10-18T04:00:00.000Z"
+          },
+          {
+            "path": "EventDateModelList[].IsAutoClient",
+            "original": "true",
+            "perturbed": "false"
+          },
+          {
+            "path": "EventDateModelList[].HideOnInternet",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "EventDateModelList[].RevenueSharing",
+            "original": "0",
+            "perturbed": "null"
+          }
+        ]
+      ],
+      "OwnerPOS": [
+        [
+          {
+            "path": "City",
+            "original": "Chicoutimi",
+            "perturbed": "imituocihC"
+          },
+          {
+            "path": "Fax",
+            "original": "(418) 545-2312",
+            "perturbed": ""
+          },
+          {
+            "path": "IsInactive",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "HasAChartOfAccounts",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "EntityType",
+            "original": "PointOfSale",
+            "perturbed": "elaSfOtnioP"
+          },
+          {
+            "path": "HasFiscalYearEnd",
+            "original": "false",
+            "perturbed": "null"
+          },
+          {
+            "path": "TaxDue2GLAccountID",
+            "original": "4d846625-6bf0-4b42-ace2-e4c604d2cd1e",
+            "perturbed": ""
+          },
+          {
+            "path": "TaxReceivable1GLAccountID",
+            "original": "a3af3ef0-1e11-452f-93e1-2b3c6d1e0adf",
+            "perturbed": "null"
+          },
+          {
+            "path": "TaxReceivable2GLAccountID",
+            "original": "26c16ada-699d-40c7-adc0-59867ae53199",
+            "perturbed": "null"
+          },
+          {
+            "path": "CommissionIncome2GLAccountID",
+            "original": "7c409f5f-ff03-49f6-8f99-f9f3d6ac28b6",
+            "perturbed": ""
+          },
+          {
+            "path": "CanViewClientSearchOnProductSearchPage",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "BuyEventDateLink",
+            "original": "http://www.reservatech.net/SelectTickets.aspx?EventDateId={EventDateID}",
+            "perturbed": "http://www.reservatech.net/SelectTi"
+          },
+          {
+            "path": "EventReminderEnabled",
+            "original": "true",
+            "perturbed": ""
+          },
+          {
+            "path": "EventReminderTemplate",
+            "original": "reservatech",
+            "perturbed": "hcetavreser"
+          }
+        ]
+      ],
+      "FeeDefinitions": [
+        [
+          {
+            "path": "EventID",
+            "original": "453",
+            "perturbed": "null"
+          }
+        ]
+      ],
+      "Prices": [
+        [
+          {
+            "path": "PriceGroup.ID",
+            "original": "2541",
+            "perturbed": "0"
+          },
+          {
+            "path": "PriceGroup.TicketingDisplay_En",
+            "original": "Regular",
+            "perturbed": "ralugeR"
+          },
+          {
+            "path": "PriceGroup.SeasonTicketID",
+            "original": "0",
+            "perturbed": "-1"
+          },
+          {
+            "path": "PriceGroup.HideOnStandardInternetSale",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "MainPrice.Price.ID",
+            "original": "2591",
+            "perturbed": "2590"
+          },
+          {
+            "path": "MainPrice.Price.EventPriceGroupID",
+            "original": "2541",
+            "perturbed": "null"
+          },
+          {
+            "path": "MainPrice.Price.FakeFeesOnTicket",
+            "original": "false",
+            "perturbed": "true"
+          },
+          {
+            "path": "MainPriceShowHereAndSubSections",
+            "original": "true",
+            "perturbed": "false"
+          },
+          {
+            "path": "Prices[].Price.SectionID",
+            "original": "13757",
+            "perturbed": "13756"
+          },
+          {
+            "path": "Prices[].Price.EventPrintPriceID",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "Prices[].Price.FakePriceOnTicket",
+            "original": "false",
+            "perturbed": ""
+          },
+          {
+            "path": "Prices[].Price.FakeFeesOnTicket",
+            "original": "false",
+            "perturbed": "true"
+          },
+          {
+            "path": "Prices[].ShowHereAndSubSections",
+            "original": "true",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_Name",
+            "original": "Régulier",
+            "perturbed": ""
+          }
+        ]
+      ],
+      "PriceGroups": [
+        [
+          {
+            "path": "AllowedPointOfSales[].EventPriceID",
+            "original": "0",
+            "perturbed": "null"
+          },
+          {
+            "path": "RO_FeeDefinition1.PointOfSaleID",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "RO_FeeDefinition1.CreatedDate",
+            "original": "2026-02-11T22:28:33.799155Z",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_EventTSTimeZone.NameEn",
+            "original": "(GMT-05:00) Eastern Time (US & Canada)",
+            "perturbed": "(GMT-05:00) Eastern"
+          },
+          {
+            "path": "RO_EventTSTimeZone.StandardTimeAbbreviationEn",
+            "original": "EST",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_EventTSTimeZone.StandardTimeOffsetHour",
+            "original": "-5",
+            "perturbed": ""
+          },
+          {
+            "path": "RO_EventTSTimeZone.WindowsTimezoneID",
+            "original": "Eastern Standard Time",
+            "perturbed": "emiT dradnatS nretsaE"
+          },
+          {
+            "path": "NameEN",
+            "original": "Regular",
+            "perturbed": ""
+          },
+          {
+            "path": "Fee1DefinitionID",
+            "original": "00000000-0000-0000-0000-000000000000",
+            "perturbed": "0000c008-0000-0100-0000-700000000000"
+          },
+          {
+            "path": "Fee2DefinitionID",
+            "original": "00000000-0000-0000-0000-000000000000",
+            "perturbed": "297a89bf-8dc4-4dfd-a61d-2255a0bc6255"
+          },
+          {
+            "path": "IsMinimumQtyActivated",
+            "original": "false",
+            "perturbed": "true"
+          },
+          {
+            "path": "MaximumTicketQty",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "Default",
+            "original": "true",
+            "perturbed": "false"
+          },
+          {
+            "path": "PassValidityFrequency",
+            "original": "0",
+            "perturbed": "-1"
+          }
+        ]
+      ],
+      "RightToSellAndFees": [
+        [
+          {
+            "path": "EventPointOfSale.Fee2Amount",
+            "original": "0",
+            "perturbed": "-6932"
+          },
+          {
+            "path": "EventPointOfSale.Fee2Tax2Amount",
+            "original": "0",
+            "perturbed": ""
+          },
+          {
+            "path": "EventPointOfSale.IsSaleAutorized",
+            "original": "true",
+            "perturbed": "false"
+          },
+          {
+            "path": "RightToSellFees[].RO_FeeAmountTotal",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "RightToSellFees[].RO_IncomeInternalTotal",
+            "original": "0",
+            "perturbed": "1"
+          },
+          {
+            "path": "RightToSellFees[].RO_ChargeTax2",
+            "original": "true",
+            "perturbed": "null"
+          },
+          {
+            "path": "RightToSellFees[].Tax1Rate",
+            "original": "0.07",
+            "perturbed": "-1.09"
+          },
+          {
+            "path": "RightToSellFees[].IncomeForPOS",
+            "original": "0",
+            "perturbed": "null"
+          },
+          {
+            "path": "RightToSellFees[].ReadOnlyItem",
+            "original": "false",
+            "perturbed": "null"
+          },
+          {
+            "path": "RO_PointOfSaleName",
+            "original": "Réservatech.net (administration)",
+            "perturbed": ")noitartsinimda( ten.hcetavreséR"
+          },
+          {
+            "path": "POSPriceGroups.2541.ID",
+            "original": "10626",
+            "perturbed": "4367"
+          }
+        ]
+      ]
+    },
+    "metrics": {
+      "precision": 0.33689839572192515,
+      "recall": 0.5526315789473685,
+      "tp": 63,
+      "fp": 124,
+      "fn": 51
+    },
+    "moduleMetrics": {
+      "Event": {
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 48
+      },
+      "EventDates": {
+        "precision": 0.2727272727272727,
+        "recall": 1,
+        "tp": 12,
+        "fp": 32,
+        "fn": 0
+      },
+      "OwnerPOS": {
+        "precision": 0.26,
+        "recall": 0.9285714285714286,
+        "tp": 13,
+        "fp": 37,
+        "fn": 1
+      },
+      "FeeDefinitions": {
+        "precision": 0.3333333333333333,
+        "recall": 1,
+        "tp": 1,
+        "fp": 2,
+        "fn": 0
+      },
+      "Prices": {
+        "precision": 0.5,
+        "recall": 1,
+        "tp": 14,
+        "fp": 14,
+        "fn": 0
+      },
+      "PriceGroups": {
+        "precision": 0.3170731707317073,
+        "recall": 0.9285714285714286,
+        "tp": 13,
+        "fp": 28,
+        "fn": 1
+      },
+      "RightToSellAndFees": {
+        "precision": 0.47619047619047616,
+        "recall": 0.9090909090909091,
+        "tp": 10,
+        "fp": 11,
+        "fn": 1
+      }
+    }
+  }
+]

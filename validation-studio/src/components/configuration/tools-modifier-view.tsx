@@ -7,18 +7,40 @@ import { cn } from "@/lib/utils"
 import { PromptsEditor } from "./tools/prompts-editor"
 import { OrganisationsEditor } from "./tools/organisations-editor"
 import { DataDescriptionEditor } from "./tools/data-description-editor"
+import { GeneralDescriptionEditor } from "./tools/general-description-editor"
 import { ToolsEditor } from "./tools/tools-editor"
 
-type ToolView = "prompts" | "organisations" | "data" | "tools"
+type ToolView = "prompts" | "organisations" | "data" | "tools" | "general-description"
 
 export function ToolsModifierView() {
-    const [activeView, setActiveView] = useState<ToolView>("prompts")
+    const [activeView, setActiveView] = useState<ToolView>("organisations")
 
     return (
         <div className="flex flex-col md:flex-row gap-8 h-full min-h-[500px]">
             {/* Sidebar Navigation */}
             <aside className="w-full md:w-[240px] flex-shrink-0">
                 <nav className="flex flex-col space-y-2">
+                    <NavButton
+                        active={activeView === "organisations"}
+                        onClick={() => setActiveView("organisations")}
+                        icon={<Building2 className="h-4 w-4 mr-2" />}
+                    >
+                        Organisations
+                    </NavButton>
+                    <NavButton
+                        active={activeView === "general-description"}
+                        onClick={() => setActiveView("general-description")}
+                        icon={<FileText className="h-4 w-4 mr-2" />}
+                    >
+                        General Description
+                    </NavButton>
+                    <NavButton
+                        active={activeView === "data"}
+                        onClick={() => setActiveView("data")}
+                        icon={<FileText className="h-4 w-4 mr-2" />}
+                    >
+                        Data Description
+                    </NavButton>
                     <NavButton
                         active={activeView === "prompts"}
                         onClick={() => setActiveView("prompts")}
@@ -33,29 +55,16 @@ export function ToolsModifierView() {
                     >
                         Tools
                     </NavButton>
-                    <NavButton
-                        active={activeView === "organisations"}
-                        onClick={() => setActiveView("organisations")}
-                        icon={<Building2 className="h-4 w-4 mr-2" />}
-                    >
-                        Organisations
-                    </NavButton>
-                    <NavButton
-                        active={activeView === "data"}
-                        onClick={() => setActiveView("data")}
-                        icon={<FileText className="h-4 w-4 mr-2" />}
-                    >
-                        Data Description
-                    </NavButton>
                 </nav>
             </aside>
 
             {/* Content Area */}
             <div className="flex-1">
+                {activeView === "organisations" && <OrganisationsEditor />}
+                {activeView === "general-description" && <GeneralDescriptionEditor />}
+                {activeView === "data" && <DataDescriptionEditor />}
                 {activeView === "prompts" && <PromptsEditor />}
                 {activeView === "tools" && <ToolsEditor />}
-                {activeView === "organisations" && <OrganisationsEditor />}
-                {activeView === "data" && <DataDescriptionEditor />}
             </div>
         </div>
     )

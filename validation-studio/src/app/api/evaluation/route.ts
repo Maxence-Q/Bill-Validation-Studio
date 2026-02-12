@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { eventId, eventName, status, issues, prompts } = body;
+        const { eventId, eventName, status, issues, prompts, perturbations } = body;
 
         // Note: looser validation for initial creation if needed, but keeping consistent
         if (!eventId || !status) {
@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
             status,
             issuesCount: issues ? issues.length : 0,
             issues: issues || [],
-            prompts: prompts || {}
+            prompts: prompts || {},
+            perturbations: perturbations || {},
+            metrics: body.metrics || { precision: 0, recall: 0, tp: 0, fp: 0, fn: 0 },
+            moduleMetrics: body.moduleMetrics || {}
         };
 
         await EvaluationStorage.saveEvaluation(record);

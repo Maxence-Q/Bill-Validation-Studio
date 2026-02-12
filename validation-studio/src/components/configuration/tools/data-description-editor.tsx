@@ -55,7 +55,7 @@ export function DataDescriptionEditor() {
                 <div>
                     <h3 className="text-lg font-medium">Data Description</h3>
                     <p className="text-sm text-muted-foreground">
-                        Define the meaning of data attributes for the Validator (YAML).
+                        Define the meaning of data attributes for the Validator (Markdown).
                     </p>
                 </div>
                 <Button onClick={handleSave} disabled={isSaving || isLoading}>
@@ -72,7 +72,7 @@ export function DataDescriptionEditor() {
                 ) : null}
                 <Editor
                     height="100%"
-                    defaultLanguage="yaml"
+                    defaultLanguage="markdown"
                     theme="vs-dark"
                     value={content}
                     onChange={(value) => setContent(value || "")}

@@ -14,6 +14,8 @@ import { HomeIssuesDisplay } from "@/components/validation/home-issues-display"
 import { cn } from "@/lib/utils"
 import { useValidationRunner } from "@/hooks/useValidationRunner"
 
+import { SearchEvents } from "@/components/search-events"
+
 export default function Home() {
   const [hasConfigs, setHasConfigs] = useState<boolean | null>(null)
   const [eventData, setEventData] = useState<any | null>(null)
@@ -58,11 +60,14 @@ export default function Home() {
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
           Validation Studio
         </h1>
-        <p className="text-xl text-muted-foreground">
-          {hasConfigs
-            ? "Ready to validate your events with your LLM configurations."
-            : "Welcome to Bill Validation Studio. Let's get you set up."}
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <p className="text-xl text-muted-foreground">
+            {hasConfigs
+              ? "Ready to validate your events with your LLM configurations."
+              : "Welcome to Bill Validation Studio. Let's get you set up."}
+          </p>
+          {hasConfigs && <SearchEvents onSelect={setEventData} />}
+        </div>
       </div>
 
       {!hasConfigs ? (

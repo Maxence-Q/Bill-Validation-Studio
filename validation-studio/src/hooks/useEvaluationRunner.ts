@@ -26,6 +26,7 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
     const [evaluationIssues, setEvaluationIssues] = useState<EvaluationIssue[]>([])
     const [evaluationMetrics, setEvaluationMetrics] = useState<EvaluationMetrics | null>(null)
     const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false)
+    const [lastSavedId, setLastSavedId] = useState<string | null>(null)
 
     // Engine State
     const [perturbationEngine, setPerturbationEngine] = useState<PerturbationEngine | null>(null)
@@ -51,6 +52,7 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
         setPerturbationEngine(null)
         setRetrievedPrompts(null)
         setPerturbationConfig(null)
+        setLastSavedId(null)
     }, [])
 
     // --- Initialization ---
@@ -195,20 +197,24 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
 
         const perturbedPrompts: Record<string, string[]> = {};
         const allPerturbedPaths: Record<string, string[][]> = {};
+        const allPerturbationDetails: Record<string, { path: string; original: string; perturbed: string }[][]> = {};
 
         Object.keys(retrievedPrompts).forEach(moduleKey => {
             const modulePrompts = retrievedPrompts[moduleKey];
             if (Array.isArray(modulePrompts)) {
                 perturbedPrompts[moduleKey] = [];
                 allPerturbedPaths[moduleKey] = [];
+                allPerturbationDetails[moduleKey] = [];
                 modulePrompts.forEach((prompt: string) => {
                     if (typeof prompt === 'string') {
                         const result = perturbationEngine.injectPerturbationsWithTracking(prompt, perturbationConfig);
                         perturbedPrompts[moduleKey].push(result.prompt);
                         allPerturbedPaths[moduleKey].push(result.perturbedPaths);
+                        allPerturbationDetails[moduleKey].push(result.perturbationDetails);
                     } else {
                         perturbedPrompts[moduleKey].push(prompt);
                         allPerturbedPaths[moduleKey].push([]);
+                        allPerturbationDetails[moduleKey].push([]);
                     }
                 });
             }
@@ -344,15 +350,29 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
 
         console.log(`LLM complete. ${allIssues.length} issues found.`);
 
-        // --- Step 3: Compute Precision / Recall ---
+        // --- Step 3: Compute Precision / Recall with Module Breakdown ---
         const allPerturbedPathsFlat = allPromptEntries.flatMap(e =>
             e.perturbedPaths.map(p => ({ module: e.module, index: e.index, path: p }))
         );
         const totalPerturbations = allPerturbedPathsFlat.length;
 
+        // Initialize Module Stats
+        const moduleStats: Record<string, { tp: number, fp: number, total: number }> = {};
+        // Ensure all modules are initialized
+        allPromptEntries.forEach(e => {
+            if (!moduleStats[e.module]) {
+                moduleStats[e.module] = { tp: 0, fp: 0, total: 0 };
+            }
+        });
+
+        // Count totals per module
+        allPerturbedPathsFlat.forEach(p => {
+            if (moduleStats[p.module]) moduleStats[p.module].total++;
+        });
+
         const matchedPerturbations = new Set<number>();
-        let tp = 0;
-        let fp = 0;
+        let globalTp = 0;
+        let globalFp = 0;
 
         for (const issue of allIssues) {
             if (issue.path === "API_LIMIT") continue;
@@ -365,24 +385,72 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
             });
 
             if (matchIdx !== -1) {
-                tp++;
+                globalTp++;
                 matchedPerturbations.add(matchIdx);
+                if (moduleStats[issue.module]) moduleStats[issue.module].tp++;
+                issue.classification = 'TP';
             } else {
-                fp++;
+                globalFp++;
+                if (issue.module && moduleStats[issue.module]) moduleStats[issue.module].fp++;
+                issue.classification = 'FP';
             }
         }
 
-        const fn = totalPerturbations - tp;
-        const precision = (tp + fp) > 0 ? tp / (tp + fp) : 1;
-        const recall = totalPerturbations > 0 ? tp / totalPerturbations : 1;
+        const globalFn = totalPerturbations - globalTp;
+        const globalPrecision = (globalTp + globalFp) > 0 ? globalTp / (globalTp + globalFp) : 1;
+        const globalRecall = totalPerturbations > 0 ? globalTp / totalPerturbations : 1;
 
-        console.log(`Metrics: TP=${tp}, FP=${fp} (hallucinations), FN=${fn}, Precision=${(precision * 100).toFixed(1)}%, Recall=${(recall * 100).toFixed(1)}%`);
+        // Compute per-module metrics
+        const moduleMetrics: Record<string, any> = {};
+        Object.keys(moduleStats).forEach(m => {
+            const stats = moduleStats[m];
+            const fn = stats.total - stats.tp;
+            const precision = (stats.tp + stats.fp) > 0 ? stats.tp / (stats.tp + stats.fp) : 1;
+            const recall = stats.total > 0 ? stats.tp / stats.total : 1;
+            moduleMetrics[m] = {
+                precision,
+                recall,
+                tp: stats.tp,
+                fp: stats.fp,
+                fn
+            };
+        });
+
+        console.log(`Global Metrics: TP=${globalTp}, FP=${globalFp}, FN=${globalFn}, Precision=${(globalPrecision * 100).toFixed(1)}%, Recall=${(globalRecall * 100).toFixed(1)}%`);
 
         setEvaluationIssues(allIssues);
-        setEvaluationMetrics({ precision, recall, tp, fp, fn });
+        setEvaluationMetrics({ precision: globalPrecision, recall: globalRecall, tp: globalTp, fp: globalFp, fn: globalFn });
         updateStepStatus("llm_call", "success");
         setCurrentPhase('complete');
-    }, [perturbationEngine, retrievedPrompts, perturbationConfig, updateStepStatus])
+
+        // --- Step 4: Save evaluation to history ---
+        const sourceRecord = observabilityHistory.find(r => r.id === selectedRunId);
+        try {
+            const saveRes = await fetch("/api/evaluation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    eventId: sourceRecord?.eventId || "unknown",
+                    eventName: sourceRecord?.eventName || "Unknown Event",
+                    status: "success",
+                    issues: allIssues,
+                    prompts: perturbedPrompts,
+                    perturbations: allPerturbationDetails,
+                    metrics: { precision: globalPrecision, recall: globalRecall, tp: globalTp, fp: globalFp, fn: globalFn },
+                    moduleMetrics: moduleMetrics
+                }),
+            });
+            if (saveRes.ok) {
+                const saveData = await saveRes.json();
+                setLastSavedId(saveData.id);
+                console.log("Evaluation saved to history:", saveData.id);
+            } else {
+                console.error("Failed to save evaluation to history");
+            }
+        } catch (err) {
+            console.error("Error saving evaluation:", err);
+        }
+    }, [perturbationEngine, retrievedPrompts, perturbationConfig, updateStepStatus, observabilityHistory, selectedRunId])
 
     // --- Loading Text ---
 
@@ -407,6 +475,7 @@ export function useEvaluationRunner(selectedRunId: string | null, observabilityH
         evaluationMetrics,
         isConfigDialogOpen,
         setIsConfigDialogOpen,
+        lastSavedId,
 
         // Actions
         loadConfigs,

@@ -6,7 +6,7 @@ import { Loader2, Save } from "lucide-react"
 import Editor from "@monaco-editor/react"
 import { toast } from "sonner"
 
-export function OrganisationsEditor() {
+export function GeneralDescriptionEditor() {
     const [content, setContent] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
@@ -14,13 +14,13 @@ export function OrganisationsEditor() {
     const fetchContent = useCallback(async () => {
         setIsLoading(true)
         try {
-            const res = await fetch("/api/tools/organisations")
-            if (!res.ok) throw new Error("Failed to fetch organisations")
+            const res = await fetch("/api/tools/general-description")
+            if (!res.ok) throw new Error("Failed to fetch general description")
             const data = await res.json()
             setContent(data.content || "")
         } catch (error) {
             console.error(error)
-            toast.error("Failed to load organisations.")
+            toast.error("Failed to load general description.")
         } finally {
             setIsLoading(false)
         }
@@ -33,17 +33,17 @@ export function OrganisationsEditor() {
     const handleSave = async () => {
         setIsSaving(true)
         try {
-            const res = await fetch("/api/tools/organisations", {
+            const res = await fetch("/api/tools/general-description", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content }),
             })
-            if (!res.ok) throw new Error("Failed to save organisations")
+            if (!res.ok) throw new Error("Failed to save general description")
 
-            toast.success("Organisations saved successfully.")
+            toast.success("General description saved successfully.")
         } catch (error) {
             console.error(error)
-            toast.error("Failed to save organisations.")
+            toast.error("Failed to save general description.")
         } finally {
             setIsSaving(false)
         }
@@ -53,9 +53,9 @@ export function OrganisationsEditor() {
         <div className="space-y-4 h-full flex flex-col">
             <div className="flex justify-between items-center">
                 <div>
-                    <h3 className="text-lg font-medium">Organisations</h3>
+                    <h3 className="text-lg font-medium">General Description</h3>
                     <p className="text-sm text-muted-foreground">
-                        Manage organisation-specific specifications (Markdown).
+                        Write the general/high-level description of the ticket office and the modules.
                     </p>
                 </div>
                 <Button onClick={handleSave} disabled={isSaving || isLoading}>
