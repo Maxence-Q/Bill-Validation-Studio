@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { Plus } from "lucide-react"
+import { parsePromptFile } from "@/lib/validation/prompt-builder"
 import { EvaluationHistoryTable } from "@/components/evaluation/evaluation-history-table"
 import { EvaluationDetailsDialog } from "@/components/evaluation/evaluation-details-dialog"
 import { CreateEvaluationDialog } from "@/components/evaluation/create-evaluation-dialog"
@@ -13,6 +14,7 @@ export default function EvaluationPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedRecord, setSelectedRecord] = useState<ValidationRecord | null>(null)
+    const [userPromptTemplate, setUserPromptTemplate] = useState<string>("")
 
     useEffect(() => {
         fetchData()
@@ -32,6 +34,16 @@ export default function EvaluationPage() {
             if (obsRes.ok) {
                 const data = await obsRes.json()
                 setObservabilityHistory(data)
+            }
+
+            // Fetch Prompts
+            const promptsRes = await fetch("/api/tools/prompts?lang=en")
+            if (promptsRes.ok) {
+                const data = await promptsRes.json()
+                if (data.content) {
+                    const parsed = parsePromptFile(data.content)
+                    setUserPromptTemplate(parsed.userPromptTemplate)
+                }
             }
         } catch (error) {
             console.error("Failed to fetch history:", error)
@@ -83,6 +95,7 @@ export default function EvaluationPage() {
                 record={selectedRecord}
                 isOpen={!!selectedRecord}
                 onClose={() => setSelectedRecord(null)}
+                template={userPromptTemplate}
             />
 
             <CreateEvaluationDialog

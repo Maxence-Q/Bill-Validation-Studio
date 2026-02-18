@@ -1,52 +1,59 @@
-export function formatCsvComparison(targetStr: string, similarStrs: string | string[]): string {
-    const refs = Array.isArray(similarStrs) ? similarStrs : [similarStrs];
+import { DataItem } from "@/types/validation";
 
-    // 1. Parsing Target
-    const targetDict: Record<string, string> = {};
-    const targetLines = targetStr.split("\n");
+export function formatDataItemToCsv(item: DataItem): string {
+    const { target, references, rules } = item;
 
-    for (const line of targetLines) {
-        const trimmed = line.trim();
-        if (trimmed.includes(":")) {
-            const [key, ...rest] = trimmed.split(":");
-            const val = rest.join(":").trim();
-            targetDict[key.trim()] = val;
-        }
-    }
+    // 1. Construct Table Headers
+    const hasRules = !!rules;
+    const headerCols = ["PATH", "TARGET", ...references.map((_, i) => `REF ${i + 1}`)];
+    if (hasRules) headerCols.push("RULE");
+    const header = headerCols.join(" | ");
 
-    // 2. Parsing References
-    const refDicts: Record<string, string>[] = refs.map((refStr) => {
-        const dict: Record<string, string> = {};
-        if (refStr) {
-            const lines = refStr.split("\n");
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.includes(":")) {
-                    const [key, ...rest] = trimmed.split(":");
-                    const val = rest.join(":").trim();
-                    dict[key.trim()] = val;
-                }
-            }
-        }
-        return dict;
-    });
-
-    // 3. Construct Table
-    const header = ["PATH", "TARGET", ...refs.map((_, i) => `REF ${i + 1}`)].join(" | ");
-    const separator = ["---", "---", ...refs.map(() => "---")].join(" | ");
+    const sepCols = ["---", "---", ...references.map(() => "---")];
+    if (hasRules) sepCols.push("---");
+    const separator = sepCols.join(" | ");
 
     const lines = [header, separator];
 
-    for (const [key, targetVal] of Object.entries(targetDict)) {
-        const tClean = targetVal.replace(/\|/g, "/");
+    // 2. Add Data Rows
+    for (const [key, targetVal] of Object.entries(target)) {
+        const tClean = targetVal ? targetVal.toString().replace(/\|/g, "/") : "";
 
-        const refVals = refDicts.map(d => {
+        const refVals = references.map(d => {
             const val = d[key] || "<NO REFERENCE>";
-            return val.replace(/\|/g, "/");
+            return val.toString().replace(/\|/g, "/");
         });
 
-        lines.push(`${key} | ${tClean} | ${refVals.join(" | ")}`);
+        const rowCols = [key, tClean, ...refVals];
+        if (hasRules) {
+            const rule = rules[key] || "";
+            rowCols.push(rule.replace(/\|/g, "/"));
+        }
+
+        lines.push(rowCols.join(" | "));
     }
 
     return lines.join("\n");
+}
+
+/** Legacy support for string-based inputs */
+export function formatCsvComparison(targetStr: string, similarStrs: string | string[]): string {
+    const refs = Array.isArray(similarStrs) ? similarStrs : [similarStrs];
+
+    // Parse strings to records
+    const parse = (s: string) => {
+        const dict: Record<string, string> = {};
+        s.split("\n").forEach(l => {
+            if (l.includes(":")) {
+                const [k, ...v] = l.split(":");
+                dict[k.trim()] = v.join(":").trim();
+            }
+        });
+        return dict;
+    };
+
+    return formatDataItemToCsv({
+        target: parse(targetStr),
+        references: refs.map(r => parse(r))
+    });
 }

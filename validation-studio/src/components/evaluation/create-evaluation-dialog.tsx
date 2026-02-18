@@ -8,6 +8,7 @@ import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { EvaluationModal } from "@/components/evaluation/evaluation-modal"
 import { ConfigForm } from "@/components/configuration/config-form"
 import { useEvaluationRunner } from "@/hooks/useEvaluationRunner"
+import { getEventConfig } from "@/app/actions"
 
 interface CreateEvaluationDialogProps {
     isOpen: boolean
@@ -106,7 +107,7 @@ export function CreateEvaluationDialog({
                                             </div>
                                             <div className="mt-2 text-xs flex gap-2">
                                                 <span className={record.status === 'success' ? 'text-green-600' : 'text-red-600'}>
-                                                    {record.status.toUpperCase()}
+                                                    {(record.status || 'unknown').toUpperCase()}
                                                 </span>
                                                 <span>{record.issuesCount} Issues</span>
                                             </div>
@@ -170,7 +171,43 @@ export function CreateEvaluationDialog({
                             onConfigSelect={runner.handleConfigSelect}
                             onNewConfig={() => runner.setIsConfigDialogOpen(true)}
                             onStrategyConfirm={runner.handleStrategyConfirm}
-                            onRunEvaluation={runner.runEvaluation}
+                            onRunEvaluation={async () => {
+                                console.log("Run Evaluation clicked", { uploadedFile, selectedRunId, config: runner.selectedConfig });
+                                let targetEvent = null;
+                                if (uploadedFile) {
+                                    try {
+                                        const text = await uploadedFile.text();
+                                        targetEvent = JSON.parse(text);
+                                    } catch (e) {
+                                        console.error("Failed to parse uploaded file", e);
+                                        return;
+                                    }
+                                } else if (selectedRunId) {
+                                    const record = observabilityHistory.find(r => r.id === selectedRunId);
+                                    if (record && record.eventId) {
+                                        try {
+                                            console.log("Fetching event config for ID:", record.eventId);
+                                            // Ensure we pass a number to getEventConfig
+                                            const eventIdNum = Number(record.eventId);
+                                            if (!isNaN(eventIdNum)) {
+                                                targetEvent = await getEventConfig(eventIdNum);
+                                            } else {
+                                                console.error("Invalid event ID format:", record.eventId);
+                                            }
+                                        } catch (e) {
+                                            console.error("Failed to fetch event for run", e);
+                                        }
+                                    } else {
+                                        console.warn("Record not found or missing eventId");
+                                    }
+                                }
+
+                                if (targetEvent && runner.selectedConfig) {
+                                    runner.runEvaluation(targetEvent, runner.selectedConfig, null);
+                                } else {
+                                    console.error("Missing target event or config", { hasEvent: !!targetEvent, hasConfig: !!runner.selectedConfig });
+                                }
+                            }}
                             onFinish={handleFinish}
                         />
                     )}

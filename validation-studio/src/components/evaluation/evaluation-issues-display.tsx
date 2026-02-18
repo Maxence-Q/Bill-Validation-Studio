@@ -21,6 +21,7 @@ interface EvaluationMetrics {
     tp: number
     fp: number
     fn: number
+    moduleMetrics?: Record<string, any>
 }
 
 interface EvaluationIssuesDisplayProps {
@@ -113,19 +114,30 @@ export function EvaluationIssuesDisplay({ issues, metrics }: EvaluationIssuesDis
                 {/* Precision / Recall pills */}
                 {metrics && (
                     <div className="flex gap-3 mb-3">
-                        <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full border border-emerald-200">
-                            Precision: {(metrics.precision * 100).toFixed(1)}%
-                            <span className="text-emerald-500 ml-0.5">({metrics.tp} TP / {metrics.tp + metrics.fp} detected)</span>
-                        </span>
-                        <span className="flex items-center gap-1 text-xs font-medium text-violet-700 bg-violet-100 px-2 py-1 rounded-full border border-violet-200">
-                            Recall: {(metrics.recall * 100).toFixed(1)}%
-                            <span className="text-violet-500 ml-0.5">({metrics.tp} TP / {metrics.tp + metrics.fn} perturbations)</span>
-                        </span>
-                        {metrics.fp > 0 && (
-                            <span className="flex items-center gap-1 text-xs font-medium text-orange-700 bg-orange-100 px-2 py-1 rounded-full border border-orange-200">
-                                {metrics.fp} hallucinations
-                            </span>
-                        )}
+                        {(() => {
+                            const isModuleSelected = selectedModule !== "All";
+                            const displayMetrics = isModuleSelected && metrics.moduleMetrics?.[selectedModule]
+                                ? metrics.moduleMetrics[selectedModule]
+                                : metrics;
+
+                            return (
+                                <>
+                                    <span className="flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full border border-emerald-200">
+                                        {isModuleSelected ? `${selectedModule} Precision` : 'Precision'}: {(displayMetrics.precision * 100).toFixed(1)}%
+                                        <span className="text-emerald-500 ml-0.5">({displayMetrics.tp} TP / {displayMetrics.tp + displayMetrics.fp} detected)</span>
+                                    </span>
+                                    <span className="flex items-center gap-1 text-xs font-medium text-violet-700 bg-violet-100 px-2 py-1 rounded-full border border-violet-200">
+                                        {isModuleSelected ? `${selectedModule} Recall` : 'Recall'}: {(displayMetrics.recall * 100).toFixed(1)}%
+                                        <span className="text-violet-500 ml-0.5">({displayMetrics.tp} TP / {displayMetrics.tp + displayMetrics.fn} perturbations)</span>
+                                    </span>
+                                    {displayMetrics.fp > 0 && (
+                                        <span className="flex items-center gap-1 text-xs font-medium text-orange-700 bg-orange-100 px-2 py-1 rounded-full border border-orange-200">
+                                            {displayMetrics.fp} hallucinations
+                                        </span>
+                                    )}
+                                </>
+                            );
+                        })()}
                     </div>
                 )}
 

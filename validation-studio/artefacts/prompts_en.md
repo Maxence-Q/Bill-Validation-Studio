@@ -22,6 +22,7 @@ The data below is presented in a side-by-side table format:
 - Column 1: PATH (The attribute name)
 - Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.
 - Column 3: REFERENCE value (ID: {similar_id}, Strategy: {strategy_used}) -> Use this for comparison.
+- Column 4: RULE -> THE EXPECTED VALIDATION LOGIC FOR THIS SPECIFIC FIELD.
 
 If "REFERENCE" contains "<NO REFERENCE>", strictly ignore the comparison for this specific field and validate based on logic/policy only.
 
@@ -32,6 +33,6 @@ DATA TO VALIDATE
 
 --------------------------------------------------
 OUTPUT INSTRUCTIONS
-If you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.
+If you detect anomalies in the TARGET column (compared to REFERENCE, Rules, or Policy), use the `report_step_issues` tool.
 If everything is correct, call `report_step_issues` with an empty list.
 """.strip()

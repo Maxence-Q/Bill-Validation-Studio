@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { DataItem } from '@/types/validation';
 
 export interface PerturbationConfig {
     moduleSelectionMode: 'all' | 'custom';
@@ -22,6 +23,39 @@ export class PerturbationEngine {
 
     private incrementStat(name: string) {
         this.stats[name] = (this.stats[name] || 0) + 1;
+    }
+
+    /**
+     * Perturbs a DataItem by modifying values in the target record.
+     */
+    public perturbDataItem(item: DataItem, config?: PerturbationConfig): { item: DataItem, perturbationTracking: any } {
+        const { target, references } = item;
+        const perturbedTarget = { ...target };
+        const perturbationDetails: any[] = [];
+        const perturbedPaths: string[] = [];
+
+        for (const [path, value] of Object.entries(target)) {
+            if (this._shouldPerturb(path, value, config)) {
+                const perturbedValue = this._perturbValue(value);
+                if (perturbedValue !== value) {
+                    perturbedTarget[path] = perturbedValue;
+                    perturbedPaths.push(path);
+                    perturbationDetails.push({
+                        path,
+                        original: value,
+                        perturbed: perturbedValue
+                    });
+                }
+            }
+        }
+
+        return {
+            item: { ...item, target: perturbedTarget },
+            perturbationTracking: {
+                details: perturbationDetails,
+                perturbedPaths
+            }
+        };
     }
 
     /**
@@ -58,7 +92,7 @@ export class PerturbationEngine {
                 continue;
             }
 
-            // Detect Table Header
+            // Detect Table Header - Handle case where input IS just the data table
             if (line.includes("|") && line.includes("TARGET") && !insideTable) {
                 // Check if it looks like a header
                 const parts = line.split("|").map(s => s.trim());

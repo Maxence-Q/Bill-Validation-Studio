@@ -6,14 +6,9 @@ import { Button } from "@/components/ui/button"
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronRight, Info, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export interface ValidationIssue {
-    path: string
-    severity: "error" | "warning" | "info"
-    message: string
-    suggestion?: string
-    module?: string
-    classification?: 'TP' | 'FP'
-}
+import { ValidationIssue } from "@/types/validation"
+
+export { type ValidationIssue }; // Re-export for compatibility if needed, though direct import is better
 
 interface IssuesDisplayProps {
     issues: ValidationIssue[]
@@ -111,7 +106,7 @@ export function IssuesDisplay({ issues, highlightedPath }: IssuesDisplayProps) {
                                 <div className="mt-0.5">{getSeverityIcon(issue.severity)}</div>
                                 <div className="flex-1">
                                     <div className="flex items-start justify-between gap-2">
-                                        <h4 className="font-semibold text-sm font-mono break-all">{issue.path}</h4>
+                                        <h4 className="font-semibold text-sm font-mono break-all">{issue.path || "Unknown Path"}</h4>
                                         <div className="flex items-center gap-2 shrink-0">
                                             {issue.classification && (
                                                 <div className={cn(
@@ -123,7 +118,12 @@ export function IssuesDisplay({ issues, highlightedPath }: IssuesDisplayProps) {
                                                     {issue.classification}
                                                 </div>
                                             )}
-                                            <span className="text-xs uppercase font-bold opacity-60 px-2 py-0.5 rounded bg-white/50">
+                                            <span className={cn(
+                                                "text-[10px] uppercase font-bold opacity-80 px-2 py-0.5 rounded border border-current",
+                                                issue.severity === "error" ? "text-red-700 bg-red-100 border-red-200" :
+                                                    issue.severity === "warning" ? "text-amber-700 bg-amber-100 border-amber-200" :
+                                                        "text-blue-700 bg-blue-100 border-blue-200"
+                                            )}>
                                                 {issue.severity}
                                             </span>
                                         </div>

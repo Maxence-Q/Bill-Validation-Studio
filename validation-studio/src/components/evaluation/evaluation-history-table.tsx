@@ -73,7 +73,7 @@ export function EvaluationHistoryTable({
                                         )}
                                     </TableCell>
                                     <TableCell>
-                                        {record.issuesCount > 0 ? (
+                                        {(record.issuesCount || 0) > 0 ? (
                                             <span className="text-amber-500 font-medium">{record.issuesCount} Issues</span>
                                         ) : (
                                             <span className="text-green-500">No Issues</span>

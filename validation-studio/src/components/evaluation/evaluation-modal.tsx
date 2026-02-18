@@ -47,7 +47,7 @@ export function EvaluationModal({
                     Analysis Progress
                 </div>
                 <div className="flex-1 overflow-auto p-6">
-                    <ValidationProgress steps={validationSteps.map(s => ({ ...s, subSteps: undefined }))} />
+                    <ValidationProgress steps={validationSteps.filter(s => !s.id.startsWith('module_'))} />
                 </div>
             </div>
 
@@ -78,10 +78,10 @@ export function EvaluationModal({
                         <div className="h-full flex flex-col animate-in fade-in duration-300">
                             <EvaluationIssuesDisplay issues={evaluationIssues} metrics={evaluationMetrics} />
                         </div>
-                    ) : currentPhase === 'running' && validationSteps.find(s => s.id === 'llm_call')?.status === 'loading' ? (
+                    ) : currentPhase === 'running' ? (
                         <div className="h-full flex flex-col animate-in fade-in duration-300 p-2">
                             <h3 className="text-sm font-semibold text-muted-foreground mb-4">LLM Processing Progress</h3>
-                            <ValidationProgress steps={validationSteps.find(s => s.id === 'llm_call')?.subSteps || []} />
+                            <ValidationProgress steps={validationSteps.filter(s => s.id.startsWith('module_'))} />
                         </div>
                     ) : currentPhase === 'ready' ? (
                         <ReadyToLaunch />

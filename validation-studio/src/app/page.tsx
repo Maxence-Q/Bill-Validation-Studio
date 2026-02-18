@@ -109,11 +109,13 @@ export default function Home() {
                   <Button variant="outline" onClick={handleReset}>
                     <RefreshCw className="mr-2 h-4 w-4" /> Reset
                   </Button>
-                  <Button size="lg" className="px-8" onClick={() => startValidation(eventData)} disabled={isValidationStarted}>
-                    {isValidationStarted ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                    Start Validation
-                  </Button>
-                  {validationSteps.some(s => s.id === "llm" && s.status === "success") && (
+                  {(isValidationStarted || validationSteps.length === 0) && (
+                    <Button size="lg" className="px-8" onClick={() => startValidation(eventData)} disabled={isValidationStarted}>
+                      {isValidationStarted ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                      Start Validation
+                    </Button>
+                  )}
+                  {!isValidationStarted && validationSteps.length > 0 && (
                     <Button asChild size="lg" className="px-8 bg-purple-600 hover:bg-purple-700">
                       <Link href="/observability">
                         Go to Observability <ArrowRight className="ml-2 h-4 w-4" />
@@ -147,7 +149,7 @@ export default function Home() {
                   ) : (
                     <div className="w-full">
                       <ValidationProgress steps={validationSteps} />
-                      {validationSteps.some(s => s.id === "llm" && s.status === "success") && (
+                      {!isValidationStarted && validationSteps.length > 0 && (
                         <div className="flex justify-center mt-6 border-t pt-4">
                           <HomeIssuesDisplay issues={validationIssues} />
                         </div>

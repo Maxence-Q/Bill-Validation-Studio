@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Select,
     SelectContent,
@@ -31,6 +32,8 @@ import {
 } from "@/types/configuration"
 import { useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
+
+const SLICING_VALUES = [1, 10, 25, 33, 50, 100]
 
 // Schema for the form (excludes id and createdAt which are handled on submit)
 const formSchema = configurationSchema.omit({ id: true, createdAt: true })
@@ -52,6 +55,7 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 temperature: initialData.temperature,
                 language: initialData.language,
                 references: initialData.references,
+                slicing: initialData.slicing || defaultConfiguration.slicing,
             }
             : {
                 name: "",
@@ -68,6 +72,7 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 temperature: initialData.temperature,
                 language: initialData.language,
                 references: initialData.references,
+                slicing: initialData.slicing || defaultConfiguration.slicing,
             })
         } else {
             form.reset({
@@ -86,139 +91,238 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
         onSubmit(config)
     }
 
+    const slicingMode = form.watch("slicing.mode")
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Configuration Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="My Custom Config" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                A unique name to identify this configuration.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <Tabs defaultValue="main" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="main">Main Configuration</TabsTrigger>
+                        <TabsTrigger value="advanced">Advanced Settings</TabsTrigger>
+                    </TabsList>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <FormField
-                        control={form.control}
-                        name="model"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>LLM Model</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    value={field.value}
-                                >
+                    <TabsContent value="main" className="space-y-6 py-4">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Configuration Name</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a model" />
-                                        </SelectTrigger>
+                                        <Input placeholder="My Custom Config" {...field} />
                                     </FormControl>
-                                    <SelectContent>
-                                        {LLM_MODELS.map((model) => (
-                                            <SelectItem key={model.id} value={model.id}>
-                                                {model.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormDescription>
-                                    The model used for event validation.
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                    <FormDescription>
+                                        A unique name to identify this configuration.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                    <FormField
-                        control={form.control}
-                        name="language"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Prompt Language</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    value={field.value}
-                                >
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <FormField
+                                control={form.control}
+                                name="model"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>LLM Model</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a model" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {LLM_MODELS.map((model) => (
+                                                    <SelectItem key={model.id} value={model.id}>
+                                                        {model.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription>
+                                            The model used for event validation.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="language"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Prompt Language</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select language" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {PROMPT_LANGUAGES.map((lang) => (
+                                                    <SelectItem key={lang.id} value={lang.id}>
+                                                        {lang.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription>
+                                            Language for the validation prompts.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="references"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Number of References: {field.value}</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select language" />
-                                        </SelectTrigger>
+                                        <Slider
+                                            min={1}
+                                            max={4}
+                                            step={1}
+                                            value={[field.value]}
+                                            onValueChange={(vals) => field.onChange(vals[0])}
+                                        />
                                     </FormControl>
-                                    <SelectContent>
-                                        {PROMPT_LANGUAGES.map((lang) => (
-                                            <SelectItem key={lang.id} value={lang.id}>
-                                                {lang.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormDescription>
-                                    Language for the validation prompts.
-                                </FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                                    <FormDescription>
+                                        Number of reference examples to include in the prompt.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </TabsContent>
 
-                <FormField
-                    control={form.control}
-                    name="temperature"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Temperature: {field.value.toFixed(2)}</FormLabel>
-                            <FormControl>
-                                <Slider
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    value={[field.value]}
-                                    onValueChange={(vals) => field.onChange(vals[0])}
+                    <TabsContent value="advanced" className="space-y-6 py-4">
+                        <FormField
+                            control={form.control}
+                            name="temperature"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Temperature: {field.value.toFixed(2)}</FormLabel>
+                                    <FormControl>
+                                        <Slider
+                                            min={0}
+                                            max={1}
+                                            step={0.01}
+                                            value={[field.value]}
+                                            onValueChange={(vals) => field.onChange(vals[0])}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Controls randomness (0 = deterministic, 1 = creative).
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="space-y-4 border rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h4 className="text-sm font-medium">Slicing Configuration</h4>
+                                    <p className="text-xs text-muted-foreground">Control percentage of prompts used</p>
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="slicing.mode"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger className="w-[140px]">
+                                                        <SelectValue placeholder="Mode" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="global">Global</SelectItem>
+                                                    <SelectItem value="custom">Custom</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormItem>
+                                    )}
                                 />
-                            </FormControl>
-                            <FormDescription>
-                                Controls randomness (0 = deterministic, 1 = creative).
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                            </div>
 
-                <FormField
-                    control={form.control}
-                    name="references"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Number of References: {field.value}</FormLabel>
-                            <FormControl>
-                                <Slider
-                                    min={1}
-                                    max={4}
-                                    step={1}
-                                    value={[field.value]}
-                                    onValueChange={(vals) => field.onChange(vals[0])}
+                            {slicingMode === 'global' ? (
+                                <FormField
+                                    control={form.control}
+                                    name="slicing.globalValue"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <div className="flex justify-between mb-2">
+                                                <FormLabel>Global Slicing</FormLabel>
+                                                <span className="text-sm font-mono text-muted-foreground">{field.value}%</span>
+                                            </div>
+                                            <FormControl>
+                                                <Slider
+                                                    min={0}
+                                                    max={SLICING_VALUES.length - 1}
+                                                    step={1}
+                                                    value={[SLICING_VALUES.indexOf(field.value) !== -1 ? SLICING_VALUES.indexOf(field.value) : SLICING_VALUES.length - 1]}
+                                                    onValueChange={(vals) => field.onChange(SLICING_VALUES[vals[0]])}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
-                            </FormControl>
-                            <FormDescription>
-                                Number of reference examples to include in the prompt.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                            ) : (
+                                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                                    {Object.keys(defaultConfiguration.slicing.moduleValues).map((module) => (
+                                        <FormField
+                                            key={module}
+                                            control={form.control}
+                                            name={`slicing.moduleValues.${module}`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <div className="flex justify-between mb-1">
+                                                        <FormLabel className="text-xs">{module}</FormLabel>
+                                                        <span className="text-xs font-mono text-muted-foreground">{field.value}%</span>
+                                                    </div>
+                                                    <FormControl>
+                                                        <Slider
+                                                            min={0}
+                                                            max={SLICING_VALUES.length - 1}
+                                                            step={1}
+                                                            value={[SLICING_VALUES.indexOf(field.value) !== -1 ? SLICING_VALUES.indexOf(field.value) : SLICING_VALUES.length - 1]}
+                                                            onValueChange={(vals) => field.onChange(SLICING_VALUES[vals[0]])}
+                                                            className="h-4"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </TabsContent>
+                </Tabs>
 
-                <div className="flex justify-end space-x-2 pt-4">
+                <div className="flex justify-end space-x-2 pt-4 border-t">
                     <Button variant="outline" type="button" onClick={onCancel}>
                         Cancel
                     </Button>

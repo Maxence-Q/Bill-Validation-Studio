@@ -4,13 +4,18 @@ import path from 'path';
 export interface ValidationRecord {
     id: string;
     timestamp: string;
-    eventId: string;
+    eventId: string | number; // Support both
     eventName: string;
-    status: "success" | "failed";
-    issuesCount: number;
+    status?: "success" | "failed"; // Optional as we don't always set it explicitly in orchestrator yet
+    issuesCount?: number; // Optional
     issues: any[];
-    prompts: any;
-    perturbations?: Record<string, { path: string; original: string; perturbed: string }[][]>;
+    prompts?: any;
+    // New fields
+    targetEventId?: number;
+    referenceIds?: number[];
+    config?: any;
+    perturbationConfig?: any;
+    perturbationTracking?: any;
     metrics?: {
         precision: number;
         recall: number;

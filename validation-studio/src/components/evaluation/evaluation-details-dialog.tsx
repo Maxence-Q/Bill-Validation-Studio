@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ValidationRecord } from "@/lib/configuration/storage-core"
@@ -13,28 +13,95 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { IssuesDisplay } from "@/components/validation/issues-display"
 import { cn } from "@/lib/utils"
+import { renderPrompt } from "@/lib/validation/prompt-builder"
 
 interface EvaluationDetailsDialogProps {
     record: ValidationRecord | null
     isOpen: boolean
     onClose: () => void
+    template: string
 }
 
 export function EvaluationDetailsDialog({
     record,
     isOpen,
-    onClose
+    onClose,
+    template
 }: EvaluationDetailsDialogProps) {
     const [activeModule, setActiveModule] = useState<string>("Event")
     const [promptIndex, setPromptIndex] = useState(0)
+    const [reconstructedPrompts, setReconstructedPrompts] = useState<Record<string, any[]> | null>(null)
+    const [isReconstructing, setIsReconstructing] = useState(false)
+
+    // Logically group prompts by their parentIndex to handle sub-prompts (slicing)
+    const groupedPrompts = useMemo(() => {
+        if (!record) return [];
+        let modulePrompts = record.prompts?.[activeModule];
+        if (!modulePrompts && reconstructedPrompts) {
+            modulePrompts = reconstructedPrompts[activeModule];
+        }
+
+        if (!modulePrompts) return [];
+
+        if (!Array.isArray(modulePrompts)) {
+            return [[modulePrompts]];
+        }
+
+        // Check if it's an array of objects with slicing metadata (new format)
+        if (modulePrompts.length > 0 && typeof modulePrompts[0] === 'object' && 'slicingMetadata' in modulePrompts[0]) {
+            const groups: any[][] = [];
+            modulePrompts.forEach((p: any) => {
+                const pIdx = p.slicingMetadata.parentIndex;
+                if (!groups[pIdx]) groups[pIdx] = [];
+                groups[pIdx].push(p);
+            });
+            // Return only valid groups
+            return groups.filter(g => g && g.length > 0);
+        }
+
+        // Legacy format: string array or simple objects, treat each as one group
+        return modulePrompts.map(p => [p]);
+    }, [record, activeModule, reconstructedPrompts]);
 
     // Reset state when record changes
     useEffect(() => {
         if (record) {
             setActiveModule("Event")
             setPromptIndex(0)
+            setReconstructedPrompts(null)
+
+            // Reconstruct if prompts missing but can be reconstructed
+            if ((!record.prompts || Object.keys(record.prompts).length === 0) && record.targetEventId && record.referenceIds) {
+                reconstructPromptsForRecord(record);
+            }
         }
     }, [record])
+
+    const reconstructPromptsForRecord = async (rec: ValidationRecord) => {
+        setIsReconstructing(true);
+        try {
+            const res = await fetch('/api/validation/reconstruct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetEventId: rec.targetEventId,
+                    referenceIds: rec.referenceIds,
+                    config: rec.config,
+                    perturbationConfig: rec.perturbationConfig
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setReconstructedPrompts(data.prompts);
+            } else {
+                console.error("Failed to reconstruct prompts");
+            }
+        } catch (e) {
+            console.error("Error reconstructing prompts", e);
+        } finally {
+            setIsReconstructing(false);
+        }
+    }
 
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
     const [highlightedIssuePath, setHighlightedIssuePath] = useState<string | null>(null)
@@ -68,24 +135,72 @@ export function EvaluationDetailsDialog({
     }
 
     const getCurrentPrompt = () => {
-        if (!record.prompts) return "No Prompt Data"
-        const modulePrompts = record.prompts[activeModule]
-        if (!modulePrompts) return "No prompt for this module"
-        return Array.isArray(modulePrompts) ? modulePrompts[promptIndex] : JSON.stringify(modulePrompts, null, 2)
+        if (isReconstructing) return "Reconstructing prompts...";
+
+        const group = groupedPrompts[promptIndex];
+        if (!group || group.length === 0) return "No prompt for this module";
+
+        // Join all sub-prompts in this group
+        return group.map((rawPrompt: any, idx: number) => {
+            const promptContent = typeof rawPrompt === 'string'
+                ? rawPrompt
+                : (rawPrompt.content || rawPrompt.rendered || JSON.stringify(rawPrompt, null, 2));
+
+            // Legacy check: if it already contains instructions, return as is
+            if (typeof promptContent === 'string' && promptContent.includes("GLOBAL INSTRUCTIONS:")) {
+                return promptContent;
+            }
+
+            // Render full prompt from data
+            return renderPrompt(promptContent, template, {
+                elementName: `${activeModule} Evaluation - Item ${promptIndex + 1}${group.length > 1 ? ` (Part ${idx + 1}/${group.length})` : ""}`,
+                targetId: (record.eventId || record.targetEventId || "Unknown").toString(),
+                referenceIds: "Evaluation Record",
+                strategy: "Perturbation Analysis"
+            });
+        }).join("\n\n" + "=".repeat(50) + "\n\n");
     }
 
     const getTotalPrompts = () => {
-        if (!record.prompts) return 0
-        const modulePrompts = record.prompts[activeModule]
-        return Array.isArray(modulePrompts) ? modulePrompts.length : 1
+        return groupedPrompts.length;
     }
 
     const getCurrentPerturbations = () => {
-        if (!record.perturbations) return []
-        const modulePerturbations = record.perturbations[activeModule]
-        if (!modulePerturbations || !Array.isArray(modulePerturbations)) return []
-        return modulePerturbations[promptIndex] || []
+        // ValidationRecord was updated to have perturbationTracking
+        const tracking = record.perturbationTracking || (record as any).perturbations;
+
+        if (!tracking) return []
+        const moduleTrack = tracking[activeModule]
+        if (!moduleTrack) return []
+
+        // Handle structure differences
+        if (Array.isArray(moduleTrack)) {
+            // New format: flattened or indexed differently?
+            // Orchestrator stores `allPerturbationTracking[mod] = [{ index, details: [...] }]`
+            // So we find the item for current promptIndex
+            const wrapper = moduleTrack.find((p: any) => p.index === promptIndex);
+            // If wrapper found, return its details array.
+            // If not found, check if moduleTrack itself is directly an array of perturbations (legacy/simple format)
+            if (wrapper && Array.isArray(wrapper.details)) {
+                return wrapper.details;
+            }
+
+            // Fallback: If no wrapper structure matched, maybe it's just the array itself (or empty)
+            // But let's be careful not to return the wrapper array if it doesn't match the expected shape of perturbation item
+            // A perturbation item usually has { path, original, perturbed }
+            // A wrapper has { index, details }
+            // If the first item has 'details', it's definitely a wrapper list.
+            if (moduleTrack.length > 0 && 'details' in moduleTrack[0]) {
+                return []; // Found wrappers but no match for index
+            }
+
+            return moduleTrack;
+        }
+        return []
     }
+
+    // Helper to check if prompts are array (to decide perturbation indexing)
+    const modulePromptsIsArray = Array.isArray(record.prompts?.[activeModule] || reconstructedPrompts?.[activeModule]);
 
     const findLineForPath = (path: string, promptText: string): number | null => {
         if (!promptText) return null
@@ -115,7 +230,7 @@ export function EvaluationDetailsDialog({
                     <div>
                         <DialogTitle className="text-xl font-bold">Evaluation Details</DialogTitle>
                         <p className="text-muted-foreground text-sm">
-                            {record.eventName} (ID: {record.eventId}) - {formatDate(record.timestamp)}
+                            {record.eventName} (ID: {record.eventId || record.targetEventId || "Unknown"}) - {formatDate(record.timestamp)}
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -154,23 +269,36 @@ export function EvaluationDetailsDialog({
                         </div>
 
                         {/* Active Module Metrics */}
-                        {record.moduleMetrics?.[activeModule] && (
-                            <div className="flex gap-3 text-sm px-3 py-1.5 bg-background border rounded-md shadow-sm shrink-0 items-center">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Precision</span>
-                                    <span className="font-mono font-medium">
-                                        {(record.moduleMetrics[activeModule].precision * 100).toFixed(0)}%
-                                    </span>
+                        {(() => {
+                            const modMetrics = record.moduleMetrics?.[activeModule] || (record.metrics as any)?.moduleMetrics?.[activeModule];
+                            if (!modMetrics) return null;
+
+                            return (
+                                <div className="flex gap-3 text-sm px-3 py-1.5 bg-background border rounded-md shadow-sm shrink-0 items-center animate-in fade-in slide-in-from-right-2 duration-300">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Precision</span>
+                                        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                            {(modMetrics.precision * 100).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="w-px h-3 bg-border"></div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Recall</span>
+                                        <span className="font-mono font-bold text-violet-600 dark:text-violet-400">
+                                            {(modMetrics.recall * 100).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    {(modMetrics.tp !== undefined) && (
+                                        <>
+                                            <div className="w-px h-3 bg-border"></div>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] text-muted-foreground">({modMetrics.tp} TP)</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                                <div className="w-px h-3 bg-border"></div>
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Recall</span>
-                                    <span className="font-mono font-medium">
-                                        {(record.moduleMetrics[activeModule].recall * 100).toFixed(0)}%
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
 
                     {/* Pagination (if needed) */}
@@ -264,7 +392,8 @@ export function EvaluationDetailsDialog({
 
                                     const isDetected = issues.some((issue: any) => {
                                         const issuePath = issue.path || "";
-                                        return p.path === issuePath || issuePath.includes(p.path) || p.path.includes(issuePath);
+                                        // Strict matching to align with MetricsCalculator
+                                        return p.path.trim() === issuePath.trim();
                                     });
 
                                     if (perturbationFilter === 'found') return isDetected;
@@ -292,7 +421,8 @@ export function EvaluationDetailsDialog({
                                             const issues = getFilteredIssues();
                                             const isDetected = issues.some((issue: any) => {
                                                 const issuePath = issue.path || "";
-                                                return p.path === issuePath || issuePath.includes(p.path) || p.path.includes(issuePath);
+                                                // Strict matching to align with MetricsCalculator
+                                                return p.path.trim() === issuePath.trim();
                                             });
 
                                             return (

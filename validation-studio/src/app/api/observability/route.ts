@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationRecord } from "@/lib/configuration/storage-core";
-import { ValidationStorage } from "@/lib/validation/storage";
+import { ResultStorage } from "@/lib/validation/orchestrator-modules/result-storage";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
     try {
-        const history = await ValidationStorage.getHistory();
+        const history = ResultStorage.getHistory('validation');
         return NextResponse.json(history);
     } catch (error) {
         console.error("Failed to fetch history:", error);
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
             prompts: prompts || {}
         };
 
-        await ValidationStorage.saveValidation(record);
+        ResultStorage.saveRecord(record, 'validation');
 
         return NextResponse.json({ success: true, id: record.id });
     } catch (error) {
@@ -51,7 +51,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: "Missing id parameter" }, { status: 400 });
         }
 
-        await ValidationStorage.deleteValidation(id);
+        ResultStorage.deleteRecord(id, 'validation');
 
         return NextResponse.json({ success: true });
     } catch (error) {

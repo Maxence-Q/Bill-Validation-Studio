@@ -19,9 +19,10 @@ VALIDATING {element_name} (ID: {cible_id})
 --------------------------------------------------
 INSTRUCTIONS:
 The data below is presented in a side-by-side table format:
-- Column 1: PATH (The attribute name)
-- Column 2: TARGET value (ID: {cible_id}) -> THIS IS WHAT YOU MUST VALIDATE.
-- Column 3: REFERENCE value (ID: {similar_id}, Strategy: {strategy_used}) -> Use this for comparison.
+- Colonne 1 : PATH (Le nom de l'attribut)
+- Colonne 2 : Valeur TARGET (ID : {cible_id}) -> C'EST CE QUE VOUS DEVEZ VALIDER.
+- Colonne 3 : Valeur RÉFÉRENCE (ID : {similar_id}, Stratégie : {strategy_used}) -> À utiliser comme comparaison.
+- Colonne 4 : RÈGLE -> LA LOGIQUE DE VALIDATION ATTENDUE POUR CE CHAMP SPÉCIFIQUE.
 
 If "REFERENCE" contains "<NO REFERENCE>", strictly ignore the comparison for this specific field and validate based on logic/policy only.
 
@@ -32,6 +33,6 @@ DATA TO VALIDATE
 
 --------------------------------------------------
 OUTPUT INSTRUCTIONS
-If you detect anomalies in the TARGET column (compared to REFERENCE or Policy), use the `report_step_issues` tool.
+Si vous détectez des anomalies dans la colonne TARGET (par rapport aux RÉFÉRENCES, aux Règles ou à la Politique), utilisez l'outil `report_step_issues`.
 If everything is correct, call `report_step_issues` with an empty list.
 """.strip()

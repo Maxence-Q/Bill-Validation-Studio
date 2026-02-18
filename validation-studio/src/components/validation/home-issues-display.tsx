@@ -4,17 +4,11 @@ import { useState, useMemo } from "react"
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronRight, Info, AlertTriangle, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ValidationIssue } from "@/types/validation"
 import { cn } from "@/lib/utils"
 
-export interface ValidationIssue {
-    path: string
-    severity: "error" | "warning" | "info"
-    message: string
-    suggestion?: string
-    module?: string
-}
+export { type ValidationIssue };
 
 interface HomeIssuesDisplayProps {
     issues: ValidationIssue[]
@@ -127,7 +121,7 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
                         </div>
                     </div>
 
-                    <ScrollArea className="flex-1 pr-4">
+                    <div className="flex-1 overflow-y-auto pr-4">
                         <div className="space-y-3 pb-4">
                             {filteredIssues.length === 0 ? (
                                 <div className="text-center text-muted-foreground py-12 border-2 border-dashed rounded-lg">
@@ -147,9 +141,9 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
                                             <div className="mt-0.5 shrink-0">{getSeverityIcon(issue.severity)}</div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between gap-2">
-                                                    <h4 className="font-semibold text-sm font-mono truncate" title={issue.path}>
-                                                        {issue.path}
-                                                    </h4>
+                                                    <div className="font-semibold text-sm font-mono break-all" title={issue.path}>
+                                                        {issue.path || "Unknown Path"}
+                                                    </div>
                                                     <span className={cn(
                                                         "text-[10px] uppercase font-bold opacity-80 px-2 py-0.5 rounded border border-current",
                                                         issue.severity === "error" ? "text-red-700 bg-red-100 border-red-200" :
@@ -187,7 +181,7 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
                                 ))
                             )}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
