@@ -42,7 +42,7 @@ export function Navbar() {
                         <span className="hidden font-bold sm:inline-block">
                             Bill <span className="text-primary">Validation</span> Studio
                         </span>
-                        <Badge variant="secondary" className="text-xs">v0.1.0</Badge>
+                        <Badge variant="secondary" className="text-xs">v0.2.0</Badge>
                     </Link>
                     <NavigationMenu>
                         <NavigationMenuList>
