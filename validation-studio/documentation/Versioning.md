@@ -24,7 +24,7 @@ We follow a [Semantic Versioning](https://semver.org/) approach (Major.Minor.Pat
 
 ---
 
-## **v0.2.0** (Current)
+## **v0.2.0**
 **Released:** 17/02/26
 **Focus:** Architectural Overhaul & Robustness Testing
 
@@ -41,6 +41,16 @@ We follow a [Semantic Versioning](https://semver.org/) approach (Major.Minor.Pat
 - **Improved Evaluation Engine:**
   - Dedicated Evaluation Run API for cleaner lifecycle management.
   - Synchronous metrics calculation during validation/evaluation runs.
+
+---
+
+## **v0.2.1** (Current)
+**Released:** 18/02/26
+**Focus:** UI/UX Polish & Data Rendering Fixes
+
+- **Interactive Details View:** Added click-to-scroll navigation from issues to prompt content and perturbation tracking (TP-sync).
+- **Prompt Rendering Fix:** Corrected Observability view to display raw `.content` instead of serialized JSON metadata.
+- **Robustness:** Better handling of undefined metadata and improved hover state feedback for interactive elements.
 
 ---
 

@@ -108,7 +108,11 @@ export function ObservabilityDetailsDialog({
         const promptsArray = Array.isArray(modulePrompts) ? modulePrompts : [modulePrompts];
 
         return promptsArray.map((rawPrompt, index) => {
-            const promptContent = typeof rawPrompt === 'string' ? rawPrompt : JSON.stringify(rawPrompt, null, 2);
+            const promptContent = typeof rawPrompt === 'string'
+                ? rawPrompt
+                : (typeof rawPrompt === 'object' && rawPrompt !== null && 'content' in rawPrompt)
+                    ? (rawPrompt as any).content
+                    : JSON.stringify(rawPrompt, null, 2);
 
             // Legacy check: if it already contains instructions, return as is
             if (typeof rawPrompt === 'string' && rawPrompt.includes("GLOBAL INSTRUCTIONS:")) {

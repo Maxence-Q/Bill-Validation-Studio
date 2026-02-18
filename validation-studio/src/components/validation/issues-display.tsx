@@ -13,9 +13,10 @@ export { type ValidationIssue }; // Re-export for compatibility if needed, thoug
 interface IssuesDisplayProps {
     issues: ValidationIssue[]
     highlightedPath?: string | null
+    onIssueClick?: (issue: ValidationIssue) => void
 }
 
-export function IssuesDisplay({ issues, highlightedPath }: IssuesDisplayProps) {
+export function IssuesDisplay({ issues, highlightedPath, onIssueClick }: IssuesDisplayProps) {
     const [expandedIssues, setExpandedIssues] = useState<string[]>([])
     const lastAutoExpandedRef = useRef<string | null>(null)
 
@@ -106,7 +107,20 @@ export function IssuesDisplay({ issues, highlightedPath }: IssuesDisplayProps) {
                                 <div className="mt-0.5">{getSeverityIcon(issue.severity)}</div>
                                 <div className="flex-1">
                                     <div className="flex items-start justify-between gap-2">
-                                        <h4 className="font-semibold text-sm font-mono break-all">{issue.path || "Unknown Path"}</h4>
+                                        <h4
+                                            className={cn(
+                                                "font-semibold text-sm font-mono break-all hover:underline hover:text-primary transition-colors cursor-pointer",
+                                                onIssueClick && "cursor-pointer"
+                                            )}
+                                            onClick={(e) => {
+                                                if (onIssueClick) {
+                                                    e.stopPropagation();
+                                                    onIssueClick(issue);
+                                                }
+                                            }}
+                                        >
+                                            {issue.path || "Unknown Path"}
+                                        </h4>
                                         <div className="flex items-center gap-2 shrink-0">
                                             {issue.classification && (
                                                 <div className={cn(

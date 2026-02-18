@@ -106,6 +106,7 @@ export function EvaluationDetailsDialog({
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
     const [highlightedIssuePath, setHighlightedIssuePath] = useState<string | null>(null)
     const [scrollToLine, setScrollToLine] = useState<number | null>(null)
+    const [scrollToPerturbation, setScrollToPerturbation] = useState<string | null>(null)
     const [perturbationFilter, setPerturbationFilter] = useState<'all' | 'found' | 'not-found'>('all')
     const [classificationFilter, setClassificationFilter] = useState<'all' | 'TP' | 'FP'>('all')
 
@@ -119,6 +120,16 @@ export function EvaluationDetailsDialog({
             }
         }
     }, [scrollToLine])
+
+    useEffect(() => {
+        if (scrollToPerturbation !== null) {
+            const element = document.getElementById(`perturbation-${scrollToPerturbation}`)
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "center" })
+                setScrollToPerturbation(null)
+            }
+        }
+    }, [scrollToPerturbation])
 
     if (!record) return null
 
@@ -426,7 +437,11 @@ export function EvaluationDetailsDialog({
                                             });
 
                                             return (
-                                                <div key={idx} className="p-4 hover:bg-muted/5 text-sm border-b last:border-0 border-border">
+                                                <div
+                                                    key={idx}
+                                                    id={`perturbation-${p.path.trim()}`}
+                                                    className="p-4 hover:bg-muted/5 text-sm border-b last:border-0 border-border"
+                                                >
                                                     <div className="flex justify-between items-start mb-3">
                                                         <div
                                                             className="font-medium text-sm text-foreground bg-primary/10 px-2 py-0.5 rounded break-all mr-2 cursor-pointer hover:bg-primary/20 hover:underline transition-colors block"
@@ -505,7 +520,30 @@ export function EvaluationDetailsDialog({
                             </span>
                         </div>
                         <div className="flex-1 overflow-auto p-4">
-                            <IssuesDisplay issues={getFilteredIssues()} highlightedPath={highlightedIssuePath} />
+                            <IssuesDisplay
+                                issues={getFilteredIssues()}
+                                highlightedPath={highlightedIssuePath}
+                                onIssueClick={(issue) => {
+                                    const path = issue.path || "";
+                                    if (!path) return;
+
+                                    // 1. All issues (TP or FP): scroll and highlight in Prompt Content
+                                    const promptText = getCurrentPrompt();
+                                    const line = findLineForPath(path, promptText);
+                                    if (line !== null) {
+                                        setHighlightedLine(line);
+                                        setScrollToLine(line);
+                                    }
+
+                                    // Always highlight the issue path for UI feedback
+                                    setHighlightedIssuePath(path);
+
+                                    // 2. TP only: scroll to perturbation listing panel
+                                    if (issue.classification === 'TP') {
+                                        setScrollToPerturbation(path.trim());
+                                    }
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
