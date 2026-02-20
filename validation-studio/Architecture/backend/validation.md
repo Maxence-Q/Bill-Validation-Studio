@@ -25,12 +25,13 @@ flowchart TD
         H --> I["validateEvent()"]
         I --> J["RetrievalService — Qdrant"]
         J -->|"fetches ref events"| K["bill-api.ts — getTsApi()"]
-        I --> L["loadPrompts() — prompt template"]
-        I --> M["DataPreparation"]
+        I --> SPP["shared-prompt-pipeline.ts"]
+        SPP --> L["loadPrompts() — prompt template"]
+        SPP --> M["DataPreparation"]
         M --> N["module-contribution.ts"]
         M --> O["format_csv_comparison.ts"]
-        I --> P["PromptProcessor"]
-        I --> Q["prompt-builder.ts — renderPrompt()"]
+        SPP --> P["PromptProcessor"]
+        SPP --> Q["prompt-builder.ts — renderPrompt()"]
         I --> R["LlmClient — Groq/OpenAI"]
         I --> S["MetricsCalculator"]
     end
@@ -125,13 +126,13 @@ flowchart TD
 
 ---
 
-## Total File Count: **20 files** involved in the validation flow
+## Total File Count: **21 files** involved in the validation flow
 
 | Layer | Count | Files |
 |-------|-------|-------|
 | User Input | 3 | `search-events.tsx`, `actions.ts`, `file-upload.tsx` |
 | Validation Page UI | 4 | `page.tsx`, `event-preview.tsx`, `useValidationRunner.ts`, `cookie-manager.ts` |
 | API Route | 1 | `api/evaluation/run/route.ts` |
-| Orchestrator Pipeline | 10 | `validation-orchestrator.ts`, `retrieval-service.ts`, `bill-api.ts`, `data-preparation.ts`, `module-contribution.ts`, `format_csv_comparison.ts`, `prompt-processor.ts`, `prompt-builder.ts`, `llm-client.ts`, `metrics-calculator.ts` |
+| Orchestrator Pipeline | 11 | `validation-orchestrator.ts`, `shared-prompt-pipeline.ts`, `retrieval-service.ts`, `bill-api.ts`, `data-preparation.ts`, `module-contribution.ts`, `format_csv_comparison.ts`, `prompt-processor.ts`, `prompt-builder.ts`, `llm-client.ts`, `metrics-calculator.ts` |
 | Storage | 2 | `result-storage.ts`, `storage-core.ts` |
 | Output Display | 2 | `validation-progress.tsx`, `home-issues-display.tsx` |

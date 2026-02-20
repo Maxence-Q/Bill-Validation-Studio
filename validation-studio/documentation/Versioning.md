@@ -1,65 +1,62 @@
 # Versioning & Changelog
 
-This document tracks the version history of the **Validation Studio** and the planned features for upcoming releases.
+This document tracks the version history of **Validation Studio** and the planned roadmap.
 
-We follow a [Semantic Versioning](https://semver.org/) approach (Major.Minor.Patch), although for now, we are in the `0.x` phase where rapid development occurs.
-
----
-
-## **v0.1.0**
-**Released:** 11/02/26
-**Focus:** Core Validation & Evaluation Foundation
-
-- **Observability Tab:**
-  - Full history of validation runs.
-  - View details of past runs (prompts, issues, perturbations).
-  - Delete records.
-- **Evaluation Tab:**
-  - Create new evaluations from previous observability runs or uploaded JSON.
-  - Configuration of LLM parameters (Model, Temperature).
-  - Perturbation testing (Typos, Case, Whitespace).
-  - **Evaluation History:** storage and visualization of past evaluation results.
-- **Home Page:**
-  - Basic navigation to Observability and Evaluation.
+We adhere to [Semantic Versioning](https://semver.org/) (Major.Minor.Patch) to maintain consistency across our architectural compartments and UI components.
 
 ---
 
-## **v0.2.0**
-**Released:** 17/02/26
-**Focus:** Architectural Overhaul & Robustness Testing
+## 🚀 Active Roadmap
 
-- **Modular Backend Architecture:**
-  - Reorganized system into **6 clearly defined compartments** (API, Build Prompts, LLM, Storage, RAG, Orchestrator) for better maintainability and horizontal scaling.
-  - Introduced `ValidationOrchestrator` to handle complex multi-step workflows.
-  - New `PromptReconstructionService` to accurately rebuild context for historical data.
-- **Advanced Configuration & Robustness:**
-  - **Prompt Length Slicing:** New hyperparameter to test partial prompts (e.g., 100%, 50%, 33% of attributes) to verify model robustness against missing context and lighten the context window.
-  - **Prompt Rules Integration:** Domain-specific rules from `description_donnee.md` are now automatically injected into the prompt building pipeline.
-- **User Experience Enhancements:**
-  - **Refined "View Details":** Completely redesigned observability details dialog for better transparency of the LLM context.
-  - **Home Page Search:** Added a powerful search bar to find and select events by name or ID instantly.
-- **Improved Evaluation Engine:**
-  - Dedicated Evaluation Run API for cleaner lifecycle management.
-  - Synchronous metrics calculation during validation/evaluation runs.
+### **v0.2.x — Stability & Polish** (Current)
+**Released:** 17/02/2026  
+**Primary Focus:** Architectural decoupling and model robustness.
+- [x] **Modular Backend:** 6-Compartment architecture (API, Build, LLM, Storage, RAG, Orchestrator).
+- [x] **Robustness Testing:** Prompt Slicing and Domain Rules integration.
+- [x] **UX Polish:** Interactive details dialog and Home Page search.
+
+### **v0.3.0 — High-Level Insights** (Planned)
+**Status:** Next Milestone  
+**Primary Focus:** Aggregated analytics and dashboarding.
+- **Dashboard Tab:** Global success/failure visualization.
+- **Analytics:** Common issue analysis and performance trends over time.
 
 ---
 
-## **v0.2.1** (Current)
-**Released:** 18/02/26
-**Focus:** UI/UX Polish & Data Rendering Fixes
+## 📜 Full Release History
 
-- **Interactive Details View:** Added click-to-scroll navigation from issues to prompt content and perturbation tracking (TP-sync).
-- **Prompt Rendering Fix:** Corrected Observability view to display raw `.content` instead of serialized JSON metadata.
-- **Robustness:** Better handling of undefined metadata and improved hover state feedback for interactive elements.
+### **v0.2.2** (20/02/2026)
+> [!NOTE]
+> Major code consolidation and UI layout optimization for validation details.
+
+- `[IMPROVED]` **Code Centralization:** Rigorous refactor of `EvaluationDetailsDialog` and `ObservabilityDetailsDialog` using shared hooks (`usePromptManager`) and components (`PromptViewer`, `DialogLayout`) for a unified validation pipeline.
+- `[CHANGED]` **Prompt Visibility:** Decoupled LLM submission from UI rendering; the interface now displays the full original prompt before slicing to provide better context, while internal logic still handles granular sub-prompt execution.
+- `[IMPROVED]` **UI Layout & UX:** Relocated module navigation to a global top bar, expanded result panels (55% width) for better data density, and fixed scrollbar boundaries in the prompt viewer for smoother navigation.
+
+### **v0.2.1** (18/02/2026)
+> [!NOTE]
+> Focus on UI/UX synchronization and data rendering accuracy.
+
+- `[IMPROVED]` **Interactive Details View:** Added click-to-scroll navigation from issue reports directly to the relevant prompt segment or perturbation tracking (TP-sync).
+- `[FIXED]` **Prompt Rendering:** Corrected observability view to display the raw `.content` (CSV/Prompt) instead of serialized JSON metadata.
+- `[IMPROVED]` **UI Robustness:** Added defensive checks for undefined metadata and improved hover feedback on interactive elements.
+
+### **v0.2.0** (17/02/2026)
+> [!IMPORTANT]
+> Major architectural overhaul and robustness features.
+
+- `[ADDED]` **6-Compartment Backend:** Complete reorganization of the system for maintainability and horizontal scaling.
+- `[ADDED]` **Prompt Length Slicing:** New hyperparameter to test partial prompts (100%, 50%, 33%) to optimize context window and robustness.
+- `[ADDED]` **Domain Rules Integration:** Automated injection of rules from `description_donnee.md` into the prompt pipeline.
+- `[IMPROVED]` **Observability Dialog:** Completely redesigned "View Details" experience for better transparency.
+- `[ADDED]` **Search Events:** Powerful search bar on the home page for instant event selection.
+
+### **v0.1.0** (11/02/2026)
+- `[ADDED]` **Core Foundations:** Initial release of Observability and Evaluation tabs.
+- `[ADDED]` **Perturbation Engine:** Basic support for Case, Typos, and Whitespace testing.
+- `[ADDED]` **LLM Integration:** Core pipeline for sending prompts to LLMs with tool-call parsing.
 
 ---
 
-## **v0.3.0** (Planned)
-**Status:** Next  
-**Focus:** High-Level Insights
-
-- **Dashboard Tab:**
-  - Global metrics visualization.
-  - Success/Failure rates over time.
-  - Common issue types analysis.
-  - Aggregated performance stats.
+> [!TIP]
+> For detailed technical specifications of the current version, refer to the [Backend Architecture](file:///home/maxencetlm/Bill-LLM-EndVal/validation-studio/Architecture/backend/backend-architecture.md).

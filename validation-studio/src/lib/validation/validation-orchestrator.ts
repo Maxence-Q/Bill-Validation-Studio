@@ -90,7 +90,9 @@ function buildValidationRecord(
         config: input.config,
         issues: allIssues,
         referenceIds: usedReferenceIds,
-        prompts: promptsDebug,
+        // We intentionally DO NOT store prompts in the history file to save space.
+        // The UI will reconstruct them on the fly using targetEventId and referenceIds.
+        prompts: undefined,
         ...(storageType === 'evaluation' ? {
             perturbationConfig: input.perturbationConfig,
             perturbationTracking: allPerturbationTracking,
@@ -184,7 +186,29 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             allPerturbationTracking[module] = moduleTracking;
         }
 
-        promptsDebug[module] = builtPrompts;
+        // Store prompts grouped by parentIndex (pre-slicing for display).
+        // Each parent element gets one entry with content joined from sub-prompts.
+        const parentMap = new Map<number, string[]>();
+        builtPrompts.forEach(p => {
+            const arr = parentMap.get(p.slicingMetadata.parentIndex) || [];
+            arr.push(p.content);
+            parentMap.set(p.slicingMetadata.parentIndex, arr);
+        });
+        promptsDebug[module] = Array.from(parentMap.entries())
+            .sort(([a], [b]) => a - b)
+            .map(([parentIndex, contents]) => {
+                // Join contents but keep header only for the first chunk
+                const combined = contents.map((c, i) => {
+                    if (i === 0) return c;
+                    const lines = c.split("\n");
+                    return lines.slice(2).join("\n");
+                }).filter(s => s.length > 0).join("\n");
+
+                return {
+                    content: combined,
+                    parentIndex
+                };
+            });
 
         // 4. C3 — LLM Execution
         // We use a Map to track how many sub-prompts for each parent item have been processed

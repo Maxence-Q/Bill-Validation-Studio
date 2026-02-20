@@ -1,4 +1,6 @@
 import OpenAI from "openai";
+import fs from "fs";
+import path from "path";
 
 // Default configuration (can be overridden by environment variables)
 const DEFAULT_API_KEY = process.env.GROQ_API_PAID_KEY || "";
@@ -10,32 +12,9 @@ const DEFAULT_BASE_URL = "https://api.groq.com/openai/v1";
  * Exported so the Orchestrator or tests can reference it if needed,
  * but the LLM compartment uses it automatically when no tools are passed.
  */
-export const DEFAULT_TOOL_SCHEMA = {
-    type: "function" as const,
-    function: {
-        name: "report_step_issues",
-        description: "Reports the result of the verification analysis for the current step.",
-        parameters: {
-            type: "object",
-            properties: {
-                issues: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            path: { type: "string" },
-                            severity: { type: "string", enum: ["error", "warning", "info"] },
-                            message: { type: "string" },
-                            suggestion: { type: "string" }
-                        },
-                        required: ["path", "severity", "message"]
-                    }
-                }
-            },
-            required: ["issues"]
-        }
-    }
-};
+export const DEFAULT_TOOL_SCHEMA = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "artefacts", "tools_en.json"), "utf8")
+);
 
 /**
  * Typed error for rate-limit responses (429 / rate_limit_exceeded).
@@ -103,7 +82,7 @@ export class LlmClient {
                         messages: messages,
                         temperature: this.temperature,
                         tools: tools as any[],
-                        tool_choice: { type: "function", function: { name: "report_step_issues" } }
+                        tool_choice: { type: "function", function: { name: DEFAULT_TOOL_SCHEMA.function.name } }
                     });
 
                     const choice = response.choices[0];
@@ -138,7 +117,7 @@ export class LlmClient {
                         console.warn(`LLM returned no tool calls on attempt ${3 - retries}`);
                         messages.push({
                             role: "user",
-                            content: "Error: No tool call detected. You MUST use the 'report_step_issues' tool."
+                            content: `Error: No tool call detected. You MUST use the '${DEFAULT_TOOL_SCHEMA.function.name}' tool.`
                         });
                     }
                 } catch (e: any) {
@@ -168,7 +147,7 @@ export class LlmClient {
             const issues: any[] = [];
             if (toolCalls) {
                 for (const toolCall of toolCalls) {
-                    if (toolCall.type === 'function' && toolCall.function.name === "report_step_issues") {
+                    if (toolCall.type === 'function' && toolCall.function.name === DEFAULT_TOOL_SCHEMA.function.name) {
                         try {
                             const args = JSON.parse(toolCall.function.arguments);
                             if (args && args.issues) issues.push(...args.issues);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LlmClient } from "@/lib/validation/llm-client";
+import { LlmClient, DEFAULT_TOOL_SCHEMA } from "@/lib/validation/llm-client";
 
 /**
  * Simple evaluation LLM endpoint.
@@ -9,33 +9,6 @@ import { LlmClient } from "@/lib/validation/llm-client";
  * Body: { prompt: string }
  * Response: { issues: Array<{ path, severity, message, suggestion? }> }
  */
-
-const TOOL_REPORT_STEP_ISSUES = {
-    type: "function",
-    function: {
-        name: "report_step_issues",
-        description: "Reports the result of the verification analysis for the current step. Must be called even if no anomalies are found.",
-        parameters: {
-            type: "object",
-            properties: {
-                issues: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            path: { type: "string" },
-                            severity: { type: "string", enum: ["error", "warning", "info"] },
-                            message: { type: "string" },
-                            suggestion: { type: "string" }
-                        },
-                        required: ["path", "severity", "message"]
-                    }
-                }
-            },
-            required: ["issues"]
-        }
-    }
-};
 
 export async function POST(request: NextRequest) {
     try {
@@ -73,8 +46,7 @@ export async function POST(request: NextRequest) {
 
         const issues = await llmClient.validateSection(
             systemMessage,
-            userMessage,
-            [TOOL_REPORT_STEP_ISSUES]
+            userMessage
         );
 
         return NextResponse.json({ issues: issues || [] });

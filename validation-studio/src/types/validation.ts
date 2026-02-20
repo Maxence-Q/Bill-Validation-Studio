@@ -14,6 +14,8 @@ export interface ValidationIssue {
     suggestion?: string;
     path?: string;
     classification?: 'TP' | 'FP';
+    /** Index of the parent element within the module (for list modules like Prices) */
+    itemIndex?: number;
 }
 
 // Discriminator for stream messages

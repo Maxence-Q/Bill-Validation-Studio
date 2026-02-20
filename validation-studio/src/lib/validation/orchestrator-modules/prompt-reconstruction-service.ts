@@ -69,7 +69,28 @@ export async function reconstructPrompts(input: {
             }
         );
 
-        reconstructedPrompts[mod] = builtPrompts;
+        // Group by parentIndex for parent-level display (slicing transparent to user)
+        const parentMap = new Map<number, string[]>();
+        builtPrompts.forEach(p => {
+            const arr = parentMap.get(p.slicingMetadata.parentIndex) || [];
+            arr.push(p.content);
+            parentMap.set(p.slicingMetadata.parentIndex, arr);
+        });
+        reconstructedPrompts[mod] = Array.from(parentMap.entries())
+            .sort(([a], [b]) => a - b)
+            .map(([parentIndex, contents]) => {
+                // Join contents but keep header only for the first chunk
+                const combined = contents.map((c, i) => {
+                    if (i === 0) return c;
+                    const lines = c.split("\n");
+                    return lines.slice(2).join("\n");
+                }).filter(s => s.length > 0).join("\n");
+
+                return {
+                    content: combined,
+                    parentIndex
+                };
+            });
     }
 
     return reconstructedPrompts;
