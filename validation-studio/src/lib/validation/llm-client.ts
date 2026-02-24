@@ -35,11 +35,22 @@ export interface LlmConfig {
 }
 
 /**
+ * Result returned by validateSection.
+ * - `issues`: parsed list of detected issues
+ * - `reasoning`: raw reasoning text emitted by the model (empty string if the model
+ *   does not support extended thinking / reasoning output)
+ */
+export interface LlmResult {
+    issues: any[];
+    reasoning: string;
+}
+
+/**
  * LLM Compartment (C3): Stateless LLM client.
  * 
  * Contract:
  *   Input:  { systemMessage, userPrompt, tools? }
- *   Output: Issue[] — parsed list of detected issues
+ *   Output: LlmResult — { issues: Issue[], reasoning: string }
  * 
  * Handles retry logic, JSON correction, and rate-limit detection internally.
  */
@@ -61,7 +72,7 @@ export class LlmClient {
         systemMessage: string,
         userPrompt: string,
         tools: any[] = [DEFAULT_TOOL_SCHEMA]
-    ): Promise<any[]> {
+    ): Promise<LlmResult> {
         try {
             const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
                 { role: "system", content: systemMessage },
@@ -69,6 +80,7 @@ export class LlmClient {
             ];
 
             let toolCalls: OpenAI.Chat.Completions.ChatCompletionMessageToolCall[] | undefined;
+            let lastChoice: OpenAI.Chat.Completions.ChatCompletion.Choice | undefined;
             let retries = 2; // Increased retries
             let lastError: any = null;
 
@@ -82,10 +94,12 @@ export class LlmClient {
                         messages: messages,
                         temperature: this.temperature,
                         tools: tools as any[],
-                        tool_choice: { type: "function", function: { name: DEFAULT_TOOL_SCHEMA.function.name } }
+                        tool_choice: { type: "function", function: { name: DEFAULT_TOOL_SCHEMA.function.name } },
+                        reasoning_effort: "medium" as any
                     });
 
                     const choice = response.choices[0];
+                    lastChoice = choice;
                     toolCalls = choice.message.tool_calls;
 
                     if (toolCalls && toolCalls.length > 0) {
@@ -144,6 +158,16 @@ export class LlmClient {
                 if (retries >= 0) await new Promise(resolve => setTimeout(resolve, 500));
             }
 
+            // Extract reasoning from the last successful choice.
+            // Models with extended thinking emit it as model_extra.reasoning (Groq)
+            // or as reasoning_content (some other providers), or directly as reasoning.
+            const rawMsg = lastChoice?.message as any;
+            const reasoning: string =
+                rawMsg?.reasoning ??
+                rawMsg?.model_extra?.reasoning ??
+                rawMsg?.reasoning_content ??
+                "";
+
             const issues: any[] = [];
             if (toolCalls) {
                 for (const toolCall of toolCalls) {
@@ -160,7 +184,7 @@ export class LlmClient {
                 throw lastError;
             }
 
-            return issues;
+            return { issues, reasoning };
 
         } catch (error) {
             if (error instanceof RateLimitError) throw error;

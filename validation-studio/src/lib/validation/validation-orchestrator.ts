@@ -44,6 +44,10 @@ export interface ValidationOutput {
     issues: any[];
     prompts: Record<string, any>;
     metrics?: ValidationMetrics;
+    /** Reasoning text per module. Each entry is an array with one string per logical
+     *  item (sub-prompt reasonings are concatenated). Singleton modules like Event will
+     *  always have a 1-element array; list modules like Prices will have N elements. */
+    reasonings: Record<string, string[]>;
 }
 
 export interface RecordDetailsInput {
@@ -74,7 +78,8 @@ function buildValidationRecord(
     allIssues: any[],
     promptsDebug: Record<string, any>,
     metrics: ValidationMetrics | undefined,
-    allPerturbationTracking: Record<string, any>
+    allPerturbationTracking: Record<string, any>,
+    allReasonings: Record<string, string[]>
 ) {
     if (!input.storage) return null;
 
@@ -93,6 +98,7 @@ function buildValidationRecord(
         // We intentionally DO NOT store prompts in the history file to save space.
         // The UI will reconstruct them on the fly using targetEventId and referenceIds.
         prompts: undefined,
+        reasonings: allReasonings,
         ...(storageType === 'evaluation' ? {
             perturbationConfig: input.perturbationConfig,
             perturbationTracking: allPerturbationTracking,
@@ -117,6 +123,8 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
     const allIssues: any[] = [];
     const promptsDebug: Record<string, any> = {};
     const allPerturbationTracking: Record<string, any> = {};
+    /** Reasoning texts: one array per module, one string per logical item (sub-prompt reasonings concatenated). */
+    const allReasonings: Record<string, string[]> = {};
 
     // 1. Retrieval (RAG → IDs only, then API → fetch events)
     const targetId = targetEvent?.Event?.Event?.ID;
@@ -214,6 +222,8 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         // We use a Map to track how many sub-prompts for each parent item have been processed
         // to send accurate progress to the UI (keeping the impression of single prompts)
         const parentProgress = new Map<number, number>();
+        /** Collects reasoning text per parent item for this module. */
+        const reasoningByParent = new Map<number, string[]>();
         let totalParents = 0;
         if (builtPrompts.length > 0) {
             totalParents = builtPrompts.reduce((acc, p) => Math.max(acc, p.slicingMetadata.parentIndex + 1), 0);
@@ -237,7 +247,7 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             parentProgress.set(meta.parentIndex, currentCount + 1);
 
             try {
-                const issues = await llmClient.validateSection(
+                const { issues, reasoning } = await llmClient.validateSection(
                     systemMessage,
                     prompt.rendered
                 );
@@ -249,6 +259,15 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                         module,
                         itemIndex: meta.parentIndex
                     })));
+                }
+
+                // Accumulate reasoning for this parent item.
+                // Sub-prompt reasonings are concatenated so the final array has
+                // exactly one entry per logical item (matching itemIndex / parentIndex).
+                if (reasoning) {
+                    const parts = reasoningByParent.get(meta.parentIndex) ?? [];
+                    parts.push(reasoning);
+                    reasoningByParent.set(meta.parentIndex, parts);
                 }
 
             } catch (err: any) {
@@ -264,6 +283,14 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                 console.error(`LLM Error module ${module}:`, err.message || err);
             }
         }
+
+        // Commit per-module reasonings: ensure we have one entry for every parent item index.
+        const finalizedReasonings: string[] = [];
+        for (let idx = 0; idx < totalParents; idx++) {
+            const parts = reasoningByParent.get(idx) || [];
+            finalizedReasonings.push(parts.join("\n\n"));
+        }
+        allReasonings[module] = finalizedReasonings;
 
         // Emit completion for this module
         if (onProgress) {
@@ -288,7 +315,8 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         allIssues,
         promptsDebug,
         metrics,
-        allPerturbationTracking
+        allPerturbationTracking,
+        allReasonings
     );
 
     if (record && input.storage) {
@@ -298,7 +326,8 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
     return {
         issues: allIssues,
         prompts: promptsDebug,
-        metrics: metrics
+        metrics: metrics,
+        reasonings: allReasonings
     };
 }
 

@@ -12,6 +12,7 @@ interface DialogLayoutProps {
     record: ValidationRecord
     titlePrefix?: string
     headerMetrics?: ReactNode // Custom metrics/badges for top right
+    viewToggle?: ReactNode    // Optional Regular/Advanced toggle rendered in the header
     topBarContent?: ReactNode // Optional top bar spanning full width below header
     sidebarContent?: ReactNode // Optional left sidebar
     promptHeaderContent?: ReactNode // Optional header for middle section
@@ -31,6 +32,7 @@ export function DialogLayout({
     record,
     titlePrefix = "",
     headerMetrics,
+    viewToggle,
     topBarContent,
     sidebarContent,
     promptHeaderContent,
@@ -65,8 +67,9 @@ export function DialogLayout({
                             {formatDate(record.timestamp)}
                         </p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         {headerMetrics}
+                        {viewToggle}
                         <Button variant="ghost" size="icon" onClick={onClose}>
                             <XCircle className="h-6 w-6 text-muted-foreground hover:text-foreground" />
                         </Button>

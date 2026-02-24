@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
                         message: "Evaluation complete",
                         issues: result.issues as import("@/types/validation").ValidationIssue[],
                         prompts: result.prompts,
-                        metrics: result.metrics
+                        metrics: result.metrics,
+                        reasonings: result.reasonings
                     });
                 } catch (err: any) {
                     console.error("Orchestrator error:", err);

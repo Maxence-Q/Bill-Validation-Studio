@@ -3,14 +3,17 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ValidationRecord } from "@/lib/configuration/storage-core"
-import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react"
+import { CheckCircle2, AlertTriangle, XCircle, BrainCircuit } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { renderPrompt } from "@/lib/validation/prompt-builder"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { usePromptManager } from "@/components/validation/shared/use-prompt-manager"
 import { PromptViewer } from "@/components/validation/shared/prompt-viewer"
+import { ReasoningViewer } from "@/components/validation/shared/reasoning-viewer"
 import { DialogLayout } from "@/components/validation/shared/dialog-layout"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 interface ObservabilityDetailsDialogProps {
     record: ValidationRecord | null
@@ -18,6 +21,8 @@ interface ObservabilityDetailsDialogProps {
     onClose: () => void
     template: string
 }
+
+type ViewMode = 'regular' | 'advanced'
 
 export function ObservabilityDetailsDialog({
     record,
@@ -37,6 +42,7 @@ export function ObservabilityDetailsDialog({
 
     const [issueFilter, setIssueFilter] = useState<'all' | 'error' | 'warning' | 'info'>('all')
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
+    const [viewMode, setViewMode] = useState<ViewMode>('regular')
 
     // List modules that support per-element navigation
     const LIST_MODULES = ["Prices", "PriceGroups", "RightToSellAndFees"]
@@ -67,6 +73,12 @@ export function ObservabilityDetailsDialog({
         })
     }
 
+    const getCurrentReasoning = (): string => {
+        const moduleReasonings = record.reasonings?.[activeModule]
+        if (!moduleReasonings) return ""
+        return moduleReasonings[promptIndex] ?? ""
+    }
+
     const getModuleIssues = () => {
         let issues = record.issues.filter((issue: any) => issue.module === activeModule)
 
@@ -86,16 +98,37 @@ export function ObservabilityDetailsDialog({
         const fullPrompt = getCurrentPrompt()
         const lines = fullPrompt.split('\n')
         const lineIndex = lines.findIndex(line => line.includes(path))
-
-        if (lineIndex !== -1) {
-            setHighlightedLine(lineIndex)
-        }
+        if (lineIndex !== -1) setHighlightedLine(lineIndex)
     }
 
     const availableModules = [
         "Event", "EventDates", "OwnerPOS", "FeeDefinitions",
         "Prices", "PriceGroups", "RightToSellAndFees"
     ]
+
+    const totalPrompts = getTotalPromptsCount()
+
+    // --- Shared sub-elements ---
+
+    const ViewToggle = (
+        <div className="flex items-center bg-muted/60 rounded-lg p-0.5 border text-xs gap-0.5">
+            {(['regular', 'advanced'] as ViewMode[]).map(mode => (
+                <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={cn(
+                        "px-3 py-1 rounded-md font-medium capitalize transition-all",
+                        viewMode === mode
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    {mode === 'advanced' && <BrainCircuit className="inline h-3 w-3 mr-1 mb-0.5" />}
+                    {mode}
+                </button>
+            ))}
+        </div>
+    )
 
     const HeaderMetrics = (
         <div className="flex items-center gap-2 mr-4">
@@ -118,7 +151,6 @@ export function ObservabilityDetailsDialog({
                 <div className="p-2 space-y-1">
                     {availableModules.map(mod => {
                         const modIssues = record.issues.filter((i: any) => i.module === mod).length
-
                         return (
                             <Button
                                 key={mod}
@@ -143,7 +175,7 @@ export function ObservabilityDetailsDialog({
         </>
     )
 
-    const RightContent = (
+    const IssuesPanel = (
         <>
             <div className="p-2 border-b bg-muted/20 font-medium text-sm shrink-0 flex items-center justify-between">
                 <span>Issues ({getModuleIssues().length})</span>
@@ -214,15 +246,103 @@ export function ObservabilityDetailsDialog({
         </>
     )
 
+    // --- Advanced view ---
+    if (viewMode === 'advanced') {
+        const PaginationControls = totalPrompts > 1 && (
+            <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-7 w-7"
+                    disabled={promptIndex === 0}
+                    onClick={() => setPromptIndex(promptIndex - 1)}>
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs tabular-nums min-w-[4rem] text-center">
+                    {promptIndex + 1} of {totalPrompts}
+                </span>
+                <Button variant="ghost" size="icon" className="h-7 w-7"
+                    disabled={promptIndex >= totalPrompts - 1}
+                    onClick={() => setPromptIndex(promptIndex + 1)}>
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
+            </div>
+        )
+
+        return (
+            <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+                <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
+                    {/* Header */}
+                    <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20">
+                        <div>
+                            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                {record.eventName}
+                                <Badge variant="outline" className="font-normal text-xs">
+                                    ID: {record.eventId || record.targetEventId || "Unknown"}
+                                </Badge>
+                            </DialogTitle>
+                            <p className="text-muted-foreground text-sm mt-1">
+                                {new Date(record.timestamp).toLocaleString()}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {HeaderMetrics}
+                            {ViewToggle}
+                            <Button variant="ghost" size="icon" onClick={onClose}>
+                                <XCircle className="h-6 w-6 text-muted-foreground hover:text-foreground" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Content: sidebar + 3 equal columns */}
+                    <div className="flex flex-1 overflow-hidden">
+                        {/* Sidebar */}
+                        <div className="w-48 border-r bg-muted/10 shrink-0 flex flex-col h-full min-h-0">
+                            {SidebarContent}
+                        </div>
+
+                        {/* 3-column area */}
+                        <div className="flex flex-1 overflow-hidden">
+                            {/* Prompt */}
+                            <div className="flex-1 flex flex-col border-r min-w-0 overflow-hidden h-full min-h-0">
+                                <div className="p-2 border-b bg-muted/10 font-medium text-sm flex justify-between items-center shrink-0 min-h-[44px]">
+                                    <div className="flex items-center gap-2 px-2">
+                                        <span className="text-muted-foreground">Prompt:</span>
+                                        <span className="font-bold">{activeModule}</span>
+                                    </div>
+                                    {PaginationControls}
+                                </div>
+                                <PromptViewer promptText={getCurrentPrompt()} highlightedLine={highlightedLine} />
+                            </div>
+
+                            {/* Reasoning */}
+                            <div className="flex-1 flex flex-col border-r min-w-0 overflow-hidden h-full min-h-0">
+                                <div className="p-2 border-b bg-muted/10 font-medium text-sm flex items-center gap-2 shrink-0 min-h-[44px] px-4">
+                                    <BrainCircuit className="h-4 w-4 text-muted-foreground" />
+                                    <span>Reasoning</span>
+                                </div>
+                                <ReasoningViewer reasoning={getCurrentReasoning()} />
+                            </div>
+
+                            {/* Issues */}
+                            <div className="flex-1 flex flex-col min-w-0 overflow-hidden h-full min-h-0 text-sm">
+                                {IssuesPanel}
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        )
+    }
+
+    // --- Regular view ---
     return (
         <DialogLayout
             isOpen={isOpen}
             onClose={onClose}
             record={record}
             headerMetrics={HeaderMetrics}
+            viewToggle={ViewToggle}
             sidebarContent={SidebarContent}
             promptIndex={promptIndex}
-            totalPrompts={getTotalPromptsCount()}
+            totalPrompts={totalPrompts}
             onPromptIndexChange={setPromptIndex}
             moduleName={activeModule}
             promptContent={
@@ -231,7 +351,7 @@ export function ObservabilityDetailsDialog({
                     highlightedLine={highlightedLine}
                 />
             }
-            rightPanelContent={RightContent}
+            rightPanelContent={IssuesPanel}
         />
     )
 }

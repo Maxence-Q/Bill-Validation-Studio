@@ -30,6 +30,9 @@ export interface ValidationRecord {
         fp: number;
         fn: number;
     }>;
+    /** Reasoning text per module, one string per logical item (sub-prompt chunks concatenated).
+     *  Singleton modules have a 1-element array; list modules have N elements. */
+    reasonings?: Record<string, string[]>;
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
