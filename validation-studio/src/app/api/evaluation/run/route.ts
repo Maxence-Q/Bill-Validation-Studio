@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
                                 module: progress.module,
                                 current: progress.current,
                                 total: progress.total,
-                                status: progress.status
+                                status: progress.status,
+                                global: progress.global
                             });
                         },
                         storage: {

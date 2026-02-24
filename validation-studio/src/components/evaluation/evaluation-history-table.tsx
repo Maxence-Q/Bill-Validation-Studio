@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { Loader2, History, CheckCircle2, AlertTriangle, Eye, Trash2 } from "lucide-react"
+import { HistoryFilterBar } from "@/components/shared/history-filter-bar"
+import { useState, useEffect } from "react"
 
 interface EvaluationHistoryTableProps {
     history: ValidationRecord[]
@@ -19,6 +21,11 @@ export function EvaluationHistoryTable({
     onSelectRecord,
     onDeleteRecord
 }: EvaluationHistoryTableProps) {
+    const [filteredHistory, setFilteredHistory] = useState<ValidationRecord[]>([])
+
+    useEffect(() => {
+        setFilteredHistory(history)
+    }, [history])
 
     const formatDate = (isoString: string) => {
         return new Date(isoString).toLocaleString()
@@ -34,6 +41,9 @@ export function EvaluationHistoryTable({
                     A log of all validation evaluations.
                 </CardDescription>
             </CardHeader>
+            <div className="px-6 mb-2">
+                <HistoryFilterBar history={history} onFilterChange={setFilteredHistory} />
+            </div>
             <CardContent>
                 {isLoading ? (
                     <div className="flex justify-center py-8">
@@ -56,7 +66,7 @@ export function EvaluationHistoryTable({
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {history.map((record) => (
+                            {filteredHistory.map((record) => (
                                 <TableRow key={record.id}>
                                     <TableCell className="font-medium">{formatDate(record.timestamp)}</TableCell>
                                     <TableCell>{record.eventName}</TableCell>

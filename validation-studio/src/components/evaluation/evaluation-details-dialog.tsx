@@ -20,11 +20,13 @@ export function EvaluationDetailsDialog({
         activeModule,
         setActiveModule,
         setHighlightedLine,
+        setHighlightedReasoningLine,
         setHighlightedIssuePath,
         classificationFilter,
         setClassificationFilter,
         highlightedIssuePath,
         getCurrentPrompt,
+        getCurrentReasoning,
         findLineForPath,
         setScrollToPerturbation,
         getFilteredIssues,
@@ -36,6 +38,7 @@ export function EvaluationDetailsDialog({
 
     const handleModuleChange = () => {
         setHighlightedLine(null)
+        setHighlightedReasoningLine(null)
         setHighlightedIssuePath(null)
     }
 
@@ -45,6 +48,11 @@ export function EvaluationDetailsDialog({
         const promptText = getCurrentPrompt()
         const line = findLineForPath(path, promptText)
         if (line !== null) setHighlightedLine(line)
+
+        const reasoningText = getCurrentReasoning()
+        const reasoningLine = findLineForPath(path, reasoningText)
+        setHighlightedReasoningLine(reasoningLine !== null ? reasoningLine : null)
+
         setHighlightedIssuePath(path)
         if (issue.classification === 'TP') {
             setScrollToPerturbation(path.trim())
@@ -55,6 +63,11 @@ export function EvaluationDetailsDialog({
         const promptText = getCurrentPrompt()
         const line = findLineForPath(path, promptText)
         if (line !== null) setHighlightedLine(line)
+
+        const reasoningText = getCurrentReasoning()
+        const reasoningLine = findLineForPath(path, reasoningText)
+        setHighlightedReasoningLine(reasoningLine !== null ? reasoningLine : null)
+
         setHighlightedIssuePath(isDetected ? path : null)
     }
 

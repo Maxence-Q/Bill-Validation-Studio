@@ -20,7 +20,19 @@ export interface ValidationIssue {
 
 // Discriminator for stream messages
 export type StreamMessage =
-    | { type: 'progress'; module: string; current: number; total: number; status?: 'running' | 'completed' }
+    | {
+        type: 'progress';
+        module: string;
+        current: number;
+        total: number;
+        status?: 'running' | 'completed';
+        global?: {
+            currentPrompt: number;
+            totalPrompts: number;
+            completedSubPrompts: number;
+            totalSubPrompts: number;
+        };
+    }
     | { type: 'result'; message: string; issues: ValidationIssue[]; prompts: any; metrics: any; reasonings?: Record<string, string[]> }
     | { type: 'error'; message: string };
 

@@ -65,13 +65,22 @@ export class RuleProcessor {
             return rules.BOOLEAN || "Boolean check";
         }
 
-        // 4. Date Check (Basic heuristic)
+        // 4. URL/Link Check
+        if (lowerKey.includes("link") || lowerKey.includes("url") || cleanValue.startsWith("http")) {
+            return rules.STRING || "String check";
+        }
+
+        // 5. Date Check (Basic heuristic)
         const dateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
-        if (dateRegex.test(cleanValue) || (cleanValue.length > 5 && !isNaN(Date.parse(cleanValue)))) {
+        const slashesRegex = /^\d{1,4}[-/]\d{1,2}[-/]\d{1,4}/; // Matches 2024/01/01 or 01/01/2024
+
+        const isDateLike = dateRegex.test(cleanValue) || slashesRegex.test(cleanValue);
+
+        if (isDateLike && !isNaN(Date.parse(cleanValue))) {
             return rules.DATE || "Date check";
         }
 
-        // 5. Number checks
+        // 6. Number checks
         if (cleanValue !== "" && !isNaN(Number(cleanValue))) {
             if (cleanValue.includes(".")) {
                 return rules.FLOAT || "Float check";
@@ -79,7 +88,7 @@ export class RuleProcessor {
             return rules.INTEGER || "Integer check";
         }
 
-        // 6. Default String
+        // 7. Default String
         return rules.STRING || "String check";
     }
 }

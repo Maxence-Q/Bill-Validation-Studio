@@ -25,6 +25,16 @@ We adhere to [Semantic Versioning](https://semver.org/) (Major.Minor.Patch) to m
 
 ## 📜 Full Release History
 
+### **v0.2.4** (24/02/2026)
+> [!NOTE]
+> Enhancements to user experience, configuration, feedback loops, and validation progress tracking.
+
+- `[ADDED]` **Get Feedback Feature:** Added a comprehensive LLM feedback generation feature to help users evaluate and improve their validation outputs.
+- `[ADDED]` **Reasoning Level Configuration:** Added configuration options (Low, Medium, High) for the LLM's reasoning effort, updating default values for different parameters.
+- `[ADDED]` **Evaluation & Observability History Filters:** Implemented advanced history filtering capabilities based on date, status, event name, and event ID.
+- `[IMPROVED]` **Reasoning Panel Navigation:** The reasoning panel now automatically scrolls to the relevant section when a specific issue is clicked, improving traceability.
+- `[IMPROVED]` **Validation Progress UI:** Enhanced the execution UI with dynamic elapsed time tracking and precise estimated time (ETA) calculations using global sub-prompt metrics.
+
 ### **v0.2.3** (24/02/2026)
 > [!NOTE]
 > Major refactor for modularity and introduction of Reasoning visualization.

@@ -33,6 +33,7 @@ export const configurationSchema = z.object({
         globalValue: z.number().min(1).max(100),
         moduleValues: z.record(z.string(), z.number().min(1).max(100)),
     }),
+    reasoningEffort: z.enum(["low", "medium", "high"]),
     createdAt: z.string().datetime(),
 })
 
@@ -42,10 +43,11 @@ export const defaultConfiguration: Omit<Configuration, "id" | "name" | "createdA
     model: "openai/gpt-oss-20b",
     temperature: 0.0,
     language: "en",
-    references: 2,
+    references: 3,
     slicing: {
         mode: "global",
-        globalValue: 100,
-        moduleValues: SLICING_MODULES.reduce((acc, module) => ({ ...acc, [module]: 100 }), {}),
+        globalValue: 10,
+        moduleValues: SLICING_MODULES.reduce((acc, module) => ({ ...acc, [module]: 10 }), {}),
     },
+    reasoningEffort: "medium",
 }

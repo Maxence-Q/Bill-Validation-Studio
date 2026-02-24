@@ -56,6 +56,7 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 language: initialData.language,
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
+                reasoningEffort: initialData.reasoningEffort || "medium",
             }
             : {
                 name: "",
@@ -73,6 +74,7 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 language: initialData.language,
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
+                reasoningEffort: initialData.reasoningEffort || "medium",
             })
         } else {
             form.reset({
@@ -234,11 +236,40 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                             )}
                         />
 
+                        <FormField
+                            control={form.control}
+                            name="reasoningEffort"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Reasoning Level</FormLabel>
+                                    <FormControl>
+                                        <div className="flex gap-2">
+                                            {(["low", "medium", "high"] as const).map((level) => (
+                                                <Button
+                                                    key={level}
+                                                    type="button"
+                                                    variant={field.value === level ? "default" : "outline"}
+                                                    onClick={() => field.onChange(level)}
+                                                    className="flex-1 capitalize"
+                                                >
+                                                    {level}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </FormControl>
+                                    <FormDescription>
+                                        The level of reasoning effort the model should apply.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
                         <div className="space-y-4 border rounded-lg p-4">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h4 className="text-sm font-medium">Slicing Configuration</h4>
-                                    <p className="text-xs text-muted-foreground">Control percentage of prompts used</p>
+                                    <p className="text-xs text-muted-foreground">Control division into sub-prompts used</p>
                                 </div>
                                 <FormField
                                     control={form.control}

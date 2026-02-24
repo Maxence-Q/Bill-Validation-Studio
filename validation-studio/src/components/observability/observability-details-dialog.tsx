@@ -14,6 +14,7 @@ import { ReasoningViewer } from "@/components/validation/shared/reasoning-viewer
 import { DialogLayout } from "@/components/validation/shared/dialog-layout"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { FeedbackModal } from "@/components/feedback/feedback-modal"
 
 interface ObservabilityDetailsDialogProps {
     record: ValidationRecord | null
@@ -42,7 +43,9 @@ export function ObservabilityDetailsDialog({
 
     const [issueFilter, setIssueFilter] = useState<'all' | 'error' | 'warning' | 'info'>('all')
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
+    const [highlightedReasoningLine, setHighlightedReasoningLine] = useState<number | null>(null)
     const [viewMode, setViewMode] = useState<ViewMode>('regular')
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     // List modules that support per-element navigation
     const LIST_MODULES = ["Prices", "PriceGroups", "RightToSellAndFees"]
@@ -94,11 +97,45 @@ export function ObservabilityDetailsDialog({
         return issues
     }
 
+    const findLineForPath = (path: string, text: string): number | null => {
+        if (!text || !path) return null
+        const lines = text.split('\n')
+
+        const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        const escapedPath = escapeRegExp(path)
+        const regex = new RegExp(`(^|[^a-zA-Z0-9_.])` + escapedPath + `([^a-zA-Z0-9_]|$)`)
+
+        for (let i = 0; i < lines.length; i++) {
+            if (regex.test(lines[i])) return i
+        }
+
+        const fallbackIndex = lines.findIndex(line => line.includes(path))
+        if (fallbackIndex !== -1) return fallbackIndex
+
+        const parts = path.split('.')
+        const leaf = parts[parts.length - 1]
+        if (leaf && leaf !== path) {
+            const escapedLeaf = escapeRegExp(leaf)
+            const leafRegex = new RegExp(`(^|[^a-zA-Z0-9_.])` + escapedLeaf + `([^a-zA-Z0-9_]|$)`)
+            for (let i = 0; i < lines.length; i++) {
+                if (leafRegex.test(lines[i])) return i
+            }
+            const fallbackLeafIndex = lines.findIndex(line => line.includes(leaf))
+            if (fallbackLeafIndex !== -1) return fallbackLeafIndex
+        }
+
+        return null
+    }
+
     const scrollToAttribute = (path: string) => {
-        const fullPrompt = getCurrentPrompt()
-        const lines = fullPrompt.split('\n')
-        const lineIndex = lines.findIndex(line => line.includes(path))
-        if (lineIndex !== -1) setHighlightedLine(lineIndex)
+        if (!path) {
+            setHighlightedLine(null)
+            setHighlightedReasoningLine(null)
+            return
+        }
+
+        setHighlightedLine(findLineForPath(path, getCurrentPrompt()))
+        setHighlightedReasoningLine(findLineForPath(path, getCurrentReasoning()))
     }
 
     const availableModules = [
@@ -111,22 +148,32 @@ export function ObservabilityDetailsDialog({
     // --- Shared sub-elements ---
 
     const ViewToggle = (
-        <div className="flex items-center bg-muted/60 rounded-lg p-0.5 border text-xs gap-0.5">
-            {(['regular', 'advanced'] as ViewMode[]).map(mode => (
-                <button
-                    key={mode}
-                    onClick={() => setViewMode(mode)}
-                    className={cn(
-                        "px-3 py-1 rounded-md font-medium capitalize transition-all",
-                        viewMode === mode
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                    )}
-                >
-                    {mode === 'advanced' && <BrainCircuit className="inline h-3 w-3 mr-1 mb-0.5" />}
-                    {mode}
-                </button>
-            ))}
+        <div className="flex items-center gap-3">
+            <div className="flex items-center bg-muted/60 rounded-lg p-0.5 border text-xs gap-0.5">
+                {(['regular', 'advanced'] as ViewMode[]).map(mode => (
+                    <button
+                        key={mode}
+                        onClick={() => setViewMode(mode)}
+                        className={cn(
+                            "px-3 py-1 rounded-md font-medium capitalize transition-all",
+                            viewMode === mode
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        {mode === 'advanced' && <BrainCircuit className="inline h-3 w-3 mr-1 mb-0.5" />}
+                        {mode}
+                    </button>
+                ))}
+            </div>
+            <Button
+                size="sm"
+                className="h-8 flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                onClick={() => setIsFeedbackOpen(true)}
+            >
+                <BrainCircuit className="w-4 h-4" />
+                <span className="font-bold text-xs">Get Feedback</span>
+            </Button>
         </div>
     )
 
@@ -159,7 +206,7 @@ export function ObservabilityDetailsDialog({
                                     "w-full justify-between font-normal",
                                     activeModule === mod && "font-medium"
                                 )}
-                                onClick={() => { setActiveModule(mod); setHighlightedLine(null); }}
+                                onClick={() => { setActiveModule(mod); setHighlightedLine(null); setHighlightedReasoningLine(null); }}
                             >
                                 <span className="truncate">{mod}</span>
                                 {modIssues > 0 && (
@@ -270,7 +317,7 @@ export function ObservabilityDetailsDialog({
             <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
                 <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
                     {/* Header */}
-                    <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20">
+                    <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20 relative">
                         <div>
                             <DialogTitle className="text-xl font-bold flex items-center gap-2">
                                 {record.eventName}
@@ -282,14 +329,25 @@ export function ObservabilityDetailsDialog({
                                 {new Date(record.timestamp).toLocaleString()}
                             </p>
                         </div>
+                        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
+                            {ViewToggle}
+                        </div>
                         <div className="flex items-center gap-3">
                             {HeaderMetrics}
-                            {ViewToggle}
                             <Button variant="ghost" size="icon" onClick={onClose}>
                                 <XCircle className="h-6 w-6 text-muted-foreground hover:text-foreground" />
                             </Button>
                         </div>
                     </div>
+
+                    {isFeedbackOpen && (
+                        <FeedbackModal
+                            isOpen={isFeedbackOpen}
+                            onClose={() => setIsFeedbackOpen(false)}
+                            record={record}
+                            type="validation"
+                        />
+                    )}
 
                     {/* Content: sidebar + 3 equal columns */}
                     <div className="flex flex-1 overflow-hidden">
@@ -318,7 +376,7 @@ export function ObservabilityDetailsDialog({
                                     <BrainCircuit className="h-4 w-4 text-muted-foreground" />
                                     <span>Reasoning</span>
                                 </div>
-                                <ReasoningViewer reasoning={getCurrentReasoning()} />
+                                <ReasoningViewer reasoning={getCurrentReasoning()} highlightedLine={highlightedReasoningLine} />
                             </div>
 
                             {/* Issues */}
@@ -334,24 +392,34 @@ export function ObservabilityDetailsDialog({
 
     // --- Regular view ---
     return (
-        <DialogLayout
-            isOpen={isOpen}
-            onClose={onClose}
-            record={record}
-            headerMetrics={HeaderMetrics}
-            viewToggle={ViewToggle}
-            sidebarContent={SidebarContent}
-            promptIndex={promptIndex}
-            totalPrompts={totalPrompts}
-            onPromptIndexChange={setPromptIndex}
-            moduleName={activeModule}
-            promptContent={
-                <PromptViewer
-                    promptText={getCurrentPrompt()}
-                    highlightedLine={highlightedLine}
+        <>
+            <DialogLayout
+                isOpen={isOpen}
+                onClose={onClose}
+                record={record}
+                headerMetrics={HeaderMetrics}
+                viewToggle={ViewToggle}
+                sidebarContent={SidebarContent}
+                promptIndex={promptIndex}
+                totalPrompts={totalPrompts}
+                onPromptIndexChange={setPromptIndex}
+                moduleName={activeModule}
+                promptContent={
+                    <PromptViewer
+                        promptText={getCurrentPrompt()}
+                        highlightedLine={highlightedLine}
+                    />
+                }
+                rightPanelContent={IssuesPanel}
+            />
+            {isFeedbackOpen && (
+                <FeedbackModal
+                    isOpen={isFeedbackOpen}
+                    onClose={() => setIsFeedbackOpen(false)}
+                    record={record}
+                    type="validation"
                 />
-            }
-            rightPanelContent={IssuesPanel}
-        />
+            )}
+        </>
     )
 }

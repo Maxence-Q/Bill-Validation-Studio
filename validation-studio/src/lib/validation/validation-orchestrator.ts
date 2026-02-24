@@ -135,13 +135,13 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
 
     if (input.referenceEvents && input.referenceEvents.similarIds?.length > 0) {
         console.log("[Orchestrator] Using provided reference events.");
-        const configRefsCount = config.references || 2;
+        const configRefsCount = config.references || 3;
         usedReferences = input.referenceEvents.events.slice(0, configRefsCount);
         usedReferenceIds = input.referenceEvents.similarIds.slice(0, configRefsCount);
     } else {
         // C5 — RAG
         const similarIds = await RetrievalService.retrieveContext(targetId, 4);
-        const configRefsCount = config.references || 2;
+        const configRefsCount = config.references || 3;
         const idsToFetch = similarIds.slice(0, configRefsCount);
 
         // C1 — API
@@ -154,13 +154,19 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
     const llmClient = new LlmClient({
         apiKey: process.env.GROQ_API_PAID_KEY || process.env.GROQ_API_KEY,
         model: config.model || "openai/gpt-oss-20b",
-        temperature: config.temperature || 0.0
+        temperature: config.temperature || 0.0,
+        reasoningEffort: config.reasoningEffort
     });
 
     // 2. Fetch Prompt Template
     const { systemMessage, userPromptTemplate } = loadPrompts();
 
-    // 3. Process Modules
+    // 3. Process Modules - PASS 1: Generate all prompts
+    // We do this to know the total global prompts and sub-prompts before starting execution
+    const allBuiltPromptsByModule = new Map<string, any[]>();
+    let globalTotalPrompts = 0;
+    let globalTotalSubPrompts = 0;
+
     for (const module of VALIDATION_MODULES) {
         if (input.moduleFilter && input.moduleFilter !== module) continue;
 
@@ -176,9 +182,10 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             }
         });
 
+        allBuiltPromptsByModule.set(module, builtPrompts);
+
         // Track Perturbations
         // DEDUPLICATION: Only track perturbations for the *first* slice of a parent item.
-        // Otherwise, if an item is sliced into 4 parts, we'd count the same perturbations 4 times.
         const seenParentIndices = new Set<number>();
         const moduleTracking = builtPrompts
             .map((p) => {
@@ -194,8 +201,7 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             allPerturbationTracking[module] = moduleTracking;
         }
 
-        // Store prompts grouped by parentIndex (pre-slicing for display).
-        // Each parent element gets one entry with content joined from sub-prompts.
+        // Store prompts grouped by parentIndex (pre-slicing for display) for debug
         const parentMap = new Map<number, string[]>();
         builtPrompts.forEach(p => {
             const arr = parentMap.get(p.slicingMetadata.parentIndex) || [];
@@ -205,7 +211,6 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         promptsDebug[module] = Array.from(parentMap.entries())
             .sort(([a], [b]) => a - b)
             .map(([parentIndex, contents]) => {
-                // Join contents but keep header only for the first chunk
                 const combined = contents.map((c, i) => {
                     if (i === 0) return c;
                     const lines = c.split("\n");
@@ -218,12 +223,27 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                 };
             });
 
-        // 4. C3 — LLM Execution
-        // We use a Map to track how many sub-prompts for each parent item have been processed
-        // to send accurate progress to the UI (keeping the impression of single prompts)
+        // Global stats calculation
+        let moduleTotalParents = 0;
+        if (builtPrompts.length > 0) {
+            moduleTotalParents = builtPrompts.reduce((acc, p) => Math.max(acc, p.slicingMetadata.parentIndex + 1), 0);
+        }
+        globalTotalPrompts += moduleTotalParents;
+        globalTotalSubPrompts += builtPrompts.length;
+    }
+
+    // 4. Process Modules - PASS 2: C3 — LLM Execution
+    let globalCurrentPrompt = 0;
+    let globalCompletedSubPrompts = 0;
+
+    for (const module of VALIDATION_MODULES) {
+        if (input.moduleFilter && input.moduleFilter !== module) continue;
+
+        const builtPrompts = allBuiltPromptsByModule.get(module) || [];
+
         const parentProgress = new Map<number, number>();
-        /** Collects reasoning text per parent item for this module. */
         const reasoningByParent = new Map<number, string[]>();
+
         let totalParents = 0;
         if (builtPrompts.length > 0) {
             totalParents = builtPrompts.reduce((acc, p) => Math.max(acc, p.slicingMetadata.parentIndex + 1), 0);
@@ -234,14 +254,20 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             const meta = prompt.slicingMetadata;
 
             // Only notify progress when starting a NEW parent or if it's the first sub-prompt of a parent
-            // We align UI progress with Parent Indices
             const currentCount = parentProgress.get(meta.parentIndex) || 0;
             if (currentCount === 0) {
+                globalCurrentPrompt++;
                 if (onProgress) onProgress({
                     module,
                     current: meta.parentIndex + 1,
                     total: totalParents,
-                    status: 'running'
+                    status: 'running',
+                    global: {
+                        currentPrompt: globalCurrentPrompt,
+                        totalPrompts: globalTotalPrompts,
+                        completedSubPrompts: globalCompletedSubPrompts,
+                        totalSubPrompts: globalTotalSubPrompts
+                    }
                 });
             }
             parentProgress.set(meta.parentIndex, currentCount + 1);
@@ -253,7 +279,6 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                 );
 
                 if (issues) {
-                    // Map issues back to the correct item index using parentIndex
                     allIssues.push(...issues.map(issue => ({
                         ...issue,
                         module,
@@ -261,9 +286,6 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                     })));
                 }
 
-                // Accumulate reasoning for this parent item.
-                // Sub-prompt reasonings are concatenated so the final array has
-                // exactly one entry per logical item (matching itemIndex / parentIndex).
                 if (reasoning) {
                     const parts = reasoningByParent.get(meta.parentIndex) ?? [];
                     parts.push(reasoning);
@@ -282,9 +304,26 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
                 }
                 console.error(`LLM Error module ${module}:`, err.message || err);
             }
+
+            // Increment tracking after sub-prompt finishes
+            globalCompletedSubPrompts++;
+
+            // We want to update progress smoothly for ETA calculations, so send an update 
+            // after every subprompt finishes too, even if it's the same parent.
+            if (onProgress) onProgress({
+                module,
+                current: meta.parentIndex + 1,
+                total: totalParents,
+                status: 'running',
+                global: {
+                    currentPrompt: globalCurrentPrompt,
+                    totalPrompts: globalTotalPrompts,
+                    completedSubPrompts: globalCompletedSubPrompts,
+                    totalSubPrompts: globalTotalSubPrompts
+                }
+            });
         }
 
-        // Commit per-module reasonings: ensure we have one entry for every parent item index.
         const finalizedReasonings: string[] = [];
         for (let idx = 0; idx < totalParents; idx++) {
             const parts = reasoningByParent.get(idx) || [];
@@ -292,13 +331,18 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         }
         allReasonings[module] = finalizedReasonings;
 
-        // Emit completion for this module
         if (onProgress) {
             onProgress({
                 module,
                 current: totalParents,
                 total: totalParents,
-                status: 'completed'
+                status: 'completed',
+                global: {
+                    currentPrompt: globalCurrentPrompt,
+                    totalPrompts: globalTotalPrompts,
+                    completedSubPrompts: globalCompletedSubPrompts,
+                    totalSubPrompts: globalTotalSubPrompts
+                }
             });
         }
     }

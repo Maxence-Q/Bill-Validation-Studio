@@ -19,6 +19,7 @@ export function useEvaluationDialogLogic(
     } = usePromptManager(record)
 
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
+    const [highlightedReasoningLine, setHighlightedReasoningLine] = useState<number | null>(null)
     const [highlightedIssuePath, setHighlightedIssuePath] = useState<string | null>(null)
     const [scrollToPerturbation, setScrollToPerturbation] = useState<string | null>(null)
     const [perturbationFilter, setPerturbationFilter] = useState<PerturbationFilter>('all')
@@ -142,16 +143,32 @@ export function useEvaluationDialogLogic(
     }
 
     const findLineForPath = (path: string, promptText: string): number | null => {
-        if (!promptText) return null
-        let index = promptText.indexOf(path)
-        if (index === -1) {
-            const parts = path.split('.')
-            const leaf = parts[parts.length - 1]
-            if (leaf) index = promptText.indexOf(leaf)
+        if (!promptText || !path) return null
+        const lines = promptText.split('\n')
+
+        const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        const escapedPath = escapeRegExp(path)
+        const regex = new RegExp(`(^|[^a-zA-Z0-9_.])` + escapedPath + `([^a-zA-Z0-9_]|$)`)
+
+        for (let i = 0; i < lines.length; i++) {
+            if (regex.test(lines[i])) return i
         }
-        if (index !== -1) {
-            return promptText.substring(0, index).split('\n').length - 1
+
+        const fallbackIndex = lines.findIndex(line => line.includes(path))
+        if (fallbackIndex !== -1) return fallbackIndex
+
+        const parts = path.split('.')
+        const leaf = parts[parts.length - 1]
+        if (leaf && leaf !== path) {
+            const escapedLeaf = escapeRegExp(leaf)
+            const leafRegex = new RegExp(`(^|[^a-zA-Z0-9_.])` + escapedLeaf + `([^a-zA-Z0-9_]|$)`)
+            for (let i = 0; i < lines.length; i++) {
+                if (leafRegex.test(lines[i])) return i
+            }
+            const fallbackLeafIndex = lines.findIndex(line => line.includes(leaf))
+            if (fallbackLeafIndex !== -1) return fallbackLeafIndex
         }
+
         return null
     }
 
@@ -167,6 +184,8 @@ export function useEvaluationDialogLogic(
         setViewMode,
         highlightedLine,
         setHighlightedLine,
+        highlightedReasoningLine,
+        setHighlightedReasoningLine,
         highlightedIssuePath,
         setHighlightedIssuePath,
         perturbationFilter,

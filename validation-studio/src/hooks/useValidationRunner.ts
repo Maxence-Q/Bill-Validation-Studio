@@ -11,6 +11,7 @@ export function useValidationRunner() {
     const [validationSteps, setValidationSteps] = useState<ValidationStep[]>([])
     const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([])
     const abortControllerRef = useRef<AbortController | null>(null)
+    const validationStartTimeRef = useRef<number | null>(null)
 
     const resetValidation = useCallback(() => {
         if (abortControllerRef.current) {
@@ -41,6 +42,7 @@ export function useValidationRunner() {
             { id: "server_processing", label: "Sending Prompts to LLM", status: "pending", subSteps: [] }
         ];
         setValidationSteps(steps);
+        validationStartTimeRef.current = Date.now();
 
         try {
             // 1. Get Configuration
@@ -109,6 +111,24 @@ export function useValidationRunner() {
                                         status: (msg as any).status === 'completed' ? 'success' : 'loading'
                                     };
 
+                                    // Handle global ETA calculation
+                                    const now = Date.now();
+                                    const valStartTime = validationStartTimeRef.current || now;
+                                    const elapsedSeconds = (now - valStartTime) / 1000;
+
+                                    let globalProgress = undefined;
+                                    if (msg.global) {
+                                        let estimatedSeconds = undefined;
+                                        if (msg.global.completedSubPrompts > 0) {
+                                            estimatedSeconds = (elapsedSeconds / msg.global.completedSubPrompts) * msg.global.totalSubPrompts;
+                                        }
+                                        globalProgress = {
+                                            ...msg.global,
+                                            elapsedSeconds,
+                                            estimatedSeconds
+                                        };
+                                    }
+
                                     if (!existing) {
                                         // Finalize previous sub-steps
                                         const updatedSubSteps = subSteps.map(ss => {
@@ -136,12 +156,13 @@ export function useValidationRunner() {
                                             }
                                             return ss;
                                         });
-                                        return { ...s, subSteps: [...updatedSubSteps, newSubStep] };
+                                        return { ...s, subSteps: [...updatedSubSteps, newSubStep], globalProgress };
                                     }
 
                                     return {
                                         ...s,
-                                        subSteps: subSteps.map(ss => ss.id === stepId ? newSubStep : ss)
+                                        subSteps: subSteps.map(ss => ss.id === stepId ? newSubStep : ss),
+                                        globalProgress
                                     };
                                 });
                             });

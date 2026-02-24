@@ -17,6 +17,14 @@ export interface ValidationStep extends SharedValidationStep {
     details?: any
     subSteps?: ValidationStep[]
     progress?: { current: number; total: number }
+    globalProgress?: {
+        currentPrompt: number;
+        totalPrompts: number;
+        completedSubPrompts: number;
+        totalSubPrompts: number;
+        elapsedSeconds: number;
+        estimatedSeconds?: number;
+    }
     issueCounts?: {
         error: number;
         warning: number;
@@ -68,21 +76,48 @@ export function ValidationProgress({ steps, isSubStep }: ValidationProgressProps
                             )}
                         </div>
                         <div className="flex-1 space-y-1">
-                            <p
-                                className={cn(
-                                    "text-sm font-medium leading-none",
-                                    step.status === "pending" && "text-muted-foreground",
-                                    step.status === "loading" && "text-primary",
-                                    (step.status === "success" || step.status === "error" || step.status === "warning") && "text-foreground"
+                            <div className="flex flex-col gap-1 w-full mt-1">
+                                <p
+                                    className={cn(
+                                        "text-sm font-medium leading-none",
+                                        step.status === "pending" && "text-muted-foreground",
+                                        step.status === "loading" && "text-primary",
+                                        (step.status === "success" || step.status === "error" || step.status === "warning") && "text-foreground"
+                                    )}
+                                >
+                                    {step.label}
+                                    {step.progress && step.status === "loading" && (
+                                        <span className="ml-2 text-xs text-muted-foreground">
+                                            ({step.progress.current}/{step.progress.total})
+                                        </span>
+                                    )}
+                                </p>
+
+                                {/* Global Progress Display */}
+                                {step.globalProgress && step.status === "loading" && (
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground bg-muted/30 px-2.5 py-1.5 rounded-md border border-muted/50 w-fit">
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                            </span>
+                                            {step.globalProgress.elapsedSeconds.toFixed(2)}s elapsed
+                                        </span>
+                                        <span className="w-px h-3 bg-muted-foreground/30"></span>
+                                        <span>
+                                            {step.globalProgress.currentPrompt} / {step.globalProgress.totalPrompts} prompts
+                                        </span>
+                                        {step.globalProgress.estimatedSeconds !== undefined && (
+                                            <>
+                                                <span className="w-px h-3 bg-muted-foreground/30"></span>
+                                                <span className="font-medium">
+                                                    ETA: ~{step.globalProgress.estimatedSeconds.toFixed(0)}s
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
                                 )}
-                            >
-                                {step.label}
-                                {step.progress && step.status === "loading" && (
-                                    <span className="ml-2 text-xs text-muted-foreground">
-                                        ({step.progress.current}/{step.progress.total})
-                                    </span>
-                                )}
-                            </p>
+                            </div>
                             {step.issueCounts && (
                                 <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-0.5">
                                     {step.issueCounts.error > 0 && (

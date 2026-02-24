@@ -12,24 +12,37 @@ import { MetricsHeader } from "./top-bar"
 interface ViewToggleProps {
     viewMode: ViewMode
     setViewMode: (mode: ViewMode) => void
+    onGetFeedback?: () => void
 }
 
-export function ViewToggle({ viewMode, setViewMode }: ViewToggleProps) {
+export function ViewToggle({ viewMode, setViewMode, onGetFeedback }: ViewToggleProps) {
     return (
-        <div className="flex items-center bg-muted/60 rounded-lg p-0.5 border text-xs gap-0.5">
-            {(['regular', 'advanced'] as ViewMode[]).map(mode => (
-                <button
-                    key={mode}
-                    onClick={() => setViewMode(mode)}
-                    className={mode === viewMode
-                        ? "px-3 py-1 rounded-md font-medium capitalize transition-all bg-background text-foreground shadow-sm"
-                        : "px-3 py-1 rounded-md font-medium capitalize transition-all text-muted-foreground hover:text-foreground"
-                    }
+        <div className="flex items-center gap-3">
+            <div className="flex items-center bg-muted/60 rounded-lg p-0.5 border text-xs gap-0.5">
+                {(['regular', 'advanced'] as ViewMode[]).map(mode => (
+                    <button
+                        key={mode}
+                        onClick={() => setViewMode(mode)}
+                        className={mode === viewMode
+                            ? "px-3 py-1 rounded-md font-medium capitalize transition-all bg-background text-foreground shadow-sm"
+                            : "px-3 py-1 rounded-md font-medium capitalize transition-all text-muted-foreground hover:text-foreground"
+                        }
+                    >
+                        {mode === 'advanced' && <BrainCircuit className="inline h-3 w-3 mr-1 mb-0.5" />}
+                        {mode}
+                    </button>
+                ))}
+            </div>
+            {onGetFeedback && (
+                <Button
+                    size="sm"
+                    className="h-8 flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                    onClick={onGetFeedback}
                 >
-                    {mode === 'advanced' && <BrainCircuit className="inline h-3 w-3 mr-1 mb-0.5" />}
-                    {mode}
-                </button>
-            ))}
+                    <BrainCircuit className="w-4 h-4" />
+                    <span className="font-bold text-xs">Get Feedback</span>
+                </Button>
+            )}
         </div>
     )
 }
@@ -72,6 +85,9 @@ interface AdvancedViewProps {
     IssuesPanel: React.ReactNode
 }
 
+import { useState } from "react"
+import { FeedbackModal } from "@/components/feedback/feedback-modal"
+
 export function AdvancedView({
     isOpen,
     onClose,
@@ -90,14 +106,17 @@ export function AdvancedView({
         getCurrentPrompt,
         getCurrentReasoning,
         highlightedLine,
-        setHighlightedLine
+        setHighlightedLine,
+        highlightedReasoningLine
     } = logic
+
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
                 {/* Header */}
-                <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20">
+                <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20 relative">
                     <div>
                         <DialogTitle className="text-xl font-bold flex items-center gap-2">
                             Evaluation Details {record.eventName}
@@ -109,14 +128,25 @@ export function AdvancedView({
                             {new Date(record.timestamp).toLocaleString()}
                         </p>
                     </div>
+                    <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
+                        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} onGetFeedback={() => setIsFeedbackOpen(true)} />
+                    </div>
                     <div className="flex items-center gap-3">
                         <MetricsHeader record={record} />
-                        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
                         <Button variant="ghost" size="icon" onClick={onClose}>
                             <XCircle className="h-6 w-6 text-muted-foreground hover:text-foreground" />
                         </Button>
                     </div>
                 </div>
+
+                {isFeedbackOpen && (
+                    <FeedbackModal
+                        isOpen={isFeedbackOpen}
+                        onClose={() => setIsFeedbackOpen(false)}
+                        record={record}
+                        type="evaluation"
+                    />
+                )}
 
                 {/* Module tabs */}
                 <div className="border-b bg-muted/10 shrink-0 w-full">
@@ -148,7 +178,7 @@ export function AdvancedView({
                             <BrainCircuit className="h-4 w-4 text-muted-foreground" />
                             <span>Reasoning</span>
                         </div>
-                        <ReasoningViewer reasoning={getCurrentReasoning()} />
+                        <ReasoningViewer reasoning={getCurrentReasoning()} highlightedLine={highlightedReasoningLine} />
                     </div>
 
                     {/* Issues */}
@@ -188,28 +218,39 @@ export function RegularView({
         getCurrentPrompt,
         highlightedLine
     } = logic
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     return (
-        <DialogLayout
-            isOpen={isOpen}
-            onClose={onClose}
-            record={record}
-            titlePrefix="Evaluation Details"
-            headerMetrics={<MetricsHeader record={record} />}
-            viewToggle={<ViewToggle viewMode={viewMode} setViewMode={setViewMode} />}
-            topBarContent={TopBar}
-            promptIndex={promptIndex}
-            totalPrompts={totalPrompts}
-            onPromptIndexChange={setPromptIndex}
-            moduleName={activeModule}
-            promptContent={
-                <PromptViewer
-                    promptText={getCurrentPrompt()}
-                    highlightedLine={highlightedLine}
+        <>
+            <DialogLayout
+                isOpen={isOpen}
+                onClose={onClose}
+                record={record}
+                titlePrefix="Evaluation Details"
+                headerMetrics={<MetricsHeader record={record} />}
+                viewToggle={<ViewToggle viewMode={viewMode} setViewMode={setViewMode} onGetFeedback={() => setIsFeedbackOpen(true)} />}
+                topBarContent={TopBar}
+                promptIndex={promptIndex}
+                totalPrompts={totalPrompts}
+                onPromptIndexChange={setPromptIndex}
+                moduleName={activeModule}
+                promptContent={
+                    <PromptViewer
+                        promptText={getCurrentPrompt()}
+                        highlightedLine={highlightedLine}
+                    />
+                }
+                rightPanelContent={RightContent}
+                rightPanelClassName="w-[55%] text-sm"
+            />
+            {isFeedbackOpen && (
+                <FeedbackModal
+                    isOpen={isFeedbackOpen}
+                    onClose={() => setIsFeedbackOpen(false)}
+                    record={record}
+                    type="evaluation"
                 />
-            }
-            rightPanelContent={RightContent}
-            rightPanelClassName="w-[55%] text-sm"
-        />
+            )}
+        </>
     )
 }

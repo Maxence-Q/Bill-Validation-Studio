@@ -23,6 +23,8 @@ export interface EvaluationDialogLogic {
     setViewMode: (mode: ViewMode) => void
     highlightedLine: number | null
     setHighlightedLine: (line: number | null) => void
+    highlightedReasoningLine: number | null
+    setHighlightedReasoningLine: (line: number | null) => void
     highlightedIssuePath: string | null
     setHighlightedIssuePath: (path: string | null) => void
     perturbationFilter: PerturbationFilter

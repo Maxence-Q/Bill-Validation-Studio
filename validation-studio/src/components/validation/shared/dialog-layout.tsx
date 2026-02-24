@@ -54,7 +54,7 @@ export function DialogLayout({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
                 {/* Header */}
-                <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20">
+                <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20 relative">
                     <div>
                         <DialogTitle className="text-xl font-bold flex items-center gap-2">
                             {titlePrefix && <span className="mr-1">{titlePrefix}</span>}
@@ -67,9 +67,13 @@ export function DialogLayout({
                             {formatDate(record.timestamp)}
                         </p>
                     </div>
+                    {viewToggle && (
+                        <div className="absolute left-1/2 -translate-x-1/2">
+                            {viewToggle}
+                        </div>
+                    )}
                     <div className="flex items-center gap-3">
                         {headerMetrics}
-                        {viewToggle}
                         <Button variant="ghost" size="icon" onClick={onClose}>
                             <XCircle className="h-6 w-6 text-muted-foreground hover:text-foreground" />
                         </Button>

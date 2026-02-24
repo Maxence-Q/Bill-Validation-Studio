@@ -32,6 +32,7 @@ export interface LlmConfig {
     baseUrl?: string;
     model?: string;
     temperature?: number;
+    reasoningEffort?: "low" | "medium" | "high";
 }
 
 /**
@@ -58,6 +59,7 @@ export class LlmClient {
     private client: OpenAI;
     private model: string;
     private temperature: number;
+    private reasoningEffort: "low" | "medium" | "high";
 
     constructor(config: LlmConfig = {}) {
         this.client = new OpenAI({
@@ -66,6 +68,7 @@ export class LlmClient {
         });
         this.model = config.model || "openai/gpt-oss-20b"; // Default Groq model
         this.temperature = config.temperature !== undefined ? config.temperature : 0.0;
+        this.reasoningEffort = config.reasoningEffort || "medium";
     }
 
     async validateSection(
@@ -95,7 +98,7 @@ export class LlmClient {
                         temperature: this.temperature,
                         tools: tools as any[],
                         tool_choice: { type: "function", function: { name: DEFAULT_TOOL_SCHEMA.function.name } },
-                        reasoning_effort: "medium" as any
+                        reasoning_effort: this.reasoningEffort as any
                     });
 
                     const choice = response.choices[0];

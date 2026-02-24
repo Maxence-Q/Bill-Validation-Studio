@@ -10,9 +10,11 @@ import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { ObservabilityDetailsDialog } from "@/components/observability/observability-details-dialog"
 import { cn } from "@/lib/utils"
 import { renderPrompt, parsePromptFile } from "@/lib/validation/prompt-builder"
+import { HistoryFilterBar } from "@/components/shared/history-filter-bar"
 
 export default function ObservabilityPage() {
     const [history, setHistory] = useState<ValidationRecord[]>([])
+    const [filteredHistory, setFilteredHistory] = useState<ValidationRecord[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [selectedRecord, setSelectedRecord] = useState<ValidationRecord | null>(null)
     const [userPromptTemplate, setUserPromptTemplate] = useState<string>("")
@@ -44,6 +46,7 @@ export default function ObservabilityPage() {
             if (res.ok) {
                 const data = await res.json()
                 setHistory(data)
+                setFilteredHistory(data)
             }
         } catch (error) {
             console.error("Failed to fetch history:", error)
@@ -95,6 +98,8 @@ export default function ObservabilityPage() {
                 </Button>
             </div>
 
+            <HistoryFilterBar history={history} onFilterChange={setFilteredHistory} />
+
             <div className="grid gap-6">
                 <Card>
                     <CardHeader>
@@ -127,7 +132,7 @@ export default function ObservabilityPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {history.map((record) => (
+                                    {filteredHistory.map((record) => (
                                         <TableRow key={record.id}>
                                             <TableCell className="font-medium">{formatDate(record.timestamp)}</TableCell>
                                             <TableCell>{record.eventName}</TableCell>
