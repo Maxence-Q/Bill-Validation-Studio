@@ -25,6 +25,14 @@ We adhere to [Semantic Versioning](https://semver.org/) (Major.Minor.Patch) to m
 
 ## 📜 Full Release History
 
+### **v0.2.3** (24/02/2026)
+> [!NOTE]
+> Major refactor for modularity and introduction of Reasoning visualization.
+
+- `[ADDED]` **Reasoning Storage & Display:** Introduced the `ReasoningViewer` and updated storage schemas to support "Chain of Thought" data. Users can now view the LLM's logical steps alongside the results in both Observability and Evaluation detail views.
+- `[IMPROVED]` **Perturbation Visualization:** Fixed the prompt panel in Evaluation Details to manually apply recorded perturbations to the display text, providing an authentic view of the exactly manipulated prompt sent to the model.
+- `[REFACTOR]` **Hook & Component Modularity:** Decomposed monolithic files (`useEvaluationRunner.ts`, `EvaluationDetailsDialog.tsx`) into a modular structure under `src/hooks/evaluation/` and `src/components/evaluation/details/`, significantly improving code maintainability.
+
 ### **v0.2.2** (20/02/2026)
 > [!NOTE]
 > Major code consolidation and UI layout optimization for validation details.
