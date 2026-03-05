@@ -1,0 +1,101 @@
+{
+  "id": "953d1515-d294-4463-bf16-150572a44164",
+  "type": "distribution",
+  "name": "RTSF_Stats",
+  "createdAt": "2026-02-27T15:06:48.047Z",
+  "updatedAt": "2026-02-27T15:06:48.292Z",
+  "isRemovable": true,
+  "description": "Perturbations stats of RTSF module.",
+  "definition": {
+    "query": {
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "scope": {
+        "modules": [
+          "RightToSellAndFees"
+        ],
+        "perturbationTypes": []
+      },
+      "metrics": [
+        "false_positives"
+      ],
+      "groupBy": "perturbation_type",
+      "aggregation": "avg"
+    }
+  },
+  "snapshots": [
+    {
+      "snapshotId": "157bf966-1c71-4c2c-b97e-4cbf3d0ae86e",
+      "createdAt": "2026-02-27T15:06:48.152Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "slices": [
+        {
+          "category": "integer",
+          "value": 33.6,
+          "percent": 0.48414985590778103
+        },
+        {
+          "category": "ID",
+          "value": 24.8,
+          "percent": 0.35734870317002887
+        },
+        {
+          "category": "boolean",
+          "value": 7.8,
+          "percent": 0.11239193083573489
+        },
+        {
+          "category": "date",
+          "value": 1.8,
+          "percent": 0.025936599423631128
+        },
+        {
+          "category": "unknown",
+          "value": 0.8,
+          "percent": 0.011527377521613836
+        },
+        {
+          "category": "float",
+          "value": 0.6,
+          "percent": 0.008645533141210375
+        }
+      ],
+      "queryHash": "2bd5614eedc7",
+      "modules": [
+        "RightToSellAndFees"
+      ],
+      "metrics": [
+        "false_positives"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "be9236f0-7c54-4288-aa20-446f30192996",
+          "timestamp": "2026-02-26T15:02:24.385Z"
+        },
+        {
+          "id": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e",
+          "timestamp": "2026-02-26T15:40:06.691Z"
+        },
+        {
+          "id": "56594221-5c9a-4566-b8ca-1d08b0ee0de2",
+          "timestamp": "2026-02-26T20:27:34.823Z"
+        },
+        {
+          "id": "40f90c83-84ef-490a-8ebd-d333dbed957e",
+          "timestamp": "2026-02-26T20:50:59.771Z"
+        },
+        {
+          "id": "85f696af-6aff-486d-8777-0ae7452f3934",
+          "timestamp": "2026-02-26T21:03:23.263Z"
+        }
+      ]
+    }
+  ]
+}

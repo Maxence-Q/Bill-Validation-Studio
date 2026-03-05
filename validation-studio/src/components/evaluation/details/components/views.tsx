@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BrainCircuit, ChevronLeft, ChevronRight, XCircle } from "lucide-react"
+import { FeedbackButton } from "@/components/feedback/feedback-button"
 import { PromptViewer } from "@/components/validation/shared/prompt-viewer"
 import { ReasoningViewer } from "@/components/validation/shared/reasoning-viewer"
 import { DialogLayout } from "@/components/validation/shared/dialog-layout"
@@ -34,14 +35,7 @@ export function ViewToggle({ viewMode, setViewMode, onGetFeedback }: ViewToggleP
                 ))}
             </div>
             {onGetFeedback && (
-                <Button
-                    size="sm"
-                    className="h-8 flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                    onClick={onGetFeedback}
-                >
-                    <BrainCircuit className="w-4 h-4" />
-                    <span className="font-bold text-xs">Get Feedback</span>
-                </Button>
+                <FeedbackButton onClick={onGetFeedback} />
             )}
         </div>
     )

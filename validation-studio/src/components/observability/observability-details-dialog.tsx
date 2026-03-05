@@ -15,6 +15,7 @@ import { DialogLayout } from "@/components/validation/shared/dialog-layout"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { FeedbackModal } from "@/components/feedback/feedback-modal"
+import { FeedbackButton } from "@/components/feedback/feedback-button"
 
 interface ObservabilityDetailsDialogProps {
     record: ValidationRecord | null
@@ -166,14 +167,7 @@ export function ObservabilityDetailsDialog({
                     </button>
                 ))}
             </div>
-            <Button
-                size="sm"
-                className="h-8 flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                onClick={() => setIsFeedbackOpen(true)}
-            >
-                <BrainCircuit className="w-4 h-4" />
-                <span className="font-bold text-xs">Get Feedback</span>
-            </Button>
+            <FeedbackButton onClick={() => setIsFeedbackOpen(true)} />
         </div>
     )
 

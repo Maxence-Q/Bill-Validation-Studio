@@ -33,8 +33,12 @@ export class PerturbationEngine {
         const perturbedTarget = { ...target };
         const perturbationDetails: any[] = [];
         const perturbedPaths: string[] = [];
+        const typeMap: Record<string, string> = {};
 
         for (const [path, value] of Object.entries(target)) {
+            // Track the type for all attributes, even if not perturbed
+            typeMap[path] = this._inferType(path, value);
+
             if (this._shouldPerturb(path, value, config)) {
                 const perturbedValue = this._perturbValue(value);
                 if (perturbedValue !== value) {
@@ -53,7 +57,8 @@ export class PerturbationEngine {
             item: { ...item, target: perturbedTarget },
             perturbationTracking: {
                 details: perturbationDetails,
-                perturbedPaths
+                perturbedPaths,
+                typeMap
             }
         };
     }
@@ -169,8 +174,9 @@ export class PerturbationEngine {
 
         // 2. Check Attribute Type
         if (config.selectedAttributeTypes && config.selectedAttributeTypes.length > 0) {
-            const type = this._inferType(value);
+            const type = this._inferType(path, value);
             // Map our internal types to the config display names
+            if (type === 'ID' && !config.selectedAttributeTypes.includes('ID')) return false;
             if (type === 'uuid' && !config.selectedAttributeTypes.includes('UUID')) return false;
             if (type === 'date' && !config.selectedAttributeTypes.includes('Date')) return false;
             if (type === 'boolean' && !config.selectedAttributeTypes.includes('Boolean')) return false;
@@ -181,7 +187,7 @@ export class PerturbationEngine {
 
         // 3. Determine Probability
         let min = 10;
-        let max = 30;
+        let max = 20;
 
         if (config.percentageMode === 'custom' && config.modulePercentages[moduleName]) {
             [min, max] = config.modulePercentages[moduleName];
@@ -195,10 +201,11 @@ export class PerturbationEngine {
         return Math.random() < probability;
     }
 
-    private _inferType(value: string): string {
+    private _inferType(path: string, value: string): string {
         if (value.toLowerCase() === "null") return "null";
         if (value === "") return "string";
         if (this._isUuid(value)) return "uuid";
+        if (path.toLowerCase().includes('id') || this._isInteger(value) && path.toLowerCase().includes('id')) return "ID";
         if (this._isDate(value)) return "date";
         if (this._isBoolean(value)) return "boolean";
         if (this._isInteger(value)) return "integer";

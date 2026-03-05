@@ -43,4 +43,6 @@ export interface EvaluationState {
     setSystemMessage: React.Dispatch<React.SetStateAction<string>>
     userPromptTemplate: string
     setUserPromptTemplate: React.Dispatch<React.SetStateAction<string>>
+    validationStartTime: number | null
+    setValidationStartTime: React.Dispatch<React.SetStateAction<number | null>>
 }

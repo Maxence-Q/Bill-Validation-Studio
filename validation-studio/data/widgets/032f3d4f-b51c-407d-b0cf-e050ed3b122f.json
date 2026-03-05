@@ -1,0 +1,264 @@
+{
+  "id": "032f3d4f-b51c-407d-b0cf-e050ed3b122f",
+  "type": "time_series",
+  "name": "EventDates_Progress",
+  "createdAt": "2026-03-03T19:11:05.051Z",
+  "updatedAt": "2026-03-03T19:11:08.267Z",
+  "isRemovable": true,
+  "description": "",
+  "definition": {
+    "query": {
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "scope": {
+        "modules": [
+          "EventDates"
+        ],
+        "perturbationTypes": []
+      },
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "groupBy": null,
+      "aggregation": "avg"
+    },
+    "targetThreshold": 0.8
+  },
+  "snapshots": [
+    {
+      "snapshotId": "8b5987a7-782f-408b-bec9-94af50cf244d",
+      "createdAt": "2026-03-03T19:11:05.131Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-03-03T19:11:05.131Z",
+              "y": 0.29889640108175575
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-03T15:17:35.477Z",
+              "y": 0.2631578947368421,
+              "runId": "df0eceb8-ec58-4906-b3c8-fc53e21ac901"
+            },
+            {
+              "x": "2026-03-03T16:52:09.540Z",
+              "y": 0.3,
+              "runId": "83f2c89a-fabf-4117-91ab-675ac76891c0"
+            },
+            {
+              "x": "2026-03-03T18:27:44.140Z",
+              "y": 0.5454545454545454,
+              "runId": "976e2e0b-ebf4-446c-b52e-5a7e369be901"
+            },
+            {
+              "x": "2026-03-03T18:55:44.087Z",
+              "y": 0.2608695652173913,
+              "runId": "cf6a2527-5ea3-402a-8db6-a06cab816ab9"
+            },
+            {
+              "x": "2026-03-03T19:05:57.554Z",
+              "y": 0.125,
+              "runId": "1219851a-b728-4f74-a628-4ab38debb881"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-03-03T19:11:05.131Z",
+              "y": 0.8346153846153846
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-03T15:17:35.477Z",
+              "y": 0.8333333333333334,
+              "runId": "df0eceb8-ec58-4906-b3c8-fc53e21ac901"
+            },
+            {
+              "x": "2026-03-03T16:52:09.540Z",
+              "y": 0.75,
+              "runId": "83f2c89a-fabf-4117-91ab-675ac76891c0"
+            },
+            {
+              "x": "2026-03-03T18:27:44.140Z",
+              "y": 0.9230769230769231,
+              "runId": "976e2e0b-ebf4-446c-b52e-5a7e369be901"
+            },
+            {
+              "x": "2026-03-03T18:55:44.087Z",
+              "y": 1,
+              "runId": "cf6a2527-5ea3-402a-8db6-a06cab816ab9"
+            },
+            {
+              "x": "2026-03-03T19:05:57.554Z",
+              "y": 0.6666666666666666,
+              "runId": "1219851a-b728-4f74-a628-4ab38debb881"
+            }
+          ]
+        }
+      ],
+      "queryHash": "e79eb03e310f",
+      "modules": [
+        "EventDates"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "df0eceb8-ec58-4906-b3c8-fc53e21ac901",
+          "timestamp": "2026-03-03T15:17:35.477Z"
+        },
+        {
+          "id": "83f2c89a-fabf-4117-91ab-675ac76891c0",
+          "timestamp": "2026-03-03T16:52:09.540Z"
+        },
+        {
+          "id": "976e2e0b-ebf4-446c-b52e-5a7e369be901",
+          "timestamp": "2026-03-03T18:27:44.140Z"
+        },
+        {
+          "id": "cf6a2527-5ea3-402a-8db6-a06cab816ab9",
+          "timestamp": "2026-03-03T18:55:44.087Z"
+        },
+        {
+          "id": "1219851a-b728-4f74-a628-4ab38debb881",
+          "timestamp": "2026-03-03T19:05:57.554Z"
+        }
+      ]
+    },
+    {
+      "snapshotId": "12ec0f7d-56bf-4983-ae29-16d79ecb87ab",
+      "createdAt": "2026-03-03T19:11:08.265Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-03-03T19:11:08.265Z",
+              "y": 0.29889640108175575
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-03T15:17:35.477Z",
+              "y": 0.2631578947368421,
+              "runId": "df0eceb8-ec58-4906-b3c8-fc53e21ac901"
+            },
+            {
+              "x": "2026-03-03T16:52:09.540Z",
+              "y": 0.3,
+              "runId": "83f2c89a-fabf-4117-91ab-675ac76891c0"
+            },
+            {
+              "x": "2026-03-03T18:27:44.140Z",
+              "y": 0.5454545454545454,
+              "runId": "976e2e0b-ebf4-446c-b52e-5a7e369be901"
+            },
+            {
+              "x": "2026-03-03T18:55:44.087Z",
+              "y": 0.2608695652173913,
+              "runId": "cf6a2527-5ea3-402a-8db6-a06cab816ab9"
+            },
+            {
+              "x": "2026-03-03T19:05:57.554Z",
+              "y": 0.125,
+              "runId": "1219851a-b728-4f74-a628-4ab38debb881"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-03-03T19:11:08.265Z",
+              "y": 0.8346153846153846
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-03T15:17:35.477Z",
+              "y": 0.8333333333333334,
+              "runId": "df0eceb8-ec58-4906-b3c8-fc53e21ac901"
+            },
+            {
+              "x": "2026-03-03T16:52:09.540Z",
+              "y": 0.75,
+              "runId": "83f2c89a-fabf-4117-91ab-675ac76891c0"
+            },
+            {
+              "x": "2026-03-03T18:27:44.140Z",
+              "y": 0.9230769230769231,
+              "runId": "976e2e0b-ebf4-446c-b52e-5a7e369be901"
+            },
+            {
+              "x": "2026-03-03T18:55:44.087Z",
+              "y": 1,
+              "runId": "cf6a2527-5ea3-402a-8db6-a06cab816ab9"
+            },
+            {
+              "x": "2026-03-03T19:05:57.554Z",
+              "y": 0.6666666666666666,
+              "runId": "1219851a-b728-4f74-a628-4ab38debb881"
+            }
+          ]
+        }
+      ],
+      "queryHash": "e79eb03e310f",
+      "modules": [
+        "EventDates"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "df0eceb8-ec58-4906-b3c8-fc53e21ac901",
+          "timestamp": "2026-03-03T15:17:35.477Z"
+        },
+        {
+          "id": "83f2c89a-fabf-4117-91ab-675ac76891c0",
+          "timestamp": "2026-03-03T16:52:09.540Z"
+        },
+        {
+          "id": "976e2e0b-ebf4-446c-b52e-5a7e369be901",
+          "timestamp": "2026-03-03T18:27:44.140Z"
+        },
+        {
+          "id": "cf6a2527-5ea3-402a-8db6-a06cab816ab9",
+          "timestamp": "2026-03-03T18:55:44.087Z"
+        },
+        {
+          "id": "1219851a-b728-4f74-a628-4ab38debb881",
+          "timestamp": "2026-03-03T19:05:57.554Z"
+        }
+      ]
+    }
+  ]
+}

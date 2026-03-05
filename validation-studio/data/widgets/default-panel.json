@@ -1,0 +1,28 @@
+{
+    "id": "default-panel",
+    "type": "default_panel",
+    "name": "Performance Overview",
+    "createdAt": "2026-02-26T00:00:00.000Z",
+    "updatedAt": "2026-02-26T00:00:00.000Z",
+    "isRemovable": false,
+    "description": "High-level Precision & Recall across all modules and runs.",
+    "definition": {
+        "query": {
+            "runSelection": {
+                "type": "latest",
+                "count": 0
+            },
+            "scope": {
+                "modules": [],
+                "perturbationTypes": []
+            },
+            "metrics": [
+                "precision",
+                "recall"
+            ],
+            "groupBy": "module",
+            "aggregation": null
+        }
+    },
+    "snapshots": []
+}

@@ -8,6 +8,7 @@ import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { EvaluationModal } from "@/components/evaluation/evaluation-modal"
 import { ConfigForm } from "@/components/configuration/config-form"
 import { useEvaluationRunner } from "@/hooks/useEvaluationRunner"
+import { SearchEvents } from "@/components/search-events"
 import { getEventConfig } from "@/app/actions"
 
 interface CreateEvaluationDialogProps {
@@ -23,6 +24,7 @@ export function CreateEvaluationDialog({
 }: CreateEvaluationDialogProps) {
     const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+    const [selectedEventData, setSelectedEventData] = useState<any | null>(null)
     const [currentStep, setCurrentStep] = useState<'selection' | 'analysis'>('selection')
 
     const runner = useEvaluationRunner(selectedRunId, observabilityHistory)
@@ -42,6 +44,7 @@ export function CreateEvaluationDialog({
             setTimeout(() => {
                 setSelectedRunId(null)
                 setUploadedFile(null)
+                setSelectedEventData(null)
                 setCurrentStep('selection')
                 runner.reset()
             }, 300) // Small delay to avoid visual flickering during close animation
@@ -52,16 +55,24 @@ export function CreateEvaluationDialog({
         if (e.target.files && e.target.files[0]) {
             setUploadedFile(e.target.files[0])
             setSelectedRunId(null)
+            setSelectedEventData(null)
         }
+    }
+
+    const handleSearchSelection = (data: any) => {
+        setSelectedEventData(data)
+        setSelectedRunId(null)
+        setUploadedFile(null)
     }
 
     const handleRunSelection = (id: string) => {
         setSelectedRunId(id)
         setUploadedFile(null)
+        setSelectedEventData(null)
     }
 
     const handleForward = () => {
-        if (selectedRunId || uploadedFile) {
+        if (selectedRunId || uploadedFile || selectedEventData) {
             setCurrentStep('analysis')
         }
     }
@@ -119,10 +130,30 @@ export function CreateEvaluationDialog({
                             {/* Panel 2: Upload */}
                             <div className="w-1/2 flex flex-col">
                                 <div className="p-4 border-b bg-muted/10 font-medium text-sm text-muted-foreground flex justify-between items-center">
-                                    <span>Upload New Event JSON</span>
-                                    {uploadedFile && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                                    <span>Search or Upload Event</span>
+                                    {(uploadedFile || selectedEventData) && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                                 </div>
-                                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                                <div className="flex-1 flex flex-col items-center p-8 text-center gap-8">
+                                    <div className="w-full flex flex-col items-center gap-2">
+                                        <p className="text-sm text-muted-foreground mb-2">Search for an existing event in the database</p>
+                                        <SearchEvents onSelect={handleSearchSelection} />
+                                        {selectedEventData && (
+                                            <div className="flex items-center gap-2 p-2 bg-primary/10 border border-primary/20 rounded text-sm w-full max-w-xl justify-center mt-2">
+                                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                <span className="font-medium text-primary">Selected: {selectedEventData.Event?.NameFR || selectedEventData.ID}</span>
+                                                <Button variant="ghost" size="icon" className="h-6 w-6 ml-1" onClick={() => setSelectedEventData(null)}>
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center w-full max-w-xl">
+                                        <div className="h-px bg-border flex-1" />
+                                        <span className="px-4 text-xs text-muted-foreground uppercase tracking-widest">OR</span>
+                                        <div className="h-px bg-border flex-1" />
+                                    </div>
+
                                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl p-12 w-full max-w-md flex flex-col items-center gap-4 hover:bg-muted/5 transition-colors">
                                         <div className="bg-muted p-4 rounded-full">
                                             <Upload className="h-8 w-8 text-muted-foreground" />
@@ -172,9 +203,11 @@ export function CreateEvaluationDialog({
                             onNewConfig={() => runner.setIsConfigDialogOpen(true)}
                             onStrategyConfirm={runner.handleStrategyConfirm}
                             onRunEvaluation={async () => {
-                                console.log("Run Evaluation clicked", { uploadedFile, selectedRunId, config: runner.selectedConfig });
+                                console.log("Run Evaluation clicked", { uploadedFile, selectedRunId, selectedEventData, config: runner.selectedConfig });
                                 let targetEvent = null;
-                                if (uploadedFile) {
+                                if (selectedEventData) {
+                                    targetEvent = selectedEventData;
+                                } else if (uploadedFile) {
                                     try {
                                         const text = await uploadedFile.text();
                                         targetEvent = JSON.parse(text);
@@ -187,7 +220,6 @@ export function CreateEvaluationDialog({
                                     if (record && record.eventId) {
                                         try {
                                             console.log("Fetching event config for ID:", record.eventId);
-                                            // Ensure we pass a number to getEventConfig
                                             const eventIdNum = Number(record.eventId);
                                             if (!isNaN(eventIdNum)) {
                                                 targetEvent = await getEventConfig(eventIdNum);
@@ -218,7 +250,7 @@ export function CreateEvaluationDialog({
                     <div className="p-4 border-t bg-muted/30 flex justify-end shrink-0">
                         <Button
                             onClick={handleForward}
-                            disabled={(!selectedRunId && !uploadedFile)}
+                            disabled={(!selectedRunId && !uploadedFile && !selectedEventData)}
                             className="w-32"
                         >
                             Forward <ArrowRight className="ml-2 h-4 w-4" />

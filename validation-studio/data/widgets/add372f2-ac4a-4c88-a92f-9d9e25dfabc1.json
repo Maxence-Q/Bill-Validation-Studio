@@ -1,0 +1,499 @@
+{
+  "id": "add372f2-ac4a-4c88-a92f-9d9e25dfabc1",
+  "type": "time_series",
+  "name": "RTSF_Progress",
+  "createdAt": "2026-02-27T14:38:09.285Z",
+  "updatedAt": "2026-03-03T14:18:25.775Z",
+  "isRemovable": true,
+  "description": "Reducing halucinations while maintaining high recall metric.",
+  "definition": {
+    "query": {
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "scope": {
+        "modules": [
+          "RightToSellAndFees"
+        ],
+        "perturbationTypes": []
+      },
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "groupBy": null,
+      "aggregation": "avg"
+    },
+    "targetThreshold": 0.8
+  },
+  "snapshots": [
+    {
+      "snapshotId": "b1260a87-e114-452b-a488-a4c99aabb713",
+      "createdAt": "2026-02-27T14:38:09.441Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-02-27T14:38:09.441Z",
+              "y": 0.42283536843476277
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-02-26T15:02:24.385Z",
+              "y": 0.375,
+              "runId": "be9236f0-7c54-4288-aa20-446f30192996"
+            },
+            {
+              "x": "2026-02-26T15:40:06.691Z",
+              "y": 0.76,
+              "runId": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e"
+            },
+            {
+              "x": "2026-02-26T20:27:34.823Z",
+              "y": 0.5,
+              "runId": "56594221-5c9a-4566-b8ca-1d08b0ee0de2"
+            },
+            {
+              "x": "2026-02-26T20:50:59.771Z",
+              "y": 0.24929178470254956,
+              "runId": "40f90c83-84ef-490a-8ebd-d333dbed957e"
+            },
+            {
+              "x": "2026-02-26T21:03:23.263Z",
+              "y": 0.22988505747126436,
+              "runId": "85f696af-6aff-486d-8777-0ae7452f3934"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-02-27T14:38:09.441Z",
+              "y": 0.9096859903381643
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-02-26T15:02:24.385Z",
+              "y": 0.875,
+              "runId": "be9236f0-7c54-4288-aa20-446f30192996"
+            },
+            {
+              "x": "2026-02-26T15:40:06.691Z",
+              "y": 0.8260869565217391,
+              "runId": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e"
+            },
+            {
+              "x": "2026-02-26T20:27:34.823Z",
+              "y": 1,
+              "runId": "56594221-5c9a-4566-b8ca-1d08b0ee0de2"
+            },
+            {
+              "x": "2026-02-26T20:50:59.771Z",
+              "y": 0.9777777777777777,
+              "runId": "40f90c83-84ef-490a-8ebd-d333dbed957e"
+            },
+            {
+              "x": "2026-02-26T21:03:23.263Z",
+              "y": 0.8695652173913043,
+              "runId": "85f696af-6aff-486d-8777-0ae7452f3934"
+            }
+          ]
+        }
+      ],
+      "queryHash": "4419005ea786",
+      "modules": [
+        "RightToSellAndFees"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "be9236f0-7c54-4288-aa20-446f30192996",
+          "timestamp": "2026-02-26T15:02:24.385Z"
+        },
+        {
+          "id": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e",
+          "timestamp": "2026-02-26T15:40:06.691Z"
+        },
+        {
+          "id": "56594221-5c9a-4566-b8ca-1d08b0ee0de2",
+          "timestamp": "2026-02-26T20:27:34.823Z"
+        },
+        {
+          "id": "40f90c83-84ef-490a-8ebd-d333dbed957e",
+          "timestamp": "2026-02-26T20:50:59.771Z"
+        },
+        {
+          "id": "85f696af-6aff-486d-8777-0ae7452f3934",
+          "timestamp": "2026-02-26T21:03:23.263Z"
+        }
+      ]
+    },
+    {
+      "snapshotId": "2ec58504-3743-4c10-9b68-ff713e4378ab",
+      "createdAt": "2026-02-27T15:20:35.499Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-02-27T15:20:35.499Z",
+              "y": 0.42283536843476277
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-02-26T15:02:24.385Z",
+              "y": 0.375,
+              "runId": "be9236f0-7c54-4288-aa20-446f30192996"
+            },
+            {
+              "x": "2026-02-26T15:40:06.691Z",
+              "y": 0.76,
+              "runId": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e"
+            },
+            {
+              "x": "2026-02-26T20:27:34.823Z",
+              "y": 0.5,
+              "runId": "56594221-5c9a-4566-b8ca-1d08b0ee0de2"
+            },
+            {
+              "x": "2026-02-26T20:50:59.771Z",
+              "y": 0.24929178470254956,
+              "runId": "40f90c83-84ef-490a-8ebd-d333dbed957e"
+            },
+            {
+              "x": "2026-02-26T21:03:23.263Z",
+              "y": 0.22988505747126436,
+              "runId": "85f696af-6aff-486d-8777-0ae7452f3934"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-02-27T15:20:35.499Z",
+              "y": 0.9096859903381643
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-02-26T15:02:24.385Z",
+              "y": 0.875,
+              "runId": "be9236f0-7c54-4288-aa20-446f30192996"
+            },
+            {
+              "x": "2026-02-26T15:40:06.691Z",
+              "y": 0.8260869565217391,
+              "runId": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e"
+            },
+            {
+              "x": "2026-02-26T20:27:34.823Z",
+              "y": 1,
+              "runId": "56594221-5c9a-4566-b8ca-1d08b0ee0de2"
+            },
+            {
+              "x": "2026-02-26T20:50:59.771Z",
+              "y": 0.9777777777777777,
+              "runId": "40f90c83-84ef-490a-8ebd-d333dbed957e"
+            },
+            {
+              "x": "2026-02-26T21:03:23.263Z",
+              "y": 0.8695652173913043,
+              "runId": "85f696af-6aff-486d-8777-0ae7452f3934"
+            }
+          ]
+        }
+      ],
+      "queryHash": "4419005ea786",
+      "modules": [
+        "RightToSellAndFees"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "be9236f0-7c54-4288-aa20-446f30192996",
+          "timestamp": "2026-02-26T15:02:24.385Z"
+        },
+        {
+          "id": "1bd1ce0f-ca50-4c7a-beda-b0060ee0117e",
+          "timestamp": "2026-02-26T15:40:06.691Z"
+        },
+        {
+          "id": "56594221-5c9a-4566-b8ca-1d08b0ee0de2",
+          "timestamp": "2026-02-26T20:27:34.823Z"
+        },
+        {
+          "id": "40f90c83-84ef-490a-8ebd-d333dbed957e",
+          "timestamp": "2026-02-26T20:50:59.771Z"
+        },
+        {
+          "id": "85f696af-6aff-486d-8777-0ae7452f3934",
+          "timestamp": "2026-02-26T21:03:23.263Z"
+        }
+      ],
+      "note": "Amélioration des règles int/id"
+    },
+    {
+      "snapshotId": "a5b7dfd8-f193-4a9d-b4d2-30c52b33cdb5",
+      "createdAt": "2026-03-02T21:48:15.840Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-03-02T21:48:15.840Z",
+              "y": 0.7396646889988115
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-02T16:35:10.748Z",
+              "y": 0.9047619047619048,
+              "runId": "4f1e15c7-3d00-4a0d-be05-62427721e352"
+            },
+            {
+              "x": "2026-03-02T20:52:02.580Z",
+              "y": 0.9444444444444444,
+              "runId": "6a914a60-99bc-4b99-844f-875568ba6f4f"
+            },
+            {
+              "x": "2026-03-02T21:20:43.663Z",
+              "y": 0.40825688073394495,
+              "runId": "a89ebf4b-c741-4fac-b5a2-be0ad228e6fd"
+            },
+            {
+              "x": "2026-03-02T21:29:38.620Z",
+              "y": 0.6666666666666666,
+              "runId": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430"
+            },
+            {
+              "x": "2026-03-02T21:39:29.939Z",
+              "y": 0.7741935483870968,
+              "runId": "85404f72-0040-4c3a-a018-dd1e753dd076"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-03-02T21:48:15.840Z",
+              "y": 0.9217560217560219
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-02T16:35:10.748Z",
+              "y": 0.8636363636363636,
+              "runId": "4f1e15c7-3d00-4a0d-be05-62427721e352"
+            },
+            {
+              "x": "2026-03-02T20:52:02.580Z",
+              "y": 1,
+              "runId": "6a914a60-99bc-4b99-844f-875568ba6f4f"
+            },
+            {
+              "x": "2026-03-02T21:20:43.663Z",
+              "y": 0.898989898989899,
+              "runId": "a89ebf4b-c741-4fac-b5a2-be0ad228e6fd"
+            },
+            {
+              "x": "2026-03-02T21:29:38.620Z",
+              "y": 0.9230769230769231,
+              "runId": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430"
+            },
+            {
+              "x": "2026-03-02T21:39:29.939Z",
+              "y": 0.9230769230769231,
+              "runId": "85404f72-0040-4c3a-a018-dd1e753dd076"
+            }
+          ]
+        }
+      ],
+      "queryHash": "4419005ea786",
+      "modules": [
+        "RightToSellAndFees"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "4f1e15c7-3d00-4a0d-be05-62427721e352",
+          "timestamp": "2026-03-02T16:35:10.748Z"
+        },
+        {
+          "id": "6a914a60-99bc-4b99-844f-875568ba6f4f",
+          "timestamp": "2026-03-02T20:52:02.580Z"
+        },
+        {
+          "id": "a89ebf4b-c741-4fac-b5a2-be0ad228e6fd",
+          "timestamp": "2026-03-02T21:20:43.663Z"
+        },
+        {
+          "id": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430",
+          "timestamp": "2026-03-02T21:29:38.620Z"
+        },
+        {
+          "id": "85404f72-0040-4c3a-a018-dd1e753dd076",
+          "timestamp": "2026-03-02T21:39:29.939Z"
+        }
+      ],
+      "note": "worked on the <NO REFERENCE> token"
+    },
+    {
+      "snapshotId": "3e7c56f1-0294-406e-96c1-c2518738d27c",
+      "createdAt": "2026-03-03T14:18:25.580Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "series": [
+        {
+          "label": "precision",
+          "metric": "precision",
+          "points": [
+            {
+              "x": "2026-03-03T14:18:25.580Z",
+              "y": 0.7934101382488479
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-02T21:29:38.620Z",
+              "y": 0.6666666666666666,
+              "runId": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430"
+            },
+            {
+              "x": "2026-03-02T21:39:29.939Z",
+              "y": 0.7741935483870968,
+              "runId": "85404f72-0040-4c3a-a018-dd1e753dd076"
+            },
+            {
+              "x": "2026-03-02T22:49:53.507Z",
+              "y": 0.6333333333333333,
+              "runId": "a9851dca-548f-4bae-a613-3502a826a176"
+            },
+            {
+              "x": "2026-03-02T23:13:24.919Z",
+              "y": 1,
+              "runId": "704d53c5-90a6-4179-9135-e7d7b4c6ab9d"
+            },
+            {
+              "x": "2026-03-03T14:11:20.487Z",
+              "y": 0.8928571428571429,
+              "runId": "5e93e0fb-13ee-4d05-ad8a-76b263196622"
+            }
+          ]
+        },
+        {
+          "label": "recall",
+          "metric": "recall",
+          "points": [
+            {
+              "x": "2026-03-03T14:18:25.580Z",
+              "y": 0.9465384615384614
+            }
+          ],
+          "drilldownPoints": [
+            {
+              "x": "2026-03-02T21:29:38.620Z",
+              "y": 0.9230769230769231,
+              "runId": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430"
+            },
+            {
+              "x": "2026-03-02T21:39:29.939Z",
+              "y": 0.9230769230769231,
+              "runId": "85404f72-0040-4c3a-a018-dd1e753dd076"
+            },
+            {
+              "x": "2026-03-02T22:49:53.507Z",
+              "y": 0.95,
+              "runId": "a9851dca-548f-4bae-a613-3502a826a176"
+            },
+            {
+              "x": "2026-03-02T23:13:24.919Z",
+              "y": 0.975,
+              "runId": "704d53c5-90a6-4179-9135-e7d7b4c6ab9d"
+            },
+            {
+              "x": "2026-03-03T14:11:20.487Z",
+              "y": 0.9615384615384616,
+              "runId": "5e93e0fb-13ee-4d05-ad8a-76b263196622"
+            }
+          ]
+        }
+      ],
+      "queryHash": "4419005ea786",
+      "modules": [
+        "RightToSellAndFees"
+      ],
+      "metrics": [
+        "precision",
+        "recall"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "54a60a6f-3689-4fc8-b6a6-cca1ba2d4430",
+          "timestamp": "2026-03-02T21:29:38.620Z"
+        },
+        {
+          "id": "85404f72-0040-4c3a-a018-dd1e753dd076",
+          "timestamp": "2026-03-02T21:39:29.939Z"
+        },
+        {
+          "id": "a9851dca-548f-4bae-a613-3502a826a176",
+          "timestamp": "2026-03-02T22:49:53.507Z"
+        },
+        {
+          "id": "704d53c5-90a6-4179-9135-e7d7b4c6ab9d",
+          "timestamp": "2026-03-02T23:13:24.919Z"
+        },
+        {
+          "id": "5e93e0fb-13ee-4d05-ad8a-76b263196622",
+          "timestamp": "2026-03-03T14:11:20.487Z"
+        }
+      ],
+      "note": "all good runs"
+    }
+  ]
+}

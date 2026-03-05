@@ -11,7 +11,9 @@ export class DataPreparation {
         // Formatting Logic
         if (!Array.isArray(targetContribution)) {
             const targetRecord = this.parseToRecord(targetContribution as string);
-            const refRecords = refContributionsByRef.map(c => this.parseToRecord((c as string) || ""));
+            const refRecords = refContributionsByRef
+                .map(c => this.parseToRecord((c as string) || ""))
+                .filter(r => Object.keys(r).length > 0);
             dataItems.push({ target: targetRecord, references: refRecords });
         } else {
             // List Logic with Fuzzy Matching
@@ -20,9 +22,11 @@ export class DataPreparation {
             else if (module === "PriceGroups") marker = "Name: ";
             else if (module === "RightToSellAndFees") marker = "RO_PointOfSaleName: ";
 
-            (targetContribution as string[]).forEach((targetElementStr) => {
+            (targetContribution as string[]).forEach((targetElementStr) => { 
                 const similarRecords: Record<string, string>[] = [];
                 const targetName = this.extractSpecElementName(marker, targetElementStr);
+
+                const fallbacks: string[] = [];
 
                 // For each reference, find the best match
                 for (const refContribution of refContributionsByRef) {
@@ -30,6 +34,7 @@ export class DataPreparation {
                     const refList = refContribution as string[];
 
                     if (Array.isArray(refList) && refList.length > 0) {
+                        fallbacks.push(refList[0]);
                         // 1. Exact Match
                         if (targetName) {
                             for (const simElementStr of refList) {
@@ -57,8 +62,16 @@ export class DataPreparation {
                             if (bestMatch) foundSimilarStr = bestMatch;
                         }
                     }
-                    similarRecords.push(this.parseToRecord(foundSimilarStr));
+
+                    if (foundSimilarStr) {
+                        similarRecords.push(this.parseToRecord(foundSimilarStr));
+                    }
                 }
+
+                if (similarRecords.length === 0 && fallbacks.length > 0) {
+                    similarRecords.push(this.parseToRecord(fallbacks[0]));
+                }
+
                 dataItems.push({
                     target: this.parseToRecord(targetElementStr),
                     references: similarRecords

@@ -65,7 +65,7 @@ export async function saveFeedback(eventId: string | number, date: string, type:
     await fs.writeFile(filePath, JSON.stringify(allFeedback, null, 2), "utf-8")
 }
 
-export async function generateFeedback(promptText: string, reasoning: string, errors: any): Promise<string> {
+export async function generateFeedback(systemPrompt: string, userPrompt: string): Promise<string> {
     const apiKey = process.env.GROQ_API_PAID_KEY || ""
     const baseUrl = "https://api.groq.com/openai/v1"
 
@@ -78,26 +78,11 @@ export async function generateFeedback(promptText: string, reasoning: string, er
         baseURL: baseUrl
     })
 
-    const errorsText = typeof errors === 'string' ? errors : JSON.stringify(errors, null, 2)
-
-    const userPrompt = `
-We sent that to a LLM:
-${promptText}
-
-The LLM reasoned that:
-${reasoning}
-
-He found these errors:
-${errorsText}
-
-Which are true errors, which are not really errors? For these false errors, explain what could have been done better.
-`.trim()
-
     try {
         const response = await client.chat.completions.create({
             model: "openai/gpt-oss-120b",
             messages: [
-                { role: "system", content: "You are an AI assistant reviewing the output of another LLM to identify true versus false positive errors and suggest improvements." },
+                { role: "system", content: systemPrompt },
                 { role: "user", content: userPrompt }
             ]
         })

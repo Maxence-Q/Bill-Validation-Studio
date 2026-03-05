@@ -20,7 +20,7 @@ export function PerturbationStrategyConfig({ onConfirm }: PerturbationStrategyCo
 
     // Section 2: Percentages
     const [percentageMode, setPercentageMode] = useState<'all' | 'custom'>('all');
-    const [globalPercentage, setGlobalPercentage] = useState<number[]>([10, 30]); // Min, Max
+    const [globalPercentage, setGlobalPercentage] = useState<number[]>([10, 20]); // Min, Max
     const [modulePercentages, setModulePercentages] = useState<Record<string, number[]>>({});
 
     // Section 3: Advanced
@@ -33,7 +33,7 @@ export function PerturbationStrategyConfig({ onConfirm }: PerturbationStrategyCo
         let changed = false;
         MODULES.forEach(m => {
             if (!newPercentages[m]) {
-                newPercentages[m] = [10, 30];
+                newPercentages[m] = [10, 20];
                 changed = true;
             }
         });
@@ -75,7 +75,7 @@ export function PerturbationStrategyConfig({ onConfirm }: PerturbationStrategyCo
 
     // Helper to format percentage range
     const formatRange = (range: number[]) => {
-        return range ? `${range[0]}% - ${range[1]}%` : "10% - 30%";
+        return range ? `${range[0]}% - ${range[1]}%` : "10% - 20%";
     }
 
     return (
@@ -184,13 +184,13 @@ export function PerturbationStrategyConfig({ onConfirm }: PerturbationStrategyCo
                                 </div>
 
                                 {percentageMode === 'all' && (
-                                    <div className="pl-6 max-w-md w-full animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <div className="pl-6 w-full sm:max-w-[300px] animate-in fade-in slide-in-from-top-1 duration-200">
                                         <div className="flex justify-between text-xs text-muted-foreground mb-3">
                                             <span>Min: {globalPercentage[0]}%</span>
                                             <span>Max: {globalPercentage[1]}%</span>
                                         </div>
                                         <Slider
-                                            defaultValue={[10, 30]}
+                                            defaultValue={[10, 20]}
                                             value={globalPercentage}
                                             max={100}
                                             step={5}
@@ -224,21 +224,18 @@ export function PerturbationStrategyConfig({ onConfirm }: PerturbationStrategyCo
                                             <div className="text-sm text-amber-500 italic">No modules selected in Section 1.</div>
                                         ) : (
                                             activeModules.map(module => (
-                                                <div key={module} className="grid grid-cols-[100px_1fr] gap-6 items-center">
-                                                    <span className="text-sm font-medium">{module}</span>
-                                                    <div className="space-y-1">
-                                                        <div className="flex justify-between text-xs text-muted-foreground">
-                                                            <span>{formatRange(modulePercentages[module])}</span>
-                                                        </div>
-                                                        <Slider
-                                                            defaultValue={[10, 30]}
-                                                            value={modulePercentages[module] || [10, 30]}
-                                                            max={100}
-                                                            step={5}
-                                                            minStepsBetweenThumbs={1}
-                                                            onValueChange={(val) => setModulePercentages(prev => ({ ...prev, [module]: val }))}
-                                                        />
-                                                    </div>
+                                                <div key={module} className="grid grid-cols-[140px_90px_1fr] sm:grid-cols-[200px_100px_300px] gap-2 sm:gap-4 items-center">
+                                                    <span className="text-sm font-medium truncate" title={module}>{module}</span>
+                                                    <span className="text-xs text-muted-foreground font-mono">{formatRange(modulePercentages[module])}</span>
+                                                    <Slider
+                                                        defaultValue={[10, 20]}
+                                                        value={modulePercentages[module] || [10, 20]}
+                                                        max={100}
+                                                        step={5}
+                                                        minStepsBetweenThumbs={1}
+                                                        onValueChange={(val) => setModulePercentages(prev => ({ ...prev, [module]: val }))}
+                                                        className="w-full"
+                                                    />
                                                 </div>
                                             ))
                                         )}

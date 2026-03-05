@@ -28,6 +28,7 @@ const navItems = [
     { name: "Configuration", href: "/configuration" },
     { name: "Observability", href: "/observability" },
     { name: "Evaluation", href: "/evaluation" },
+    { name: "Dashboard", href: "/dashboard" },
 ]
 
 export function Navbar() {

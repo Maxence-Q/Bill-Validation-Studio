@@ -109,7 +109,8 @@ function buildValidationRecord(
                 fp: metrics.fp,
                 fn: metrics.fn
             } : {},
-            moduleMetrics: metrics?.moduleMetrics
+            moduleMetrics: metrics?.moduleMetrics,
+            typeModuleMetrics: metrics?.typeModuleMetrics
         } : {})
     };
 }

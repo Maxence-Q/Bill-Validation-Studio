@@ -16,7 +16,7 @@ interface HomeIssuesDisplayProps {
 
 export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
     const [expandedIssues, setExpandedIssues] = useState<string[]>([])
-    const [selectedModule, setSelectedModule] = useState<string>("All")
+    const [selectedModule, setSelectedModule] = useState<string>("All modules")
     const [selectedSeverity, setSelectedSeverity] = useState<string>("All")
 
     const toggleIssue = (index: number) => {
@@ -28,12 +28,12 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
 
     const uniqueModules = useMemo(() => {
         const modules = issues.map(i => i.module || "Unknown")
-        return ["All", ...Array.from(new Set(modules))]
+        return ["All modules", ...Array.from(new Set(modules))]
     }, [issues])
 
     const filteredIssues = useMemo(() => {
         return issues.filter(issue => {
-            const moduleMatch = selectedModule === "All" || (issue.module || "Unknown") === selectedModule
+            const moduleMatch = selectedModule === "All modules" || (issue.module || "Unknown") === selectedModule
             const severityMatch = selectedSeverity === "All" || issue.severity === selectedSeverity
             return moduleMatch && severityMatch
         })
@@ -64,7 +64,7 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
                     View Detailed Results ({issues.length})
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[70vw] h-[85vh] flex flex-col">
+            <DialogContent className="max-w-[95vw] md:max-w-4xl lg:max-w-6xl xl:max-w-[45vw] h-[85vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Validation Detailed Results</DialogTitle>
                     <DialogDescription>
@@ -165,9 +165,9 @@ export function HomeIssuesDisplay({ issues }: HomeIssuesDisplayProps) {
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        <div className="flex gap-2 text-xs text-muted-foreground mt-2">
+                                                        <div className="flex gap-2 text-xs text-slate-600 mt-2">
                                                             <span className="bg-white/50 border border-black/5 px-2 py-1 rounded shadow-sm">
-                                                                Module: <span className="font-medium text-foreground">{issue.module || "Unknown"}</span>
+                                                                Module: <span className="font-medium text-slate-900">{issue.module || "Unknown"}</span>
                                                             </span>
                                                         </div>
                                                     </div>

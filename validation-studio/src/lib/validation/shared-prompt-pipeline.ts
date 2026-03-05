@@ -84,6 +84,46 @@ export function buildPromptsForModule(
         dataItems = DataPreparation.prepareModuleData(targetEvent, references, module);
     }
 
+    // PRE-FILTER: Remove keys where any reference is missing a value.
+    // This prevents the perturbation engine from perturbing rows that will just be dropped later,
+    // and prevents creating empty sub-prompts containing only dropped rows.
+    dataItems = dataItems.map(item => {
+        const filteredTarget: Record<string, any> = {};
+        const filteredRefs: Record<string, any>[] = item.references.map(() => ({}));
+        const filteredRules: Record<string, string> | undefined = item.rules ? {} : undefined;
+
+        for (const [key, targetVal] of Object.entries(item.target)) {
+            let hasNoRef = false;
+            for (const ref of item.references) {
+                if (!ref[key]) {
+                    hasNoRef = true;
+                    break;
+                }
+            }
+
+            if (!hasNoRef) {
+                filteredTarget[key] = targetVal;
+                item.references.forEach((ref, index) => {
+                    filteredRefs[index][key] = ref[key];
+                });
+                if (filteredRules && item.rules && item.rules[key]) {
+                    filteredRules[key] = item.rules[key];
+                }
+            }
+        }
+
+        return {
+            ...item,
+            target: filteredTarget,
+            references: filteredRefs,
+            ...(filteredRules ? { rules: filteredRules } : {})
+        };
+    }).filter(item => Object.keys(item.target).length > 0); // Drop completely empty items
+
+    if (dataItems.length === 0) {
+        return [];
+    }
+
     // Apply rules to data items BEFORE perturbation/slicing
     dataItems = RuleProcessor.applyRules(dataItems);
 

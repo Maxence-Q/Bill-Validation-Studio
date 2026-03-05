@@ -20,6 +20,7 @@ export function useEvaluationState(): EvaluationState {
     const [perturbationConfig, setPerturbationConfig] = useState<any>(null)
     const [systemMessage, setSystemMessage] = useState<string>("")
     const [userPromptTemplate, setUserPromptTemplate] = useState<string>("")
+    const [validationStartTime, setValidationStartTime] = useState<number | null>(null)
 
     return {
         validationSteps,
@@ -50,5 +51,7 @@ export function useEvaluationState(): EvaluationState {
         setSystemMessage,
         userPromptTemplate,
         setUserPromptTemplate,
+        validationStartTime,
+        setValidationStartTime,
     }
 }

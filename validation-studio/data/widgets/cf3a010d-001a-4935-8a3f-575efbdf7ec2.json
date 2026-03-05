@@ -1,0 +1,86 @@
+{
+  "id": "cf3a010d-001a-4935-8a3f-575efbdf7ec2",
+  "type": "distribution",
+  "name": "EventDates_Stats",
+  "createdAt": "2026-03-03T19:11:42.125Z",
+  "updatedAt": "2026-03-03T19:11:42.464Z",
+  "isRemovable": true,
+  "description": "Perturbations stats of EventDates module.",
+  "definition": {
+    "query": {
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "scope": {
+        "modules": [
+          "EventDates"
+        ],
+        "perturbationTypes": []
+      },
+      "metrics": [
+        "false_positives"
+      ],
+      "groupBy": "perturbation_type",
+      "aggregation": "avg"
+    }
+  },
+  "snapshots": [
+    {
+      "snapshotId": "77eb4fa7-324b-4157-a59c-5346c206db70",
+      "createdAt": "2026-03-03T19:11:42.207Z",
+      "runSelection": {
+        "type": "latest",
+        "count": 5
+      },
+      "slices": [
+        {
+          "category": "date",
+          "value": 11.8,
+          "percent": 0.855072463768116
+        },
+        {
+          "category": "string",
+          "value": 1.6,
+          "percent": 0.11594202898550725
+        },
+        {
+          "category": "boolean",
+          "value": 0.4,
+          "percent": 0.028985507246376812
+        }
+      ],
+      "queryHash": "fe1c68f9f2fd",
+      "modules": [
+        "EventDates"
+      ],
+      "metrics": [
+        "false_positives"
+      ],
+      "selectionMode": "Latest 5 runs",
+      "aggregation": "avg",
+      "runsUsed": [
+        {
+          "id": "df0eceb8-ec58-4906-b3c8-fc53e21ac901",
+          "timestamp": "2026-03-03T15:17:35.477Z"
+        },
+        {
+          "id": "83f2c89a-fabf-4117-91ab-675ac76891c0",
+          "timestamp": "2026-03-03T16:52:09.540Z"
+        },
+        {
+          "id": "976e2e0b-ebf4-446c-b52e-5a7e369be901",
+          "timestamp": "2026-03-03T18:27:44.140Z"
+        },
+        {
+          "id": "cf6a2527-5ea3-402a-8db6-a06cab816ab9",
+          "timestamp": "2026-03-03T18:55:44.087Z"
+        },
+        {
+          "id": "1219851a-b728-4f74-a628-4ab38debb881",
+          "timestamp": "2026-03-03T19:05:57.554Z"
+        }
+      ]
+    }
+  ]
+}

@@ -15,10 +15,10 @@ We adhere to [Semantic Versioning](https://semver.org/) (Major.Minor.Patch) to m
 - [x] **Robustness Testing:** Prompt Slicing and Domain Rules integration.
 - [x] **UX Polish:** Interactive details dialog and Home Page search.
 
-### **v0.3.0 — High-Level Insights** (Planned)
-**Status:** Next Milestone  
+### **v0.3.0 — High-Level Insights** (In Progress)
+**Status:** 🚧 In Progress  
 **Primary Focus:** Aggregated analytics and dashboarding.
-- **Dashboard Tab:** Global success/failure visualization.
+- `[ADDED]` **Dashboard Page:** Precision & recall panel (`default-panel`) with date filter, run selector, global metrics, and per-module breakdown.
 - **Analytics:** Common issue analysis and performance trends over time.
 
 ---

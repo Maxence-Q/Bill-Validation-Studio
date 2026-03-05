@@ -10,6 +10,8 @@ export function useEvaluationExecution(state: EvaluationState) {
         setEvaluationReasonings,
         setValidationSteps,
         setCurrentPhase,
+        validationStartTime,
+        setValidationStartTime,
     } = state
 
     const runEvaluation = useCallback(async (
@@ -25,6 +27,8 @@ export function useEvaluationExecution(state: EvaluationState) {
         setEvaluationIssues([]);
         setEvaluationMetrics(null);
         setCurrentPhase('running');
+        const startTime = Date.now();
+        setValidationStartTime(startTime);
 
         // Reset steps for a clean run
         setValidationSteps(prev => {
@@ -70,19 +74,42 @@ export function useEvaluationExecution(state: EvaluationState) {
                                 const stepId = `module_${data.module}`;
                                 const existing = prev.find(s => s.id === stepId);
 
+                                // Handle global ETA calculation
+                                const now = Date.now();
+                                const valStartTime = startTime;
+                                const elapsedSeconds = (now - valStartTime) / 1000;
+
+                                let globalProgress = undefined;
+                                if (data.global) {
+                                    let estimatedSeconds = undefined;
+                                    if (data.global.completedSubPrompts > 0) {
+                                        estimatedSeconds = (elapsedSeconds / data.global.completedSubPrompts) * data.global.totalSubPrompts;
+                                    }
+                                    globalProgress = {
+                                        ...data.global,
+                                        elapsedSeconds,
+                                        estimatedSeconds
+                                    };
+                                }
+
+                                const updateServerProcessing = (steps: any[]) => steps.map(s =>
+                                    s.id === "server_processing" ? { ...s, globalProgress } : s
+                                );
+
                                 // Insert after server_processing or at end
                                 if (!existing) {
-                                    return [...prev, {
+                                    const newSubStep = {
                                         id: stepId,
                                         label: `Evaluating ${data.module} (${data.current}/${data.total})`,
                                         status: data.status === 'completed' ? "success" : "loading"
-                                    }];
+                                    };
+                                    return updateServerProcessing([...prev, newSubStep]);
                                 }
-                                return prev.map(s => s.id === stepId ? {
+                                return updateServerProcessing(prev.map(s => s.id === stepId ? {
                                     ...s,
                                     label: `Evaluating ${data.module} (${data.current}/${data.total})`,
                                     status: data.status === 'completed' ? "success" : "loading"
-                                } : s);
+                                } : s));
                             });
                         } else if (data.type === "result") {
                             setEvaluationIssues(data.issues || []);
