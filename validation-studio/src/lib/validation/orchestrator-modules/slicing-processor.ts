@@ -48,23 +48,44 @@ export class SlicingProcessor {
 
         // 4. Apply chunking to each data item
         return items.map(item => {
-            const entries = Object.entries(item.target);
-            if (entries.length <= 1) return [item];
+            const allEntries = Object.entries(item.target);
+            if (allEntries.length === 0) return [item];
 
-            // Calculate how many attributes per chunk
-            // e.g. 10% on 100 entries = 10 entries per chunk -> 10 chunks total
-            const chunkSize = Math.max(1, Math.ceil(entries.length * (slicePercentage / 100)));
+            // Separate regular entries from POSPriceGroups entries
+            const regularEntries = allEntries.filter(([k]) => !k.startsWith("POSPriceGroups."));
+            const posPgEntries = allEntries.filter(([k]) => k.startsWith("POSPriceGroups."));
 
             const chunks: DataItem[] = [];
-            for (let i = 0; i < entries.length; i += chunkSize) {
-                const slicedEntries = entries.slice(i, i + chunkSize);
+
+            // 4a. Handle Regular Entries
+            if (regularEntries.length > 0) {
+                // Calculate how many attributes per chunk
+                const chunkSize = Math.max(1, Math.ceil(regularEntries.length * (slicePercentage / 100)));
+
+                for (let i = 0; i < regularEntries.length; i += chunkSize) {
+                    const slicedEntries = regularEntries.slice(i, i + chunkSize);
+                    chunks.push({
+                        ...item,
+                        target: Object.fromEntries(slicedEntries)
+                    });
+                }
+            }
+
+            // 4b. Handle POSPriceGroups (Dedicated final chunk)
+            if (posPgEntries.length > 0 || module === "RightToSellAndFees") {
+                const posName = item.target["RO_PointOfSaleName"] || "";
                 chunks.push({
                     ...item,
-                    target: Object.fromEntries(slicedEntries)
+                    target: {
+                        ...Object.fromEntries(posPgEntries),
+                        "__is_summary_chunk": "true",
+                        ...(posName ? { "RO_PointOfSaleName": posName } : {})
+                    }
                 });
             }
 
-            return chunks;
+            // Fallback if somehow empty
+            return chunks.length > 0 ? chunks : [item];
         });
     }
 }

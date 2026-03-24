@@ -22,9 +22,14 @@ const qdrant = new QdrantClient({
  * Does NOT fetch event data — that's the API compartment's responsibility.
  * The Orchestrator calls RAG → gets IDs → then calls API to fetch events.
  */
+export interface RetrievalResult {
+    id: number;
+    score: number;
+    payload: any;
+}
+
 export class RetrievalService {
-    static async retrieveContext(eventId: number, limit: number = 4): Promise<number[]> {
-        // Always fetch 4 references as per requirement
+    static async retrieveDetailedContext(eventId: number, limit: number = 4): Promise<RetrievalResult[]> {
         const fetchLimit = Math.max(limit, 4);
 
         try {
@@ -40,11 +45,22 @@ export class RetrievalService {
                 with_payload: true
             });
 
-            return results.map((point: any) => typeof point.id === 'string' ? parseInt(point.id) : point.id);
+            console.log(`[Retrieval] Found ${results.length} results for eventId ${eventId}`);
+
+            return results.map((point: any) => ({
+                id: typeof point.id === 'string' ? parseInt(point.id) : point.id,
+                score: point.score,
+                payload: point.payload
+            }));
 
         } catch (error) {
             console.error("Context retrieval error:", error);
             return [];
         }
+    }
+
+    static async retrieveContext(eventId: number, limit: number = 4): Promise<number[]> {
+        const results = await this.retrieveDetailedContext(eventId, limit);
+        return results.map(r => r.id);
     }
 }

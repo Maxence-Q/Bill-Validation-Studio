@@ -22,7 +22,7 @@ export class DataPreparation {
             else if (module === "PriceGroups") marker = "Name: ";
             else if (module === "RightToSellAndFees") marker = "RO_PointOfSaleName: ";
 
-            (targetContribution as string[]).forEach((targetElementStr) => { 
+            (targetContribution as string[]).forEach((targetElementStr) => {
                 const similarRecords: Record<string, string>[] = [];
                 const targetName = this.extractSpecElementName(marker, targetElementStr);
 

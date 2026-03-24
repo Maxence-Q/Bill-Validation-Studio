@@ -11,6 +11,16 @@ export const PROMPT_LANGUAGES = [
     { id: "fr", name: "French" },
 ] as const
 
+export const EXECUTION_STRATEGIES = [
+    { id: "single-pass", name: "Single Pass (Default)" },
+    { id: "two-pass", name: "Two Pass Contextual" },
+] as const
+
+export const BUILDER_STRATEGIES = [
+    { id: "line-by-line", name: "Line by Line Slicing" },
+    { id: "semantic-chunking", name: "Semantic Chunking" }
+] as const
+
 export const SLICING_MODULES = [
     "Event",
     "EventDates",
@@ -34,6 +44,8 @@ export const configurationSchema = z.object({
         moduleValues: z.record(z.string(), z.number().min(1).max(100)),
     }),
     reasoningEffort: z.enum(["low", "medium", "high"]),
+    executionStrategy: z.enum(["single-pass", "two-pass"]),
+    builderStrategy: z.enum(["line-by-line", "semantic-chunking"]),
     createdAt: z.string().datetime(),
 })
 
@@ -50,4 +62,6 @@ export const defaultConfiguration: Omit<Configuration, "id" | "name" | "createdA
         moduleValues: SLICING_MODULES.reduce((acc, module) => ({ ...acc, [module]: 10 }), {}),
     },
     reasoningEffort: "medium",
+    executionStrategy: "single-pass",
+    builderStrategy: "semantic-chunking",
 }

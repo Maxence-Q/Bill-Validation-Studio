@@ -9,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { ObservabilityDetailsDialog } from "@/components/observability/observability-details-dialog"
 import { cn } from "@/lib/utils"
-import { renderPrompt, parsePromptFile } from "@/lib/validation/prompt-builder"
 import { HistoryFilterBar } from "@/components/shared/history-filter-bar"
 
 export default function ObservabilityPage() {
@@ -17,21 +16,10 @@ export default function ObservabilityPage() {
     const [filteredHistory, setFilteredHistory] = useState<ValidationRecord[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [selectedRecord, setSelectedRecord] = useState<ValidationRecord | null>(null)
-    const [userPromptTemplate, setUserPromptTemplate] = useState<string>("")
 
     useEffect(() => {
         fetchHistory()
 
-        // Fetch Prompts
-        fetch("/api/tools/prompts?lang=en")
-            .then(res => res.json())
-            .then(data => {
-                if (data.content) {
-                    const parsed = parsePromptFile(data.content);
-                    setUserPromptTemplate(parsed.userPromptTemplate);
-                }
-            })
-            .catch(err => console.error("Failed to load prompts:", err));
     }, [])
 
     useEffect(() => {
@@ -177,7 +165,6 @@ export default function ObservabilityPage() {
                 record={selectedRecord}
                 isOpen={!!selectedRecord}
                 onClose={() => setSelectedRecord(null)}
-                template={userPromptTemplate}
             />
         </div>
     )

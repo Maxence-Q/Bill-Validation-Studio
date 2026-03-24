@@ -67,6 +67,11 @@ interface PerturbationsPanelProps {
     onPerturbationClick: (path: string, isDetected: boolean) => void
 }
 
+function normalizePath(path: string): string {
+    if (!path) return "";
+    return path.replace(/\[\d*\]/g, '').trim();
+}
+
 export function PerturbationsPanel({
     perturbations,
     perturbationFilter,
@@ -76,7 +81,7 @@ export function PerturbationsPanel({
 }: PerturbationsPanelProps) {
     const filteredPerturbations = perturbations.filter((p: any) => {
         if (perturbationFilter === 'all') return true
-        const isDetected = issues.some((issue: any) => p.path.trim() === (issue.path || "").trim())
+        const isDetected = issues.some((issue: any) => normalizePath(p.path) === normalizePath(issue.path || ""))
         if (perturbationFilter === 'found') return isDetected
         if (perturbationFilter === 'not-found') return !isDetected
         return true
@@ -127,7 +132,7 @@ export function PerturbationsPanel({
                 ) : (
                     <div className="w-full">
                         {filteredPerturbations.map((p: any, idx: number) => {
-                            const isDetected = issues.some((issue: any) => p.path.trim() === (issue.path || "").trim())
+                            const isDetected = issues.some((issue: any) => normalizePath(p.path) === normalizePath(issue.path || ""))
                             return (
                                 <div
                                     key={idx}

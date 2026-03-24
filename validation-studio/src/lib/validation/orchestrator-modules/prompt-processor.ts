@@ -18,8 +18,9 @@ export class PromptProcessor {
     /**
      * Entry point for processing module data. 
      * Applies perturbations and slicing (chunking) directly on the structured data items.
+     * @param skipSlicing If true, slicing (chunking) is skipped (used for UI reconstruction).
      */
-    static processItems(items: DataItem[], module: string, config: Configuration, perturbationConfig?: any): ProcessedItem[] {
+    static processItems(items: DataItem[], module: string, config: Configuration, perturbationConfig?: any, skipSlicing: boolean = false): ProcessedItem[] {
         // 1. Initial mapping to preserve original indices
         let currentItems = items.map((item, idx) => ({
             data: item,
@@ -43,11 +44,13 @@ export class PromptProcessor {
         }
 
         // 3. Apply Slicing (Chunking) on the data attributes
-        const chunkedDataGroups = SlicingProcessor.slice({
-            items: perturbedItems.map(pi => pi.data),
-            module,
-            slicingConfig: config.slicing
-        });
+        const chunkedDataGroups = skipSlicing
+            ? perturbedItems.map(pi => [pi.data])
+            : SlicingProcessor.slice({
+                items: perturbedItems.map(pi => pi.data),
+                module,
+                slicingConfig: config.slicing
+            });
 
         // 4. Flatten chunks and assign sub-metadata
         const finalProcessed: ProcessedItem[] = [];

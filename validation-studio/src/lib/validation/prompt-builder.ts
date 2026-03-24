@@ -1,5 +1,6 @@
 export interface RenderPromptOptions {
-    policyIntro?: string;
+    generalDescription?: string;
+    organisation?: string;
     elementName?: string;
     targetId?: string;
     referenceIds?: string;
@@ -32,7 +33,8 @@ export function parsePromptFile(content: string): { systemMessage: string, userP
  */
 export function renderPrompt(comparisonData: string, template: string, options: RenderPromptOptions = {}): string {
     const {
-        policyIntro = "",
+        generalDescription = "",
+        organisation = "",
         elementName = "Unknown Element",
         targetId = "Unknown",
         referenceIds = "Unknown",
@@ -42,7 +44,8 @@ export function renderPrompt(comparisonData: string, template: string, options: 
     if (!template) return "";
 
     return template
-        .replace("{policy_intro}", policyIntro)
+        .replace("{General Description}", generalDescription)
+        .replace("{Organisation}", organisation)
         .replace("{element_name}", elementName)
         .replace("{cible_id}", targetId)
         .replace("{similar_id}", referenceIds)

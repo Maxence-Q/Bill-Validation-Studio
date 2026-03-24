@@ -16,6 +16,13 @@ export interface ValidationMetrics {
 }
 
 export class MetricsCalculator {
+    private static normalizePath(path: string): string {
+        if (!path) return "";
+        // Remove all [n] or [] from the path for consistent matching
+        // e.g. "Prices[0].Value" -> "Prices.Value", "Prices[].Value" -> "Prices.Value"
+        return path.replace(/\[\d*\]/g, '').trim();
+    }
+
     static calculateMetrics(allIssues: any[], allPerturbationTracking: Record<string, any[]>): ValidationMetrics | undefined {
         if (Object.keys(allPerturbationTracking).length === 0) return undefined;
 
@@ -56,6 +63,7 @@ export class MetricsCalculator {
             if (!moduleStats[issue.module]) moduleStats[issue.module] = { tp: 0, fp: 0, total: 0 };
 
             const issuePath = issue.path || "";
+            const normalizedIssuePath = this.normalizePath(issuePath);
 
             const matchIdx = allPerturbedPathsFlat.findIndex((p, idx) => {
                 const pId = `${p.module}-${p.index}-${idx}`; // Index in flat array
@@ -64,9 +72,8 @@ export class MetricsCalculator {
 
                 if (p.index !== issue.itemIndex) return false;
 
-                // Strict matching (Exact Path)
-                // We use trim() just in case of whitespace artifacts, but avoid includes()
-                return p.path.trim() === issuePath.trim();
+                // Path matching (Normalized)
+                return this.normalizePath(p.path) === normalizedIssuePath;
             });
 
             if (matchIdx !== -1) {

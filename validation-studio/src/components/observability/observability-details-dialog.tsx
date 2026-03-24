@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { ValidationRecord } from "@/lib/configuration/storage-core"
 import { CheckCircle2, AlertTriangle, XCircle, BrainCircuit } from "lucide-react"
@@ -21,7 +21,6 @@ interface ObservabilityDetailsDialogProps {
     record: ValidationRecord | null
     isOpen: boolean
     onClose: () => void
-    template: string
 }
 
 type ViewMode = 'regular' | 'advanced'
@@ -30,7 +29,6 @@ export function ObservabilityDetailsDialog({
     record,
     isOpen,
     onClose,
-    template
 }: ObservabilityDetailsDialogProps) {
     const {
         activeModule,
@@ -39,8 +37,50 @@ export function ObservabilityDetailsDialog({
         setPromptIndex,
         isReconstructing,
         groupedPrompts,
-        getTotalPromptsCount
+        getTotalPromptsCount,
+        reconstructedPrompts
     } = usePromptManager(record)
+
+    const availableModules = useMemo(() => {
+        if (!record) return [];
+        const moduleSet = new Set<string>();
+
+        // 1. Modules with reasonings (most reliable for successfully processed modules)
+        if (record.reasonings) {
+            Object.keys(record.reasonings).forEach(m => moduleSet.add(m));
+        }
+
+        // 2. Modules with issues (important for failed validations)
+        if (record.issues) {
+            record.issues.forEach((i: any) => {
+                if (i.module) moduleSet.add(i.module);
+            });
+        }
+
+        // 3. Modules from reconstructed/stored prompts
+        const prompts = reconstructedPrompts || record.prompts;
+        if (prompts) {
+            Object.keys(prompts).forEach(m => moduleSet.add(m));
+        }
+
+        // Fallback for UI if everything else failed
+        if (moduleSet.size === 0) {
+            return [
+                "Event", "EventDates", "OwnerPOS", "FeeDefinitions",
+                "Prices", "PriceGroups", "RightToSellAndFees"
+            ];
+        }
+
+        // Return sorted list
+        return Array.from(moduleSet).sort();
+    }, [record, reconstructedPrompts]);
+
+    // Ensure activeModule is valid
+    useEffect(() => {
+        if (availableModules.length > 0 && !availableModules.includes(activeModule)) {
+            setActiveModule(availableModules[0]);
+        }
+    }, [availableModules, activeModule, setActiveModule]);
 
     const [issueFilter, setIssueFilter] = useState<'all' | 'error' | 'warning' | 'info'>('all')
     const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
@@ -49,19 +89,21 @@ export function ObservabilityDetailsDialog({
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     // List modules that support per-element navigation
-    const LIST_MODULES = ["Prices", "PriceGroups", "RightToSellAndFees"]
+    const LIST_MODULES = ["Prices", "PriceGroups", "RightToSellAndFees", "performances", "pricing", "sales_channels"]
 
     if (!record) return null
 
     const getCurrentPrompt = () => {
         if (isReconstructing) return "Reconstructing prompts..."
-        if (groupedPrompts.length === 0) return "No prompt for this module"
 
-        const safeIndex = Math.min(promptIndex, groupedPrompts.length - 1)
+        const safeIndex = Math.min(promptIndex, (groupedPrompts.length || 1) - 1)
         const currentPrompt = groupedPrompts[safeIndex]
+
         if (!currentPrompt) return "No prompt for this module"
 
-        if (currentPrompt.content.includes("GLOBAL INSTRUCTIONS:")) {
+        // If it's already a full prompt (e.g. from reconstruction), return it
+        if (currentPrompt.content.includes("--------------------------------------------------") ||
+            currentPrompt.content.includes("INSTRUCTIONS:")) {
             return currentPrompt.content
         }
 
@@ -69,12 +111,9 @@ export function ObservabilityDetailsDialog({
             ? `${activeModule} Validation (Element ${safeIndex + 1})`
             : `${activeModule} Validation`
 
-        return renderPrompt(currentPrompt.content, template, {
-            elementName: label,
-            targetId: record.eventId.toString(),
-            referenceIds: "Validation Record",
-            strategy: "Standard Validation"
-        })
+        // Fallback: If for some reason we still have raw data and no template,
+        // just show the raw data rather than an empty string.
+        return currentPrompt.content;
     }
 
     const getCurrentReasoning = (): string => {
@@ -138,11 +177,6 @@ export function ObservabilityDetailsDialog({
         setHighlightedLine(findLineForPath(path, getCurrentPrompt()))
         setHighlightedReasoningLine(findLineForPath(path, getCurrentReasoning()))
     }
-
-    const availableModules = [
-        "Event", "EventDates", "OwnerPOS", "FeeDefinitions",
-        "Prices", "PriceGroups", "RightToSellAndFees"
-    ]
 
     const totalPrompts = getTotalPromptsCount()
 
@@ -257,7 +291,7 @@ export function ObservabilityDetailsDialog({
                                 )}
                                 onClick={() => scrollToAttribute(issue.path)}
                             >
-                                <div className="flex items-start gap-2 mb-2">
+                                <div className="flex items-start gap-2 mb-2 w-full min-w-0">
                                     {issue.severity === 'error' ? (
                                         <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                                     ) : (
@@ -266,7 +300,7 @@ export function ObservabilityDetailsDialog({
                                             issue.severity === 'warning' ? "text-amber-500" : "text-blue-500"
                                         )} />
                                     )}
-                                    <span className="font-semibold text-sm">Issue {i + 1}: {issue.path}</span>
+                                    <span className="font-semibold text-sm break-all">Issue {i + 1}: {issue.path}</span>
                                 </div>
                                 <div className="text-sm text-foreground break-words font-medium mb-1">
                                     {issue.severity.toUpperCase()}
@@ -309,7 +343,7 @@ export function ObservabilityDetailsDialog({
 
         return (
             <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-                <DialogContent showCloseButton={false} className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] p-0 flex flex-col overflow-hidden gap-0">
+                <DialogContent showCloseButton={false} className="max-w-[98vw] sm:max-w-[98vw] w-[98vw] h-[92vh] p-0 flex flex-col overflow-hidden gap-0">
                     {/* Header */}
                     <div className="p-4 border-b flex justify-between items-center shrink-0 bg-muted/20 relative">
                         <div>
@@ -344,14 +378,14 @@ export function ObservabilityDetailsDialog({
                     )}
 
                     {/* Content: sidebar + 3 equal columns */}
-                    <div className="flex flex-1 overflow-hidden">
+                    <div className="flex flex-1 w-full overflow-hidden">
                         {/* Sidebar */}
                         <div className="w-48 border-r bg-muted/10 shrink-0 flex flex-col h-full min-h-0">
                             {SidebarContent}
                         </div>
 
                         {/* 3-column area */}
-                        <div className="flex flex-1 overflow-hidden">
+                        <div className="flex flex-1 w-full overflow-hidden">
                             {/* Prompt */}
                             <div className="flex-1 flex flex-col border-r min-w-0 overflow-hidden h-full min-h-0">
                                 <div className="p-2 border-b bg-muted/10 font-medium text-sm flex justify-between items-center shrink-0 min-h-[44px]">

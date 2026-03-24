@@ -117,7 +117,9 @@ export function EvaluationDetailsDialog({
                             perturbations={getCurrentPerturbations()}
                             perturbationFilter={perturbationFilter}
                             setPerturbationFilter={setPerturbationFilter}
-                            issues={record.issues}
+                            issues={record.issues.filter((i: any) =>
+                                i.module === activeModule && (i.itemIndex === undefined || i.itemIndex === logic.promptIndex)
+                            )}
                             onPerturbationClick={handlePerturbationClick}
                         />
                     </div>

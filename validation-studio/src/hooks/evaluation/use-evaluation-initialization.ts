@@ -1,5 +1,4 @@
 import { useCallback } from "react"
-import { CookieManager } from "@/lib/configuration/cookie-manager"
 import { parsePromptFile } from "@/lib/validation/prompt-builder"
 import { EvaluationState } from "./types"
 
@@ -24,12 +23,15 @@ export function useEvaluationInitialization(state: EvaluationState) {
     }, [setValidationSteps])
 
     const loadConfigs = useCallback(() => {
-        const saved = CookieManager.get("llm_configurations");
-        if (saved) {
-            try {
-                setConfigs(JSON.parse(saved));
-            } catch (e) { console.error(e); }
-        }
+        // Load configurations
+        fetch("/api/configurations")
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setConfigs(data);
+                }
+            })
+            .catch(err => console.error("Failed to load configurations:", err));
 
         // Load Prompts
         fetch("/api/tools/prompts?lang=en")

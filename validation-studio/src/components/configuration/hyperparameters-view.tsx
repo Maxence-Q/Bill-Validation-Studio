@@ -13,7 +13,6 @@ import {
 import { ConfigCard } from "@/components/configuration/config-card"
 import { ConfigForm } from "@/components/configuration/config-form"
 import { Configuration } from "@/types/configuration"
-import { CookieManager } from "@/lib/configuration/cookie-manager"
 
 export function HyperparametersView() {
     const [configs, setConfigs] = useState<Configuration[]>([])
@@ -21,38 +20,52 @@ export function HyperparametersView() {
     const [editingConfig, setEditingConfig] = useState<Configuration | null>(null)
     const [isClient, setIsClient] = useState(false)
 
-    // Load configs from cookies on mount
+    // Load configs from API on mount
     useEffect(() => {
         setIsClient(true)
-        const savedConfigs = CookieManager.get("llm_configurations")
-        if (savedConfigs) {
+        const fetchConfigs = async () => {
             try {
-                setConfigs(JSON.parse(savedConfigs))
+                const res = await fetch("/api/configurations")
+                if (res.ok) {
+                    const data = await res.json()
+                    setConfigs(data)
+                }
             } catch (e) {
-                console.error("Failed to parse configurations", e)
+                console.error("Failed to fetch configurations", e)
             }
         }
+        fetchConfigs()
     }, [])
 
-    // Save configs to cookies whenever they change
-    useEffect(() => {
-        if (isClient) {
-            CookieManager.set("llm_configurations", JSON.stringify(configs), { expires: 365 })
+    const saveConfigs = async (newConfigs: Configuration[]) => {
+        try {
+            await fetch("/api/configurations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newConfigs),
+            })
+        } catch (e) {
+            console.error("Failed to save configurations", e)
         }
-    }, [configs, isClient])
+    }
 
-    const handleCreateOrUpdate = (config: Configuration) => {
+    const handleCreateOrUpdate = async (config: Configuration) => {
+        let updatedConfigs: Configuration[]
         if (editingConfig) {
-            setConfigs(configs.map((c) => (c.id === config.id ? config : c)))
+            updatedConfigs = configs.map((c) => (c.id === config.id ? config : c))
         } else {
-            setConfigs([...configs, config])
+            updatedConfigs = [...configs, config]
         }
+        setConfigs(updatedConfigs)
+        await saveConfigs(updatedConfigs)
         setIsDialogOpen(false)
         setEditingConfig(null)
     }
 
-    const handleDelete = (id: string) => {
-        setConfigs(configs.filter((c) => c.id !== id))
+    const handleDelete = async (id: string) => {
+        const updatedConfigs = configs.filter((c) => c.id !== id)
+        setConfigs(updatedConfigs)
+        await saveConfigs(updatedConfigs)
     }
 
     const openAddDialog = () => {

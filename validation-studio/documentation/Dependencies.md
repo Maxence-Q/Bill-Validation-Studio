@@ -20,8 +20,10 @@ A breakdown of every external library used in the project and why.
 |---------|---------|---------|
 | `radix-ui` | 1.4.3 | Headless, accessible UI primitives (dialogs, dropdowns, tooltips, etc.) |
 | `@radix-ui/react-tabs` | 1.1.13 | Standalone Radix Tabs component used for tab navigation |
-| `lucide-react` | 0.563.0 | Icon library — provides all SVG icons used across the app (e.g. `Loader2`, `Eye`, `Trash2`) |
+| `@radix-ui/react-checkbox` | 1.3.3 | Accessible checkbox primitive |
+| `lucide-react` | 0.563.0 | Icon library — provides all SVG icons used across the app (e.g. `Book`, `Database`, `Cpu`) |
 | `sonner` | 2.0.7 | Toast notification system — lightweight, animated toasts |
+| `cmdk` | 1.1.1 | Command palette component |
 
 ---
 
@@ -31,6 +33,7 @@ A breakdown of every external library used in the project and why.
 |---------|---------|---------|
 | `tailwindcss` | 4.x | Utility-first CSS framework — all styling is done via Tailwind classes |
 | `@tailwindcss/postcss` | 4.x | PostCSS plugin to process Tailwind in the build pipeline |
+| `@tailwindcss/typography` | 0.5.19 | Plugin to style raw markdown/HTML content |
 | `tailwind-merge` | 3.4.0 | Intelligently merges conflicting Tailwind classes (used in the `cn()` utility) |
 | `class-variance-authority` | 0.7.1 | Manages component style variants (e.g. `Button` with `variant="ghost"`, `size="sm"`) |
 | `clsx` | 2.1.1 | Conditional class name concatenation — used inside `cn()` |
@@ -72,6 +75,8 @@ A breakdown of every external library used in the project and why.
 |---------|---------|---------|
 | `axios` | 1.13.5 | HTTP client — used for external API calls alongside the native `fetch` |
 | `react-dropzone` | 15.0.0 | Drag-and-drop file upload component — used for JSON file uploads |
+| `react-markdown` | 10.1.0 | Renders markdown as React components |
+| `remark-gfm` | 4.0.1 | Support for GitHub Flavored Markdown (tables, tasklists) |
 
 ---
 

@@ -1,0 +1,429 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/actions.ts
+   38:72  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   70:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/actions/feedback.ts
+  35:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  49:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/evaluation/route.ts
+  10:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/evaluation/run/route.ts
+  54:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/tools/data-description/route.ts
+  9:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/tools/general-description/route.ts
+  9:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/tools/organisations/route.ts
+  9:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/validation/build-prompts/route.ts
+  26:15  warning  'client' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+  28:14  error    Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  30:80  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  76:17  error    'modulePrompt' is never reassigned. Use 'const' instead                                                  prefer-const
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/api/validation/reconstruct/route.ts
+  30:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/configuration/page.tsx
+  3:10  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/observability/page.tsx
+   5:81  warning  'ChevronLeft' is defined but never used                 @typescript-eslint/no-unused-vars
+   5:94  warning  'ChevronRight' is defined but never used                @typescript-eslint/no-unused-vars
+  12:10  warning  'renderPrompt' is defined but never used                @typescript-eslint/no-unused-vars
+  78:11  warning  'getFilteredIssues' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/page.tsx
+  21:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  31:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/app/page.tsx:31:9
+  29 |       try {
+  30 |         const parsed = JSON.parse(savedConfigs) as Configuration[]
+> 31 |         setHasConfigs(parsed.length > 0)
+     |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |       } catch (e) {
+  33 |         setHasConfigs(false)
+  34 |       }  react-hooks/set-state-in-effect
+  32:16  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/config-card.tsx
+  91:33  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  91:47  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/config-form.tsx
+  96:25  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/config-form.tsx:96:25
+  94 |     }
+  95 |
+> 96 |     const slicingMode = form.watch("slicing.mode")
+     |                         ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  97 |
+  98 |     return (
+  99 |         <Form {...form}>  react-hooks/incompatible-library
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/hyperparameters-view.tsx
+  26:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/hyperparameters-view.tsx:26:9
+  24 |     // Load configs from cookies on mount
+  25 |     useEffect(() => {
+> 26 |         setIsClient(true)
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  27 |         const savedConfigs = CookieManager.get("llm_configurations")
+  28 |         if (savedConfigs) {
+  29 |             try {  react-hooks/set-state-in-effect
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/tools/prompts-editor.tsx
+  4:16  warning  'TabsContent' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/configuration/tools/tools-editor.tsx
+  4:16  warning  'TabsContent' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/dashboard/create-widget-dialog.tsx
+  319:22  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/dashboard/widget-navigation-modal.tsx
+  20:10  warning  'Badge' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/dashboard/widgets/distribution/DistributionWidget.tsx
+   59:11  warning  The 'slices' logical expression could make the dependencies of useMemo Hook (at line 77) change on every render. To fix this, wrap the initialization of 'slices' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  162:47  warning  'outerPath' is assigned a value but never used                                                                                                                                               @typescript-eslint/no-unused-vars
+  163:47  warning  'innerPath' is assigned a value but never used                                                                                                                                               @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/dashboard/widgets/timeSeries/TimeSeriesWidget.tsx
+  78:10  warning  'buildSvgLines' is defined but never used  @typescript-eslint/no-unused-vars
+  81:5   warning  'innerH' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/create-evaluation-dialog.tsx
+  27:64  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  38:8   warning  React Hook useEffect has a missing dependency: 'runner'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  52:8   warning  React Hook useEffect has a missing dependency: 'runner'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  62:42  error    Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/details/components/panels.tsx
+    9:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   13:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:82  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   79:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/details/components/top-bar.tsx
+   3:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  39:83  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/details/types.ts
+  20:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/details/use-evaluation-dialog-logic.ts
+   43:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   57:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/evaluation-details-dialog.tsx
+  45:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/evaluation-issues-display.tsx
+  24:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/evaluation-modal.tsx
+  23:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/perturbation-strategy-config.tsx
+   5:10  warning  'Switch' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  10:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  40:22  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/evaluation/perturbation-strategy-config.tsx:40:22
+  38 |             }
+  39 |         });
+> 40 |         if (changed) setModulePercentages(newPercentages);
+     |                      ^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |     }, []);
+  42 |
+  43 |     // Helper to handle module checkboxes  react-hooks/set-state-in-effect
+  41:8   warning  React Hook useEffect has a missing dependency: 'modulePercentages'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/feedback/feedback-modal.tsx
+  118:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  192:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  209:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  247:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/observability/observability-details-dialog.tsx
+   87:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  194:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  225:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  232:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  249:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/search-events.tsx
+   5:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  22:22  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:18  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/shared/history-filter-bar.tsx
+  3:40  warning  'useRef' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/validation/event-preview.tsx
+  15:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/validation/file-upload.tsx
+   9:26  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:30  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/validation/issues-display.tsx
+  4:10  warning  'Dialog' is defined but never used             @typescript-eslint/no-unused-vars
+  4:18  warning  'DialogContent' is defined but never used      @typescript-eslint/no-unused-vars
+  4:33  warning  'DialogDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  4:52  warning  'DialogHeader' is defined but never used       @typescript-eslint/no-unused-vars
+  4:66  warning  'DialogTitle' is defined but never used        @typescript-eslint/no-unused-vars
+  4:79  warning  'DialogTrigger' is defined but never used      @typescript-eslint/no-unused-vars
+  5:10  warning  'Button' is defined but never used             @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/validation/shared/use-prompt-manager.ts
+   10:85  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   79:31  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  144:63  warning  React Hook useMemo has a missing dependency: 'getGroupedPrompts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/components/validation/validation-progress.tsx
+  17:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/evaluation/types.ts
+  14:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/evaluation/use-evaluation-execution.ts
+   13:9   warning  'validationStartTime' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+   18:22  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+   20:19  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+   95:72  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  129:94  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  131:79  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  132:81  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  133:78  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  165:25  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  173:8   warning  React Hook useCallback has a missing dependency: 'setValidationStartTime'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/evaluation/use-evaluation-handlers.ts
+   6:102  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/evaluation/use-evaluation-initialization.ts
+  19:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  63:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/evaluation/use-evaluation-state.ts
+  19:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/hooks/useValidationRunner.ts
+   26:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/configuration/storage-core.ts
+  11:13  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:26  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:18  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/dashboard/distributionSnapshot.ts
+   49:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:19  warning  '_' is defined but never used             @typescript-eslint/no-unused-vars
+  114:95  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/dashboard/evaluationHistory.ts
+  13:24  warning  'TimeSeriesSeries' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/execution-strategies/single-pass-strategy.ts
+   9:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/execution-strategies/strategy-factory.ts
+  7:33  warning  'config' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/execution-strategies/two-pass-strategy.ts
+  11:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/execution-strategies/types.ts
+   6:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   7:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/llm-client.ts
+   45:13  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:16  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:41  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:67  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:38  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  126:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:51  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:27  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/module-contribution.ts
+   1:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   8:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/data-preparation.ts
+    5:43  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+    5:60  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+    7:60  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  106:23  error  The array literal notation [] is preferable  @typescript-eslint/no-array-constructor
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/metrics-calculator.ts
+   14:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:87  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   89:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/prompt-processor.ts
+   8:28   error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  22:104  error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  24:13   error  'currentItems' is never reassigned. Use 'const' instead  prefer-const
+  31:54   error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/prompt-reconstruction-service.ts
+  15:37  error  A `require()` style import is forbidden   @typescript-eslint/no-require-imports
+  36:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/result-storage.ts
+   4:10  warning  'ValidationRecord' is defined but never used        @typescript-eslint/no-unused-vars
+  29:74  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  41:70  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  43:33  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  46:31  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  49:13  error    'history' is never reassigned. Use 'const' instead  prefer-const
+  67:38  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/orchestrator-modules/retrieval-service.ts
+  43:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/perturbation-engine.ts
+   31:114  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+   32:25   warning  'references' is assigned a value but never used        @typescript-eslint/no-unused-vars
+   34:36   error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  111:21   warning  'tableHeaderIndex' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  257:54   error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  257:81   error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/prompt-strategies/line-by-line-strategy.ts
+   15:22  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   16:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:63  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:42  warning  'i' is defined but never used             @typescript-eslint/no-unused-vars
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/prompt-strategies/types.ts
+   6:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   7:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/shared-prompt-pipeline.ts
+  11:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/lib/validation/validation-orchestrator.ts
+    3:21  warning  'RateLimitError' is defined but never used                                                               @typescript-eslint/no-unused-vars
+   34:18  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   36:26  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   37:25  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   41:21  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   43:55  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   48:13  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   49:29  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   62:26  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   67:78  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   72:94  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   80:18  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   82:16  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   83:34  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+   85:45  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  128:22  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  129:40  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  130:51  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  138:25  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  171:53  error    Unexpected any. Specify a different type                                                                 @typescript-eslint/no-explicit-any
+  175:10  error    Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+  251:10  error    Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+
+/home/maxencetlm/Bill-LLM-EndVal/validation-studio/src/types/validation.ts
+  36:78  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:92  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 233 problems (182 errors, 51 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

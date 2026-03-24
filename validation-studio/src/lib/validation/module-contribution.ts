@@ -36,13 +36,21 @@ export function buildListContribution(data: any): string[] {
 
     let unflattenedList: any[] = [];
 
-    // Logic based on Python implementation
-    if ("PriceGroupModelList" in data) {
-        unflattenedList = data["PriceGroupModelList"] || [];
-    } else if ("PriceGroups" in data) {
-        unflattenedList = data["PriceGroups"] || [];
-    } else if ("RightToSellAndFeesModelList" in data) {
-        unflattenedList = data["RightToSellAndFeesModelList"] || [];
+    if (Array.isArray(data)) {
+        unflattenedList = data;
+    } else {
+        // Logic based on Python implementation
+        if ("PriceGroupModelList" in data) {
+            unflattenedList = data["PriceGroupModelList"] || [];
+        } else if ("PriceGroups" in data) {
+            unflattenedList = data["PriceGroups"] || [];
+        } else if ("RightToSellAndFeesModelList" in data) {
+            unflattenedList = data["RightToSellAndFeesModelList"] || [];
+        } else if ("EventPriceModelList" in data) {
+            unflattenedList = data["EventPriceModelList"] || [];
+        } else if ("Prices" in data) {
+            unflattenedList = data["Prices"] || [];
+        }
     }
 
     return unflattenedList.map(item => buildFullContribution(item));

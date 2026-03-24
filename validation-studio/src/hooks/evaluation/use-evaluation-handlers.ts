@@ -1,6 +1,5 @@
 import { useCallback } from "react"
 import { Configuration } from "@/types/configuration"
-import { CookieManager } from "@/lib/configuration/cookie-manager"
 import { EvaluationState } from "./types"
 
 export function useEvaluationHandlers(state: EvaluationState, updateStepStatus: (id: string, status: any) => void) {
@@ -22,10 +21,20 @@ export function useEvaluationHandlers(state: EvaluationState, updateStepStatus: 
         setCurrentPhase('perturbation_strategy');
     }, [setSelectedConfig, updateStepStatus, setCurrentPhase])
 
-    const handleNewConfig = useCallback((newConfig: Configuration) => {
+    const handleNewConfig = useCallback(async (newConfig: Configuration) => {
         const updatedConfigs = [...configs, newConfig];
         setConfigs(updatedConfigs);
-        CookieManager.set("llm_configurations", JSON.stringify(updatedConfigs), { expires: 365 });
+
+        try {
+            await fetch("/api/configurations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedConfigs),
+            });
+        } catch (e) {
+            console.error("Failed to save new configuration:", e);
+        }
+
         setIsConfigDialogOpen(false);
         handleConfigSelect(newConfig);
     }, [configs, setConfigs, setIsConfigDialogOpen, handleConfigSelect])

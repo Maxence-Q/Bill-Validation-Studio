@@ -72,16 +72,16 @@ export function useEvaluationDialogLogic(
         const currentPrompt = groupedPrompts[promptIndex]
         if (!currentPrompt) return "No prompt for this module"
 
-        if (currentPrompt.content.includes("GLOBAL INSTRUCTIONS:")) {
-            return currentPrompt.content
-        }
+        let basePrompt = currentPrompt.content;
 
-        const basePrompt = renderPrompt(currentPrompt.content, template, {
-            elementName: `${activeModule} Evaluation - Item ${promptIndex + 1}`,
-            targetId: (record.eventId || record.targetEventId || "Unknown").toString(),
-            referenceIds: "Evaluation Record",
-            strategy: "Perturbation Analysis"
-        })
+        if (!basePrompt.includes("INSTRUCTIONS:") && !basePrompt.includes("--------------------------------------------------")) {
+            basePrompt = renderPrompt(basePrompt, template, {
+                elementName: `${activeModule} Evaluation - Item ${promptIndex + 1}`,
+                targetId: (record.eventId || record.targetEventId || "Unknown").toString(),
+                referenceIds: "Evaluation Record",
+                strategy: "Perturbation Analysis"
+            })
+        }
 
         const perturbations = getCurrentPerturbations()
         if (!perturbations || perturbations.length === 0) return basePrompt

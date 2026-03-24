@@ -29,7 +29,15 @@ import {
     defaultConfiguration,
     LLM_MODELS,
     PROMPT_LANGUAGES,
+    EXECUTION_STRATEGIES,
+    BUILDER_STRATEGIES,
 } from "@/types/configuration"
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
 import { useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 
@@ -57,10 +65,13 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
                 reasoningEffort: initialData.reasoningEffort || "medium",
+                executionStrategy: initialData.executionStrategy || "single-pass",
+                builderStrategy: initialData.builderStrategy || "semantic-chunking",
             }
             : {
                 name: "",
                 ...defaultConfiguration,
+                builderStrategy: "semantic-chunking",
             },
     })
 
@@ -75,11 +86,14 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
                 reasoningEffort: initialData.reasoningEffort || "medium",
+                executionStrategy: initialData.executionStrategy || "single-pass",
+                builderStrategy: initialData.builderStrategy || "semantic-chunking",
             })
         } else {
             form.reset({
                 name: "",
                 ...defaultConfiguration,
+                builderStrategy: "semantic-chunking",
             })
         }
     }, [initialData, form])
@@ -99,9 +113,10 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                 <Tabs defaultValue="main" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="main">Main Configuration</TabsTrigger>
                         <TabsTrigger value="advanced">Advanced Settings</TabsTrigger>
+                        <TabsTrigger value="strategies">Execution Strategies</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="main" className="space-y-6 py-4">
@@ -350,6 +365,100 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                                 </div>
                             )}
                         </div>
+                    </TabsContent>
+
+                    <TabsContent value="strategies" className="space-y-6 py-4">
+                        <Accordion type="single" collapsible defaultValue="builder">
+                            <AccordionItem value="builder">
+                                <AccordionTrigger className="hover:no-underline">
+                                    <div className="flex flex-col items-start gap-1 text-left">
+                                        <span className="font-semibold">Builder Strategy</span>
+                                        <span className="text-xs font-normal text-muted-foreground mt-1">
+                                            Determines how large JSON structures are sliced for the LLM.
+                                        </span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pt-4 px-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="builderStrategy"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                    value={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select builder strategy" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {BUILDER_STRATEGIES.map((strategy) => (
+                                                            <SelectItem key={strategy.id} value={strategy.id}>
+                                                                {strategy.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="mt-4 text-sm bg-muted p-3 rounded-md space-y-2">
+                                        <p><strong>Line by Line Slicing:</strong> Slices the flattened JSON sequentially. Best for wide data rows using strict structural rule evaluations.</p>
+                                        <p><strong>Semantic Chunking:</strong> Groups semantically related fields into structured summaries, significantly reducing token usage while preserving context.</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="execution">
+                                <AccordionTrigger className="hover:no-underline">
+                                    <div className="flex flex-col items-start gap-1 text-left">
+                                        <span className="font-semibold">Execution Strategy</span>
+                                        <span className="text-xs font-normal text-muted-foreground mt-1">
+                                            Determines how the LLM handles the chunked data and filters anomalies.
+                                        </span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pt-4 px-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="executionStrategy"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                    value={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select execution strategy" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {EXECUTION_STRATEGIES.map((strategy) => (
+                                                            <SelectItem key={strategy.id} value={strategy.id}>
+                                                                {strategy.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="mt-4 text-sm bg-muted p-3 rounded-md space-y-2">
+                                        <p><strong>Single-Pass:</strong> Fastest execution. Processes chunks once and flags all anomalies immediately. Good for baseline metrics.</p>
+                                        <p><strong>Two-Pass:</strong> Higher latency, but captures event context. Sends a second 'reviewer' prompt to filter out known operational workarounds (e.g., dummy dates 2038) to reduce false positives.</p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </TabsContent>
                 </Tabs>
 

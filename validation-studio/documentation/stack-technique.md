@@ -22,6 +22,7 @@ Ce document recense les technologies, bibliothèques et outils utilisés dans le
 | **Monaco Editor** | Éditeur de code embarqué (similaire à VS Code) pour l'édition de JSON/Code. |
 | **Sonner** | Gestion des notifications toast. |
 | **CMDK** | Interface de type "Command Palette". |
+| **Lucide React** | Bibliothèque d'icônes standardisée (Book, Database, Cpu). |
 | **Class Variance Authority (CVA)** | Gestion des variantes de styles pour les composants. |
 | **clsx / tailwind-merge** | Utilitaires pour la fusion conditionnelle et propre des classes CSS. |
 
@@ -59,8 +60,9 @@ Bien que "Frontend", l'application Next.js gère des routes API et des intégrat
 ### Structure du Projet
 - **App Router**: Utilisation du dossier `src/app` pour le routing basé sur le système de fichiers.
 - **Server Actions / API Routes**: Gestion de la logique serveur via `src/app/api`.
+- **Pages de Documentation**: Routage spécifique sous `/docs` pour Qdrant, API et l'Architecture de l'Orchestrateur.
 - **Components**: Séparation entre composants UI génériques (`components/ui`) et composants métier spécifiques.
 
 ### Flux de Données
 - **Streaming**: L'application utilise fortement le streaming de données (NDJSON) pour afficher la progression des validations en temps réel sans bloquer l'interface.
-- **Configuration**: Les configurations LLM sont stockées côté client (Cookies) pour une itération rapide, tandis que l'historique est géré côté serveur.
+- **Configuration**: Les configurations LLM sont persistées côté serveur pour garantir la cohérence entre les sessions, tandis que l'interface permet une édition en temps réel via des API dédiées.

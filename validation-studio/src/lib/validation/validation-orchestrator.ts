@@ -1,3 +1,13 @@
+/**
+ * Validation Orchestrator Steps:
+ * 1. Retrieval: Fetch target and reference event data from API/RAG
+ * 2. Setup: Initialize LLM client and load prompt templates
+ * 3. Pretreatment: Clean and transform event data for model ingestion
+ * 4. Pass 1 (Prompt Building): Generate all module-specific prompts
+ * 5. Pass 2 (Execution): Run prompts through LLM via strategy manager
+ * 6. Analysis: Calculate validation metrics and performance
+ * 7. Persistence: Save complete validation record for history
+ */
 import { v4 as uuidv4 } from 'uuid';
 import { Configuration } from "@/types/configuration";
 import { LlmClient, RateLimitError } from "@/lib/validation/llm-client";
@@ -10,19 +20,14 @@ import { ResultStorage } from "@/lib/validation/orchestrator-modules/result-stor
 import { loadPrompts, reconstructPrompts as reconstructPromptsService } from "@/lib/validation/orchestrator-modules/prompt-reconstruction-service";
 import { buildPromptsForModule } from "@/lib/validation/shared-prompt-pipeline";
 
+// Execution Strategies
+import { StrategyFactory } from "@/lib/validation/execution-strategies/strategy-factory";
+import { ExecutionContext } from "@/lib/validation/execution-strategies/types";
+
 // Re-export for backward compatibility
 export { reconstructPrompts } from "@/lib/validation/orchestrator-modules/prompt-reconstruction-service";
-
-// Modules to process
-export const VALIDATION_MODULES = [
-    "Event",
-    "OwnerPOS",
-    "EventDates",
-    "FeeDefinitions",
-    "PriceGroups",
-    "Prices",
-    "RightToSellAndFees"
-];
+import { resolveValidationModules } from "@/lib/validation/module-resolver";
+import { pretreatData } from "@/lib/validation/data-pretreatment";
 
 // --- Interface Definitions ---
 
@@ -73,13 +78,15 @@ async function fetchEventsForIds(ids: number[]): Promise<{ id: number, data: any
 function buildValidationRecord(
     input: ValidationInput,
     targetId: number,
+    eventName: string,
     targetEvent: any,
     usedReferenceIds: number[],
     allIssues: any[],
     promptsDebug: Record<string, any>,
     metrics: ValidationMetrics | undefined,
     allPerturbationTracking: Record<string, any>,
-    allReasonings: Record<string, string[]>
+    allReasonings: Record<string, string[]>,
+    referenceScores?: Record<number, number>
 ) {
     if (!input.storage) return null;
 
@@ -88,13 +95,14 @@ function buildValidationRecord(
         id: storageType === 'validation' ? (input.storage.extraData?.id || uuidv4()) : uuidv4(),
         targetEventId: targetId,
         eventId: targetId,
-        eventName: targetEvent.Event?.Event?.NameFr || targetEvent.Event?.Event?.NameEN || targetEvent.Event?.Event?.Name || "Unknown Event",
+        eventName: eventName,
         timestamp: new Date().toISOString(),
         status: allIssues.length > 0 ? "success" : "failed",
         issuesCount: allIssues.length,
         config: input.config,
         issues: allIssues,
         referenceIds: usedReferenceIds,
+        referenceScores: referenceScores,
         // We intentionally DO NOT store prompts in the history file to save space.
         // The UI will reconstruct them on the fly using targetEventId and referenceIds.
         prompts: undefined,
@@ -118,7 +126,8 @@ function buildValidationRecord(
 // --- Process 6.1: Main Validation / Evaluation ---
 
 export async function validateEvent(input: ValidationInput): Promise<ValidationOutput> {
-    const { targetEvent, config, perturbationConfig, onProgress } = input;
+    let { targetEvent } = input;
+    const { config, perturbationConfig, onProgress } = input;
     if (!config) throw new Error("Configuration is missing");
 
     const allIssues: any[] = [];
@@ -129,10 +138,13 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
 
     // 1. Retrieval (RAG → IDs only, then API → fetch events)
     const targetId = targetEvent?.Event?.Event?.ID;
+    const eventName = targetEvent.Event?.Event?.NameFr || targetEvent.Event?.Event?.NameEN || targetEvent.Event?.Event?.Name || "Unknown Event";
+
     if (!targetId) throw new Error("Target event has no ID");
 
     let usedReferences: any[];
     let usedReferenceIds: number[];
+    let referenceScores: Record<number, number> = {};
 
     if (input.referenceEvents && input.referenceEvents.similarIds?.length > 0) {
         console.log("[Orchestrator] Using provided reference events.");
@@ -141,9 +153,12 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         usedReferenceIds = input.referenceEvents.similarIds.slice(0, configRefsCount);
     } else {
         // C5 — RAG
-        const similarIds = await RetrievalService.retrieveContext(targetId, 4);
+        const retrievalResults = await RetrievalService.retrieveDetailedContext(targetId, 4);
         const configRefsCount = config.references || 3;
-        const idsToFetch = similarIds.slice(0, configRefsCount);
+        const resultsToUse = retrievalResults.slice(0, configRefsCount);
+
+        const idsToFetch = resultsToUse.map(r => r.id);
+        resultsToUse.forEach(r => referenceScores[r.id] = r.score);
 
         // C1 — API
         const fetchedEvents = await fetchEventsForIds(idsToFetch);
@@ -160,15 +175,22 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
     });
 
     // 2. Fetch Prompt Template
-    const { systemMessage, userPromptTemplate } = loadPrompts();
+    const { systemMessage, userPromptTemplate, generalDescription, organisation } = loadPrompts(config.builderStrategy);
 
-    // 3. Process Modules - PASS 1: Generate all prompts
+    // 3. Pretreatment before generating prompts
+    const pretreated = pretreatData(targetEvent, usedReferences, config);
+    targetEvent = pretreated.targetEvent;
+    usedReferences = pretreated.usedReferences;
+
+    const activeModules = resolveValidationModules(config, targetEvent);
+
+    // 4. Process Modules - PASS 1: Generate all prompts
     // We do this to know the total global prompts and sub-prompts before starting execution
     const allBuiltPromptsByModule = new Map<string, any[]>();
     let globalTotalPrompts = 0;
     let globalTotalSubPrompts = 0;
 
-    for (const module of VALIDATION_MODULES) {
+    for (const module of activeModules) {
         if (input.moduleFilter && input.moduleFilter !== module) continue;
 
         // C2 — Build Prompts
@@ -176,7 +198,9 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             joinListModules: false,
             userPromptTemplate,
             renderOptions: {
-                policyIntro: "",
+                generalDescription,
+                organisation,
+                elementName: module,
                 targetId: targetId.toString(),
                 referenceIds: usedReferenceIds.join(", "),
                 strategy: perturbationConfig ? "Perturbation Analysis" : "Similarity Search"
@@ -233,135 +257,80 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
         globalTotalSubPrompts += builtPrompts.length;
     }
 
-    // 4. Process Modules - PASS 2: C3 — LLM Execution
-    let globalCurrentPrompt = 0;
-    let globalCompletedSubPrompts = 0;
+    // 5. Process Modules - PASS 2: C3 — LLM Execution via Strategy Manager
+    const globalTracking = {
+        currentPrompt: 0,
+        totalPrompts: globalTotalPrompts,
+        completedSubPrompts: 0,
+        totalSubPrompts: globalTotalSubPrompts
+    };
 
-    for (const module of VALIDATION_MODULES) {
-        if (input.moduleFilter && input.moduleFilter !== module) continue;
+    // Instantiate Strategy (Defaults to SinglePass for backward compatibility)
+    const executionStrategy = StrategyFactory.getExecutionStrategy(config);
 
-        const builtPrompts = allBuiltPromptsByModule.get(module) || [];
+    const modulesToProcess = activeModules.filter(m => !input.moduleFilter || input.moduleFilter === m);
+    const executionResults: { module: string; issues: any[]; reasonings: string[] }[] = [];
 
-        const parentProgress = new Map<number, number>();
-        const reasoningByParent = new Map<number, string[]>();
+    // Parallel execution with workers
+    const MAX_CONCURRENT_WORKERS = 5;
+    const queue = [...modulesToProcess];
 
-        let totalParents = 0;
-        if (builtPrompts.length > 0) {
-            totalParents = builtPrompts.reduce((acc, p) => Math.max(acc, p.slicingMetadata.parentIndex + 1), 0);
-        }
+    const worker = async () => {
+        while (queue.length > 0) {
+            const module = queue.shift();
+            if (!module) continue;
 
-        for (let i = 0; i < builtPrompts.length; i++) {
-            const prompt = builtPrompts[i];
-            const meta = prompt.slicingMetadata;
+            const builtPrompts = allBuiltPromptsByModule.get(module) || [];
 
-            // Only notify progress when starting a NEW parent or if it's the first sub-prompt of a parent
-            const currentCount = parentProgress.get(meta.parentIndex) || 0;
-            if (currentCount === 0) {
-                globalCurrentPrompt++;
-                if (onProgress) onProgress({
-                    module,
-                    current: meta.parentIndex + 1,
-                    total: totalParents,
-                    status: 'running',
-                    global: {
-                        currentPrompt: globalCurrentPrompt,
-                        totalPrompts: globalTotalPrompts,
-                        completedSubPrompts: globalCompletedSubPrompts,
-                        totalSubPrompts: globalTotalSubPrompts
-                    }
-                });
-            }
-            parentProgress.set(meta.parentIndex, currentCount + 1);
-
-            try {
-                const { issues, reasoning } = await llmClient.validateSection(
-                    systemMessage,
-                    prompt.rendered
-                );
-
-                if (issues) {
-                    allIssues.push(...issues.map(issue => ({
-                        ...issue,
-                        module,
-                        itemIndex: meta.parentIndex
-                    })));
-                }
-
-                if (reasoning) {
-                    const parts = reasoningByParent.get(meta.parentIndex) ?? [];
-                    parts.push(reasoning);
-                    reasoningByParent.set(meta.parentIndex, parts);
-                }
-
-            } catch (err: any) {
-                if (err instanceof RateLimitError) {
-                    allIssues.push({
-                        severity: "error",
-                        module: module,
-                        path: "API_LIMIT_REACHED",
-                        message: "Evaluation stopped early: LLM API rate limit reached."
-                    });
-                    break;
-                }
-                console.error(`LLM Error module ${module}:`, err.message || err);
-            }
-
-            // Increment tracking after sub-prompt finishes
-            globalCompletedSubPrompts++;
-
-            // We want to update progress smoothly for ETA calculations, so send an update 
-            // after every subprompt finishes too, even if it's the same parent.
-            if (onProgress) onProgress({
+            // Build Execution Context
+            const context: ExecutionContext = {
+                targetEvent,
+                references: usedReferences,
+                config,
+                llmClient,
+                systemMessage,
                 module,
-                current: meta.parentIndex + 1,
-                total: totalParents,
-                status: 'running',
-                global: {
-                    currentPrompt: globalCurrentPrompt,
-                    totalPrompts: globalTotalPrompts,
-                    completedSubPrompts: globalCompletedSubPrompts,
-                    totalSubPrompts: globalTotalSubPrompts
-                }
-            });
-        }
+                onProgress,
+                globalTracking
+            };
 
-        const finalizedReasonings: string[] = [];
-        for (let idx = 0; idx < totalParents; idx++) {
-            const parts = reasoningByParent.get(idx) || [];
-            finalizedReasonings.push(parts.join("\n\n"));
+            // Delegate execution to the strategy
+            const result = await executionStrategy.execute(builtPrompts, context);
+            executionResults.push({ module, issues: result.issues, reasonings: result.reasonings });
         }
-        allReasonings[module] = finalizedReasonings;
+    };
 
-        if (onProgress) {
-            onProgress({
-                module,
-                current: totalParents,
-                total: totalParents,
-                status: 'completed',
-                global: {
-                    currentPrompt: globalCurrentPrompt,
-                    totalPrompts: globalTotalPrompts,
-                    completedSubPrompts: globalCompletedSubPrompts,
-                    totalSubPrompts: globalTotalSubPrompts
-                }
-            });
+    const workers = Array.from(
+        { length: Math.min(MAX_CONCURRENT_WORKERS, modulesToProcess.length) },
+        () => worker()
+    );
+
+    await Promise.all(workers);
+
+    // Collect results
+    for (const res of executionResults) {
+        if (res.issues.length > 0) {
+            allIssues.push(...res.issues);
         }
+        allReasonings[res.module] = res.reasonings;
     }
 
-    // 5. Metrics Calculation
+    // 6. Metrics Calculation
     const metrics = MetricsCalculator.calculateMetrics(allIssues, allPerturbationTracking);
 
-    // 6. C4 — Storage
+    // 7. C4 — Storage
     const record = buildValidationRecord(
         input,
         targetId,
+        eventName,
         targetEvent,
         usedReferenceIds,
         allIssues,
         promptsDebug,
         metrics,
         allPerturbationTracking,
-        allReasonings
+        allReasonings,
+        referenceScores
     );
 
     if (record && input.storage) {

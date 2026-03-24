@@ -1,0 +1,27 @@
+[
+  {
+    "id": "141ae307-72d8-43b2-aed0-66d788cc0ddc",
+    "createdAt": "2026-03-19T15:52:48.355Z",
+    "name": "default-config",
+    "model": "openai/gpt-oss-20b",
+    "temperature": 0,
+    "language": "en",
+    "references": 3,
+    "slicing": {
+      "mode": "global",
+      "globalValue": 10,
+      "moduleValues": {
+        "Event": 10,
+        "EventDates": 10,
+        "OwnerPOS": 10,
+        "FeeDefinitions": 10,
+        "Prices": 10,
+        "PriceGroups": 10,
+        "RightToSellAndFees": 10
+      }
+    },
+    "reasoningEffort": "medium",
+    "executionStrategy": "single-pass",
+    "builderStrategy": "semantic-chunking"
+  }
+]

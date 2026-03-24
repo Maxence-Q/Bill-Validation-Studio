@@ -3,7 +3,6 @@
 import { useState, useCallback, useRef } from "react"
 import { ValidationStep } from "@/components/validation/validation-progress"
 import { ValidationIssue } from "@/types/validation"
-import { CookieManager } from "@/lib/configuration/cookie-manager"
 import { Configuration } from "@/types/configuration"
 
 export function useValidationRunner() {
@@ -23,7 +22,7 @@ export function useValidationRunner() {
         setValidationIssues([])
     }, [])
 
-    const startValidation = useCallback(async (eventData: any) => {
+    const startValidation = useCallback(async (eventData: any, config: Configuration) => {
         // Cancel any previous validation
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
@@ -45,14 +44,7 @@ export function useValidationRunner() {
         validationStartTimeRef.current = Date.now();
 
         try {
-            // 1. Get Configuration
-            const savedConfigs = CookieManager.get("llm_configurations");
-            if (!savedConfigs) throw new Error("No configurations found. Go to 'Configuration' page.");
-
-            const parsed = JSON.parse(savedConfigs) as Configuration[];
-            if (!parsed || parsed.length === 0) throw new Error("Configuration list is empty.");
-
-            const config = parsed[0]; // Use first config active
+            if (!config) throw new Error("No configuration selected.");
 
             setValidationSteps(prev => prev.map(s => s.id === "init" ? { ...s, status: "success" } : s));
             setValidationSteps(prev => prev.map(s => s.id === "server_processing" ? { ...s, status: "loading" } : s));
@@ -94,6 +86,7 @@ export function useValidationRunner() {
                     if (!line.trim()) continue;
                     try {
                         const msg = JSON.parse(line) as import("@/types/validation").StreamMessage;
+                        console.log("[Stream]", msg);
 
                         if (msg.type === "progress") {
                             setValidationSteps(prev => {

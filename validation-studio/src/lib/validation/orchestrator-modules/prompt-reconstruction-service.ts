@@ -3,22 +3,37 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { buildPromptsForModule } from "@/lib/validation/shared-prompt-pipeline";
 
-// Modules to process (imported constant)
-import { VALIDATION_MODULES } from "@/lib/validation/validation-orchestrator";
+// Modules to process
+import { resolveValidationModules } from "@/lib/validation/module-resolver";
+import { pretreatData } from "@/lib/validation/data-pretreatment";
 
 /**
  * Loads prompt templates from the prompts_en.md file.
  * Shared between validateEvent (orchestrator) and reconstructPrompts (this service).
  */
-export function loadPrompts() {
+export function loadPrompts(builderStrategy?: string) {
     try {
         const { parsePromptFile } = require('@/lib/validation/prompt-builder');
-        const templatePath = path.join(process.cwd(), 'artefacts', 'prompts_en.md');
+        const filename = (builderStrategy === "semantic-chunking")
+            ? 'prompts_en_semantic.md'
+            : 'prompts_en.md';
+        const templatePath = path.join(process.cwd(), 'artefacts', filename);
         const templateContent = fs.readFileSync(templatePath, 'utf-8');
-        return parsePromptFile(templateContent);
+
+        const generalDescPath = path.join(process.cwd(), 'artefacts', 'general_description.md');
+        const generalDescription = fs.existsSync(generalDescPath) ? fs.readFileSync(generalDescPath, 'utf-8') : "";
+
+        // Organisation logic placeholder
+        const organisation = "";
+
+        return {
+            ...parsePromptFile(templateContent),
+            generalDescription,
+            organisation
+        };
     } catch (e) {
-        console.error("Failed to load prompts_en.md", e);
-        return { systemMessage: "", userPromptTemplate: "" };
+        console.error("Failed to load prompt template", e);
+        return { systemMessage: "", userPromptTemplate: "", generalDescription: "", organisation: "" };
     }
 }
 
@@ -41,13 +56,21 @@ export async function reconstructPrompts(input: {
     config?: Configuration;
     perturbationConfig?: any;
 }) {
-    const { targetEvent, referenceEvents, targetEventId, referenceIds, module, config, perturbationConfig } = input;
+    let { targetEvent, referenceEvents } = input;
+    const { targetEventId, referenceIds, module, config, perturbationConfig } = input;
+
+    // 0. Pretreatment (e.g., semantic chunking)
+    if (config) {
+        const pretreated = pretreatData(targetEvent, referenceEvents, config);
+        targetEvent = pretreated.targetEvent;
+        referenceEvents = pretreated.usedReferences;
+    }
 
     // 1. Load Template
-    const { userPromptTemplate } = loadPrompts();
+    const { userPromptTemplate, generalDescription, organisation } = loadPrompts(config?.builderStrategy);
 
     // 2. Process Modules via shared pipeline
-    const modulesToProcess = module ? [module] : VALIDATION_MODULES;
+    const modulesToProcess = module ? [module] : resolveValidationModules(config || {} as Configuration, targetEvent);
     const reconstructedPrompts: Record<string, any[]> = {};
 
     for (const mod of modulesToProcess) {
@@ -58,36 +81,40 @@ export async function reconstructPrompts(input: {
             config || {} as Configuration,
             perturbationConfig,
             {
-                joinListModules: false, // Granular for eval detail, UI will group if needed
+                joinListModules: false, // Keep list items (like Prices) separated by default
+
+                // CRITICAL: We want to reconstruct the PARENT prompts (module data BEFORE slicing).
+                // Example: We want exactly 17 parent prompts total for semantic chunking, 
+                // not the 19 post-slicing child prompts actually sent to the LLM.
+                skipSlicing: true,
+
                 userPromptTemplate,
                 renderOptions: {
                     elementName: mod,
                     targetId: targetEventId.toString(),
                     referenceIds: referenceIds.join(", "),
-                    strategy: "Reconstruction"
+                    strategy: "Reconstruction",
+                    generalDescription,
+                    organisation
                 }
             }
         );
 
-        // Group by parentIndex for parent-level display (slicing transparent to user)
+        // Group by parentIndex for parent-level display
         const parentMap = new Map<number, string[]>();
         builtPrompts.forEach(p => {
             const arr = parentMap.get(p.slicingMetadata.parentIndex) || [];
-            arr.push(p.content);
+            arr.push(p.rendered);
             parentMap.set(p.slicingMetadata.parentIndex, arr);
         });
+
         reconstructedPrompts[mod] = Array.from(parentMap.entries())
             .sort(([a], [b]) => a - b)
             .map(([parentIndex, contents]) => {
-                // Join contents but keep header only for the first chunk
-                const combined = contents.map((c, i) => {
-                    if (i === 0) return c;
-                    const lines = c.split("\n");
-                    return lines.slice(2).join("\n");
-                }).filter(s => s.length > 0).join("\n");
-
+                // If there are multiple chunks for one parent (should not happen now but kept for safety),
+                // join them via divider.
                 return {
-                    content: combined,
+                    content: contents.join("\n\n" + "=".repeat(50) + "\n\n"),
                     parentIndex
                 };
             });

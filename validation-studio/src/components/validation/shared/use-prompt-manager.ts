@@ -77,22 +77,27 @@ export function usePromptManager(
 
         // Detect format and normalize
         return arr.map((item: any, idx: number) => {
-            // New format: { content, parentIndex }
+            // New format: { rendered, content, slicingMetadata }
+            if (typeof item === 'object' && item !== null && ('rendered' in item || 'content' in item) && 'slicingMetadata' in item) {
+                const content = item.rendered || item.content;
+                return { content, parentIndex: item.slicingMetadata.parentIndex as number }
+            }
+            // Reconstruction format: { content, parentIndex }
             if (typeof item === 'object' && item !== null && 'content' in item && 'parentIndex' in item) {
                 return { content: item.content as string, parentIndex: item.parentIndex as number }
             }
-            // Legacy BuiltPrompt with slicingMetadata — group by parentIndex on the fly
+            // Legacy BuiltPrompt with slicingMetadata
             if (typeof item === 'object' && item !== null && 'slicingMetadata' in item) {
-                const content = item.content || item.rendered || JSON.stringify(item, null, 2)
+                const content = item.rendered || item.content || JSON.stringify(item, null, 2)
                 return { content, parentIndex: item.slicingMetadata.parentIndex as number }
             }
             // Plain string
             if (typeof item === 'string') {
                 return { content: item, parentIndex: idx }
             }
-            // Object with just .content
-            if (typeof item === 'object' && item !== null && 'content' in item) {
-                return { content: item.content as string, parentIndex: idx }
+            // Object with just .rendered or .content
+            if (typeof item === 'object' && item !== null && ('rendered' in item || 'content' in item)) {
+                return { content: (item.rendered || item.content) as string, parentIndex: idx }
             }
             // Fallback: JSON stringify generic objects
             return { content: JSON.stringify(item, null, 2), parentIndex: idx }
@@ -117,8 +122,10 @@ export function usePromptManager(
         return Array.from(grouped.entries())
             .sort(([a], [b]) => a - b)
             .map(([parentIndex, contents]) => {
-                // If any content looks like a full rendered prompt (legacy), join them via divider
-                if (contents.some(c => typeof c === 'string' && c.includes("GLOBAL INSTRUCTIONS:"))) {
+                const isFullPrompt = (c: string) => typeof c === 'string' && (c.includes("INSTRUCTIONS:") || c.includes("--------------------------------------------------"));
+
+                // If any content looks like a full rendered prompt, join them via divider
+                if (contents.some(isFullPrompt)) {
                     return {
                         content: contents.join("\n\n" + "=".repeat(50) + "\n\n"),
                         parentIndex

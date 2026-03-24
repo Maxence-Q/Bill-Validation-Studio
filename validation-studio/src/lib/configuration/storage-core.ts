@@ -13,6 +13,7 @@ export interface ValidationRecord {
     // New fields
     targetEventId?: number;
     referenceIds?: number[];
+    referenceScores?: Record<number, number>;
     config?: any;
     perturbationConfig?: any;
     perturbationTracking?: any;

@@ -11,11 +11,9 @@ Rules:
 
 
 USER_PROMPT =
-GLOBAL INSTRUCTIONS:
-{policy_intro}
+{General Description}
+{Organisation}
 
---------------------------------------------------
-VALIDATING {element_name} (ID: {cible_id})
 --------------------------------------------------
 INSTRUCTIONS:
 The data below is presented in a side-by-side table format:
@@ -35,4 +33,3 @@ DATA TO VALIDATE
 OUTPUT INSTRUCTIONS
 If you detect anomalies in the TARGET column (compared to REFERENCE, Rules, or Policy), use the `report_step_issues` tool.
 If everything is correct, call `report_step_issues` with an empty list.
-""".strip()

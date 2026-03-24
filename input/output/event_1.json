@@ -1,0 +1,608 @@
+{
+  "_metadata": {
+    "source_system": "Reservatech",
+    "description": "LLM-friendly event data",
+    "default_taxes": [
+      "TPS",
+      "TVQ"
+    ],
+    "default_taxes_note": "All prices and fees use these taxes unless overridden"
+  },
+  "event": {
+    "name": {
+      "fr": "SAM16-Ariane Moffatt",
+      "en": "SAM16-Ariane Moffatt"
+    },
+    "internet_name": {
+      "fr": "Ariane Moffatt",
+      "en": "Ariane Moffatt"
+    },
+    "long_description": {
+      "fr": "<p>Ariane Moffatt</p>",
+      "en": "<p>Ariane Moffatt</p>"
+    },
+    "artist_name": "Ariane Moffatt",
+    "genre": {
+      "fr": "Chanson française",
+      "en": "French Songs"
+    },
+    "activity_type": "Diffuseur",
+    "product_type": "Ticket",
+    "max_tickets_per_order": 827,
+    "membership_presale_hours": 72,
+    "status": {
+      "is_on_sale": true,
+      "is_general_admission": false,
+      "is_history": false,
+      "is_demo": false
+    },
+    "internet_settings": {
+      "display_on_internet": true,
+      "show_available_places": false,
+      "show_best_ticket_first": false,
+      "is_guest_client_authorized": false,
+      "always_ask_for_price_on_ticket_selection": false
+    },
+    "delivery": {
+      "mail_shipping_available": true,
+      "eticket_available": false,
+      "shipping_mandatory": false
+    }
+  },
+  "venue": {
+    "name": "Salle André-Mathieu",
+    "address": {
+      "street": "475, boulevard de l'Avenir",
+      "city": "Laval",
+      "province": "QC",
+      "postal_code": "H7N 5H9",
+      "country": "Canada",
+      "region": "Laval"
+    },
+    "contact": {
+      "phone": "(450) 667-2040",
+      "email": "billetterie@co-motion.ca"
+    },
+    "email_signature": {
+      "fr": "L'équipe de Scène 1425, de la Salle André-Mathieu et evenko",
+      "en": "Scene 1425, Salle Andre-Mathieu and evenko"
+    },
+    "timezone": {
+      "iana_id": "America/Toronto",
+      "standard_offset_hours": -5,
+      "daylight_offset_hours": -4,
+      "abbreviation": {
+        "fr": "HNE",
+        "en": "EST"
+      },
+      "daylight_abbreviation": {
+        "fr": "HAE",
+        "en": "EDT"
+      }
+    },
+    "entity_type": "Producer",
+    "event_reminder": {
+      "enabled": true,
+      "template": "reservatech-holidays",
+      "days_before": 2
+    }
+  },
+  "producer": {
+    "name": "SAM - Les Yeux Boussolles",
+    "email": "peter.perron@solutionstlm.com",
+    "report_frequency": "DAILY"
+  },
+  "performances": [
+    {
+      "code": "AR160218",
+      "name": {
+        "fr": "Ariane Moffatt 2016",
+        "en": "Ariane Moffatt 2016"
+      },
+      "date_utc": "2036-02-19T00:00:00Z",
+      "date_local": "2036-02-18T19:00:00",
+      "description": {
+        "fr": "<p>Ariane Moffatt 2016</p>",
+        "en": "<p>Ariane Moffatt 2016</p>"
+      },
+      "venue_name": "Salle André-Mathieu",
+      "sales_windows": {
+        "box_office": {
+          "start": "2015-03-10T09:00:00",
+          "end": "2036-02-18T23:00:00"
+        },
+        "network": {
+          "start": "2015-03-13T10:00:00",
+          "end": "2036-02-18T19:00:00"
+        },
+        "internet": {
+          "start": "2015-03-13T10:00:00",
+          "end": "2036-02-18T19:00:00"
+        }
+      },
+      "status": {
+        "cancelled": false,
+        "sold_out": false,
+        "hidden_on_internet": false,
+        "auto_client": true
+      }
+    }
+  ],
+  "pricing": {
+    "applicable_taxes": [
+      {
+        "name": "TPS",
+        "rate": 0.05
+      },
+      {
+        "name": "TVQ",
+        "rate": 0.09975
+      }
+    ],
+    "sections": [
+      "Section_88919",
+      "Section_88920",
+      "Section_88921",
+      "Section_88922"
+    ],
+    "price_groups": [
+      {
+        "name": {
+          "fr": "Club Privilège",
+          "en": "Club Privilège"
+        },
+        "is_active": true,
+        "is_favour": false,
+        "is_consignment": false,
+        "charge_fee1": false,
+        "charge_fee2": true,
+        "hide_on_internet": false,
+        "membership_required": {
+          "name": {
+            "fr": "Club [co]motion",
+            "en": "Club [co]motion"
+          },
+          "type": "MemberCard",
+          "duration": "12 Month",
+          "is_active": true
+        },
+        "allowed_sales_channels": "all",
+        "prices": [
+          31.31,
+          23.48,
+          31.31,
+          23.48
+        ]
+      },
+      {
+        "name": {
+          "fr": "Club Privilège 1",
+          "en": "Club Privilège 1"
+        },
+        "is_active": true,
+        "is_favour": false,
+        "is_consignment": false,
+        "charge_fee1": false,
+        "charge_fee2": true,
+        "hide_on_internet": false,
+        "membership_required": {
+          "name": {
+            "fr": "Club [co]motion",
+            "en": "Club [co]motion"
+          },
+          "type": "MemberCard",
+          "duration": "12 Month",
+          "is_active": true
+        },
+        "allowed_sales_channels": [
+          "Internet",
+          "Salle André-Mathieu"
+        ],
+        "prices": [
+          34.79,
+          23.48,
+          34.79,
+          23.48
+        ]
+      },
+      {
+        "name": {
+          "fr": "Faveur",
+          "en": "Faveur"
+        },
+        "is_active": true,
+        "is_favour": true,
+        "is_consignment": false,
+        "charge_fee1": false,
+        "charge_fee2": false,
+        "hide_on_internet": false,
+        "allowed_sales_channels": [
+          "Salle André-Mathieu"
+        ],
+        "prices": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display_prices": [
+          45.5,
+          35.5,
+          45.5,
+          35.5
+        ]
+      },
+      {
+        "name": {
+          "fr": "MCBN",
+          "en": "MCBN"
+        },
+        "is_active": true,
+        "is_favour": false,
+        "is_consignment": false,
+        "charge_fee1": true,
+        "charge_fee2": false,
+        "hide_on_internet": false,
+        "has_credit_card_condition": true,
+        "allowed_sales_channels": [
+          "Salle André-Mathieu",
+          "Internet"
+        ],
+        "prices": [
+          34.79,
+          23.48,
+          34.79,
+          23.48
+        ]
+      },
+      {
+        "name": {
+          "fr": "Prod.",
+          "en": "Prod."
+        },
+        "is_active": true,
+        "is_favour": true,
+        "is_consignment": false,
+        "charge_fee1": false,
+        "charge_fee2": false,
+        "hide_on_internet": false,
+        "allowed_sales_channels": [
+          "Salle André-Mathieu"
+        ],
+        "prices": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display_prices": [
+          40,
+          30,
+          40,
+          30
+        ]
+      },
+      {
+        "name": {
+          "fr": "Prom.",
+          "en": "Prom."
+        },
+        "is_active": true,
+        "is_favour": true,
+        "is_consignment": false,
+        "charge_fee1": false,
+        "charge_fee2": false,
+        "hide_on_internet": false,
+        "allowed_sales_channels": [
+          "Salle André-Mathieu"
+        ],
+        "prices": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "display_prices": [
+          45.5,
+          35.5,
+          45.5,
+          35.5
+        ]
+      },
+      {
+        "name": {
+          "fr": "Rég.",
+          "en": "Rég."
+        },
+        "is_active": true,
+        "is_favour": false,
+        "is_consignment": false,
+        "charge_fee1": true,
+        "charge_fee2": false,
+        "hide_on_internet": false,
+        "allowed_sales_channels": [
+          "Salle André-Mathieu",
+          "Internet"
+        ],
+        "prices": [
+          34.79,
+          26.09,
+          34.79,
+          26.09
+        ]
+      }
+    ]
+  },
+  "sales_channels": [
+    {
+      "name": "Internet",
+      "is_sale_authorized": true,
+      "authorization_date": "2015-03-09T17:17:27",
+      "fees": {
+        "fee1": {
+          "name": "Fee 1",
+          "amount": 4.78
+        },
+        "fee2": {
+          "name": "Fee 2",
+          "amount": 3.91
+        }
+      },
+      "authorized_price_groups": [
+        "Club Privilège 1",
+        "MCBN",
+        "Rég."
+      ]
+    },
+    {
+      "name": "Salle André-Mathieu",
+      "is_sale_authorized": true,
+      "authorization_date": "2015-03-09T17:17:27",
+      "fees": {
+        "fee1": {
+          "name": "Fee 1",
+          "amount": 4.78
+        },
+        "fee2": {
+          "name": "Fee 2",
+          "amount": 3.91
+        }
+      },
+      "authorized_price_groups": [
+        "Club Privilège 1",
+        "Faveur",
+        "MCBN",
+        "Prod.",
+        "Prom.",
+        "Rég."
+      ]
+    }
+  ],
+  "_insights": {
+    "pricing_summary": {
+      "price_range": {
+        "min": 23.48,
+        "max": 34.79,
+        "currency_note": "before tax"
+      },
+      "section_tiers": [
+        {
+          "tier": "premium",
+          "sections": [
+            "Section_88919",
+            "Section_88921"
+          ],
+          "base_price": 31.31
+        },
+        {
+          "tier": "standard",
+          "sections": [
+            "Section_88920",
+            "Section_88922"
+          ],
+          "base_price": 23.48
+        }
+      ],
+      "premium_to_standard_ratio": 1.33,
+      "paid_groups_count": 4,
+      "complimentary_groups_count": 3,
+      "complimentary_group_names": [
+        "Faveur",
+        "Prod.",
+        "Prom."
+      ]
+    },
+    "group_comparisons": {
+      "baseline_group": "Rég.",
+      "comparisons": [
+        {
+          "group": "Club Privilège",
+          "vs_baseline": 0.9,
+          "note": "10% discount, requires Club [co]motion"
+        },
+        {
+          "group": "Club Privilège 1",
+          "vs_baseline_by_section": {
+            "Section_88919": 1.0,
+            "Section_88920": 0.9,
+            "Section_88921": 1.0,
+            "Section_88922": 0.9
+          },
+          "note": "requires Club [co]motion"
+        },
+        {
+          "group": "MCBN",
+          "vs_baseline_by_section": {
+            "Section_88919": 1.0,
+            "Section_88920": 0.9,
+            "Section_88921": 1.0,
+            "Section_88922": 0.9
+          },
+          "note": "credit card condition"
+        }
+      ]
+    },
+    "fee_impact": {
+      "total_fees_before_tax": 8.69,
+      "fee_as_pct_of_cheapest_ticket": 0.37,
+      "fee_as_pct_of_most_expensive_ticket": 0.25
+    },
+    "sales_channel_summary": {
+      "total_channels": 2,
+      "channel_names": [
+        "Internet",
+        "Salle André-Mathieu"
+      ],
+      "box_office_only_groups": [
+        "Faveur",
+        "Prod.",
+        "Prom."
+      ]
+    },
+    "performance_schedule": {
+      "performances": [
+        {
+          "code": "AR160218",
+          "day_of_week": "Monday",
+          "show_time": "19:00",
+          "time_category": "evening"
+        }
+      ],
+      "day_of_week_distribution": {
+        "Monday": 1
+      },
+      "time_category_distribution": {
+        "evening": 1
+      }
+    },
+    "sales_timeline": {
+      "computed_at": "2026-02-26T13:48:06.178349",
+      "performances": [
+        {
+          "code": "AR160218",
+          "sales_window_days": {
+            "box_office": 7650.6,
+            "network": 7647.4,
+            "internet": 7647.4
+          },
+          "box_office_head_start_days": 3.0,
+          "internet_close_to_performance_hours": 0.0,
+          "membership_presale": {
+            "starts": "2015-03-10T10:00:00",
+            "hours_before_internet": 72
+          },
+          "days_until_performance": 3644.2
+        }
+      ]
+    },
+    "authorization_timeline": [
+      {
+        "channel": "Internet",
+        "authorization_date": "2015-03-09T17:17:27",
+        "authorization_to_first_sale_days": 0.7
+      },
+      {
+        "channel": "Salle André-Mathieu",
+        "authorization_date": "2015-03-09T17:17:27",
+        "authorization_to_first_sale_days": 0.7
+      }
+    ],
+    "quantity_constraints_summary": {
+      "note": "no quantity constraints active on any price group"
+    },
+    "fee_breakdown": [
+      {
+        "channel": "Internet",
+        "fees": [
+          {
+            "fee": "Fee 1",
+            "amount": 4.78
+          },
+          {
+            "fee": "Fee 2",
+            "amount": 3.91
+          }
+        ],
+        "total_fees_before_tax": 8.69,
+        "fee_applicability_by_group": [
+          {
+            "group": "Club Privilège",
+            "charged_fees": [
+              "fee2"
+            ]
+          },
+          {
+            "group": "Club Privilège 1",
+            "charged_fees": [
+              "fee2"
+            ]
+          },
+          {
+            "group": "MCBN",
+            "charged_fees": [
+              "fee1"
+            ]
+          },
+          {
+            "group": "Rég.",
+            "charged_fees": [
+              "fee1"
+            ]
+          }
+        ]
+      },
+      {
+        "channel": "Salle André-Mathieu",
+        "fees": [
+          {
+            "fee": "Fee 1",
+            "amount": 4.78
+          },
+          {
+            "fee": "Fee 2",
+            "amount": 3.91
+          }
+        ],
+        "total_fees_before_tax": 8.69,
+        "fee_applicability_by_group": [
+          {
+            "group": "Club Privilège",
+            "charged_fees": [
+              "fee2"
+            ]
+          },
+          {
+            "group": "Club Privilège 1",
+            "charged_fees": [
+              "fee2"
+            ]
+          },
+          {
+            "group": "MCBN",
+            "charged_fees": [
+              "fee1"
+            ]
+          },
+          {
+            "group": "Rég.",
+            "charged_fees": [
+              "fee1"
+            ]
+          }
+        ]
+      }
+    ],
+    "event_profile": {
+      "number_of_performances": 1,
+      "number_of_sections": 4,
+      "number_of_section_tiers": 2,
+      "has_membership_pricing": true,
+      "has_complimentary_tickets": true,
+      "has_credit_card_conditions": true,
+      "genre": "Chanson française",
+      "venue_city": "Laval",
+      "has_quantity_constraints": false,
+      "has_multiple_show_times": false
+    }
+  }
+}
