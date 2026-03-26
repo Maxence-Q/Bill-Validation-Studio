@@ -5,10 +5,17 @@ import { ValidationStep } from "@/components/validation/validation-progress"
 import { ValidationIssue } from "@/types/validation"
 import { Configuration } from "@/types/configuration"
 
+export interface CompletedModule {
+    module: string;
+    issues: ValidationIssue[];
+}
+
 export function useValidationRunner() {
     const [isValidationStarted, setIsValidationStarted] = useState(false)
     const [validationSteps, setValidationSteps] = useState<ValidationStep[]>([])
     const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([])
+    const [completedModules, setCompletedModules] = useState<CompletedModule[]>([])
+    const [totalModules, setTotalModules] = useState<number>(0)
     const abortControllerRef = useRef<AbortController | null>(null)
     const validationStartTimeRef = useRef<number | null>(null)
 
@@ -20,6 +27,8 @@ export function useValidationRunner() {
         setIsValidationStarted(false)
         setValidationSteps([])
         setValidationIssues([])
+        setCompletedModules([])
+        setTotalModules(0)
     }, [])
 
     const startValidation = useCallback(async (eventData: any, config: Configuration) => {
@@ -34,6 +43,8 @@ export function useValidationRunner() {
         setIsValidationStarted(true)
         setValidationSteps([])
         setValidationIssues([])
+        setCompletedModules([])
+        setTotalModules(0)
 
         // Initialize UI Steps
         const steps: ValidationStep[] = [
@@ -88,7 +99,9 @@ export function useValidationRunner() {
                         const msg = JSON.parse(line) as import("@/types/validation").StreamMessage;
                         console.log("[Stream]", msg);
 
-                        if (msg.type === "progress") {
+                        if (msg.type === "start") {
+                            setTotalModules(msg.totalModules);
+                        } else if (msg.type === "progress") {
                             setValidationSteps(prev => {
                                 const stepId = `module_${msg.module}`;
 
@@ -159,6 +172,13 @@ export function useValidationRunner() {
                                     };
                                 });
                             });
+                        } else if (msg.type === "module_complete") {
+                            // New: Handle module completion for agent chat UI
+                            setTotalModules(msg.totalModules);
+                            setCompletedModules(prev => [
+                                ...prev,
+                                { module: msg.module, issues: msg.issues }
+                            ]);
                         } else if (msg.type === "result") {
                             if (msg.issues) {
                                 allIssues = msg.issues;
@@ -239,7 +259,10 @@ export function useValidationRunner() {
         isValidationStarted,
         validationSteps,
         validationIssues,
+        completedModules,
+        totalModules,
         startValidation,
         resetValidation,
     }
 }
+

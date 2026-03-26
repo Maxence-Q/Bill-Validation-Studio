@@ -68,11 +68,16 @@ export function SearchEvents({ onSelect }: SearchEventsProps) {
         try {
             const id = parseInt(idStr)
             const config = await getEventConfig(id)
-            onSelect(config)
-            toast.success("Event loaded successfully")
-            setQuery("") // Optional: clear search after selection
+            if (config) {
+                onSelect(config)
+                toast.success("Event loaded successfully")
+                setQuery("") // Optional: clear search after selection
+            } else {
+                toast.error("Event data was empty or invalid")
+            }
         } catch (error) {
-            toast.error("Failed to load event configuration")
+            console.error("Failed to load event:", error)
+            toast.error("Failed to load event configuration (Possible SSL error on staging)")
         } finally {
             setFetchingConfig(false)
         }

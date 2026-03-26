@@ -125,9 +125,6 @@ export function ConfigCarousel({ configs, selectedId, onSelect }: ConfigCarousel
                                     </div>
 
                                     <div className="flex flex-wrap gap-1.5 pt-1">
-                                        <Badge variant="secondary" className="text-[10px] py-0 h-4 font-medium uppercase tracking-tighter">
-                                            {config.language}
-                                        </Badge>
                                         <Badge variant="outline" className="text-[10px] py-0 h-4 font-medium uppercase tracking-tighter">
                                             {config.builderStrategy === 'semantic-chunking' ? 'Semantic Chunking' : 'Line-by-Line'}
                                         </Badge>

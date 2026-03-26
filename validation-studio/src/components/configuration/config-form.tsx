@@ -28,7 +28,6 @@ import {
     configurationSchema,
     defaultConfiguration,
     LLM_MODELS,
-    PROMPT_LANGUAGES,
     EXECUTION_STRATEGIES,
     BUILDER_STRATEGIES,
 } from "@/types/configuration"
@@ -61,7 +60,6 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 name: initialData.name,
                 model: initialData.model,
                 temperature: initialData.temperature,
-                language: initialData.language,
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
                 reasoningEffort: initialData.reasoningEffort || "medium",
@@ -82,7 +80,6 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                 name: initialData.name,
                 model: initialData.model,
                 temperature: initialData.temperature,
-                language: initialData.language,
                 references: initialData.references,
                 slicing: initialData.slicing || defaultConfiguration.slicing,
                 reasoningEffort: initialData.reasoningEffort || "medium",
@@ -170,37 +167,6 @@ export function ConfigForm({ initialData, onSubmit, onCancel }: ConfigFormProps)
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name="language"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Prompt Language</FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                            value={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select language" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {PROMPT_LANGUAGES.map((lang) => (
-                                                    <SelectItem key={lang.id} value={lang.id}>
-                                                        {lang.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormDescription>
-                                            Language for the validation prompts.
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </div>
 
                         <FormField

@@ -16,23 +16,15 @@ export interface ValidationIssue {
     classification?: 'TP' | 'FP';
     /** Index of the parent element within the module (for list modules like Prices) */
     itemIndex?: number;
+    /** Operator feedback status: 'fixed' = corrected on billing platform, 'dismissed' = not relevant */
+    feedbackStatus?: 'fixed' | 'dismissed';
 }
 
 // Discriminator for stream messages
 export type StreamMessage =
-    | {
-        type: 'progress';
-        module: string;
-        current: number;
-        total: number;
-        status?: 'running' | 'completed';
-        global?: {
-            currentPrompt: number;
-            totalPrompts: number;
-            completedSubPrompts: number;
-            totalSubPrompts: number;
-        };
-    }
+    | { type: 'start'; totalModules: number }
+    | { type: 'progress'; module: string; current: number; total: number; status?: 'running' | 'completed'; global?: { currentPrompt: number; totalPrompts: number; completedSubPrompts: number; totalSubPrompts: number } }
+    | { type: 'module_complete'; module: string; issues: ValidationIssue[]; totalModules: number }
     | { type: 'result'; message: string; issues: ValidationIssue[]; prompts: any; metrics: any; reasonings?: Record<string, string[]> }
     | { type: 'error'; message: string };
 

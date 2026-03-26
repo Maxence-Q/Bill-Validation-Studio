@@ -36,6 +36,8 @@ export interface ValidationInput {
     config: Configuration;
     perturbationConfig?: any;
     onProgress?: (data: any) => void;
+    onModuleComplete?: (module: string, issues: any[], totalModules: number) => void;
+    onStart?: (totalModules: number) => void;
     storage?: {
         type: 'validation' | 'evaluation';
         path?: string;
@@ -127,7 +129,7 @@ function buildValidationRecord(
 
 export async function validateEvent(input: ValidationInput): Promise<ValidationOutput> {
     let { targetEvent } = input;
-    const { config, perturbationConfig, onProgress } = input;
+    const { config, perturbationConfig, onProgress, onModuleComplete, onStart } = input;
     if (!config) throw new Error("Configuration is missing");
 
     const allIssues: any[] = [];
@@ -183,6 +185,9 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
     usedReferences = pretreated.usedReferences;
 
     const activeModules = resolveValidationModules(config, targetEvent);
+    if (onStart) {
+        onStart(activeModules.length);
+    }
 
     // 4. Process Modules - PASS 1: Generate all prompts
     // We do this to know the total global prompts and sub-prompts before starting execution
@@ -297,6 +302,11 @@ export async function validateEvent(input: ValidationInput): Promise<ValidationO
             // Delegate execution to the strategy
             const result = await executionStrategy.execute(builtPrompts, context);
             executionResults.push({ module, issues: result.issues, reasonings: result.reasonings });
+
+            // Notify the UI that this module is complete with its issues
+            if (onModuleComplete) {
+                onModuleComplete(module, result.issues, modulesToProcess.length);
+            }
         }
     };
 

@@ -5,7 +5,6 @@
     "name": "default-config",
     "model": "openai/gpt-oss-20b",
     "temperature": 0,
-    "language": "en",
     "references": 3,
     "slicing": {
       "mode": "global",

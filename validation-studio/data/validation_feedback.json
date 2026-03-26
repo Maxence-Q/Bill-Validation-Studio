@@ -16,5 +16,23 @@
         "- **IsAutoClient** – Target value `true` does not match the majority (`false`) of reference values; should be `false`. *(error)*\n- **DateToBeDeterminated** – Target value `false` does not match the majority (`true`) of reference values; should be `true`. *(error)*\n- **Date** – Target date `2045-01-01T05:00:00Z` differs by 33 years from one reference date, exceeding the allowed ±1‑month variation. *(warning)*\n- **SalesStartDateBoxOffice** – Target date `2021-01-01T05:00:00Z` differs by several months/years from reference dates (`2021-09-01T04:00:00Z`, `2011-12-02T05:00:00Z`), exceeding the allowed slight variation. *(warning)*\n- **SalesStartDateNetwork** – Same major discrepancy as above with reference dates, exceeding allowed variation. *(warning)*\n- **SalesStartDateInternet** – Same major discrepancy as above with reference dates, exceeding allowed variation. *(warning)*\n- **SalesEndDateBoxOffice** – Target date `2045-01-01T05:00:00Z` differs by 33 years from a reference date (`2012-12-02T05:00:00Z`), exceeding allowed variation. *(warning)*\n- **SalesEndDateNetwork** – Same major discrepancy as above with reference dates, exceeding allowed variation. *(warning)*\n- **SalesEndDateInternet** – Same major discrepancy as above with reference dates, exceeding allowed variation. *(warning)*"
       ]
     }
+  },
+  {
+    "eventId": 453,
+    "date": "2026-03-25T19:07:49.323Z",
+    "modules": {
+      "Event": [
+        "-"
+      ]
+    }
+  },
+  {
+    "eventId": 6723,
+    "date": "2026-03-25T19:06:29.635Z",
+    "modules": {
+      "EventDates": [
+        "| Issue Summary | TRUE / FALSE | Brief Reason |\n|---------------|--------------|--------------|\n| `EventDateModelList[].Code` differs from reference codes | **TRUE** | Target value does not match any of the provided reference codes, indicating a mismatch. |\n| `EventDateModelList[].RepresentationNameFR` differs from reference | **TRUE** | Target French representation name is not identical to any reference, suggesting an incorrect or unexpected value. |\n| `EventDateModelList[].RepresentationNameEN` differs from reference | **TRUE** | Target English representation name does not match any reference, indicating a discrepancy. |\n| `EventDateModelList[].DescriptionFR` differs from reference | **TRUE** | Target French description is different from all reference descriptions, flagging a potential error. |\n| `EventDateModelList[].DescriptionEN` differs from reference | **TRUE** | Target English description does not align with any reference description, marking it as inconsistent. |\n| `EventDateModelList[].BuyEventDateLink` differs from reference | **TRUE** | The link URL uses a different EventDateId than all references, which may be incorrect. |\n| `EventDateModelList[].RepresentationNameEN` appears to be French | **TRUE** | The value is in French while the field expects English, violating language expectations. |\n| `EventDateModelList[].DescriptionEN` appears to be French | **TRUE** | The description is written in French despite being the English description field, indicating a language mismatch. |"
+      ]
+    }
   }
 ]

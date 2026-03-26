@@ -359,19 +359,6 @@ function transformPrices(data: any): any {
     const list = data?.Prices;
     if (!Array.isArray(list)) return list || {};
 
-    /** Helper to remove case-sensitive ID keys */
-    function removeIDKeys(obj: any): any {
-        if (!obj || typeof obj !== 'object') return obj;
-        if (Array.isArray(obj)) return obj.map(removeIDKeys);
-
-        const result: any = {};
-        for (const [k, v] of Object.entries(obj)) {
-            if (k.includes("ID")) continue;
-            result[k] = removeIDKeys(v);
-        }
-        return result;
-    }
-
     return list.map((priceDef: any) => {
         const summaryObj = { ...priceDef };
 
@@ -541,6 +528,19 @@ function extractListFromModule(moduleData: any, listKeys: string[]): any {
     return moduleData;
 }
 
+/** Helper to remove case-sensitive ID keys */
+function removeIDKeys(obj: any): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(removeIDKeys);
+
+    const result: any = {};
+    for (const [k, v] of Object.entries(obj)) {
+        if (k.includes("ID")) continue;
+        result[k] = removeIDKeys(v);
+    }
+    return result;
+}
+
 export function transformReservatechEvent(data: any, references: any[] = []): any {
     // 1. Prepare Target and Reference data using Semantic Chunking logic
     const allEvents = [data, ...references];
@@ -558,13 +558,13 @@ export function transformReservatechEvent(data: any, references: any[] = []): an
         }
 
         return {
-            Event: transformEvent(resolved),
-            EventDates: transformEventDates(resolved),
-            FeeDefinitions: transformFeeDefinitions(resolved),
-            OwnerPOS: transformOwnerPOS(resolved),
-            PriceGroups: transformPriceGroups(resolved),
-            Prices: transformPrices(resolved),
-            RightToSellAndFees: transformRightToSellAndFees(resolved),
+            Event: removeIDKeys(transformEvent(resolved)),
+            EventDates: removeIDKeys(transformEventDates(resolved)),
+            FeeDefinitions: removeIDKeys(transformFeeDefinitions(resolved)),
+            OwnerPOS: removeIDKeys(transformOwnerPOS(resolved)),
+            PriceGroups: removeIDKeys(transformPriceGroups(resolved)),
+            Prices: transformPrices(resolved), // transformPrices already calls removeIDKeys on each item
+            RightToSellAndFees: removeIDKeys(transformRightToSellAndFees(resolved)),
         };
     });
 

@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
                                 global: progress.global
                             });
                         },
+                        onStart: (totalModules) => {
+                            send({ type: "start", totalModules });
+                        },
+                        onModuleComplete: (module, issues, totalModules) => {
+                            send({
+                                type: "module_complete",
+                                module,
+                                issues: issues as import("@/types/validation").ValidationIssue[],
+                                totalModules
+                            });
+                        },
                         storage: {
                             type: body.storageType || 'evaluation'
                         }

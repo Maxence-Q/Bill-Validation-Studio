@@ -21,8 +21,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Edit, Trash2, Thermometer, Box, MessageSquare, BookOpen } from "lucide-react"
-import { Configuration, LLM_MODELS, PROMPT_LANGUAGES } from "@/types/configuration"
+import { Edit, Trash2, Thermometer, Box, BookOpen } from "lucide-react"
+import { Configuration, LLM_MODELS } from "@/types/configuration"
 
 interface ConfigCardProps {
     config: Configuration
@@ -32,7 +32,6 @@ interface ConfigCardProps {
 
 export function ConfigCard({ config, onEdit, onDelete }: ConfigCardProps) {
     const modelName = LLM_MODELS.find((m) => m.id === config.model)?.name || config.model
-    const langName = PROMPT_LANGUAGES.find((l) => l.id === config.language)?.name || config.language
 
     return (
         <Card className="flex flex-col h-full bg-card/50 hover:bg-card/80 transition-colors border-primary/20">
@@ -60,10 +59,6 @@ export function ConfigCard({ config, onEdit, onDelete }: ConfigCardProps) {
                     <div className="flex items-center gap-2">
                         <Thermometer className="h-4 w-4 text-muted-foreground" />
                         <span>Temp: {config.temperature.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                        <span>{langName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-muted-foreground" />

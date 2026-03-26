@@ -87,6 +87,7 @@ export async function getEventConfig(id: number): Promise<any> {
         return await response.json()
     } catch (error) {
         console.error(`Error fetching config for event ${id}:`, error)
+        throw error // Re-throw so the UI knows it failed
     }
 }
 

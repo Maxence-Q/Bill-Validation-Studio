@@ -4,12 +4,10 @@ import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import { ArrowRight, Settings, Play, RefreshCw, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUpload } from "@/components/validation/file-upload"
 import { EventPreview } from "@/components/validation/event-preview"
-import { ValidationProgress } from "@/components/validation/validation-progress"
-import { HomeIssuesDisplay } from "@/components/validation/home-issues-display"
+import { AgentChat } from "@/components/validation/agent-chat"
 import { cn } from "@/lib/utils"
 import { useValidationRunner } from "@/hooks/useValidationRunner"
 import { Configuration } from "@/types/configuration"
@@ -23,7 +21,18 @@ export default function Home() {
   const [eventData, setEventData] = useState<any | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const { isValidationStarted, validationSteps, validationIssues, startValidation, resetValidation } = useValidationRunner()
+  const {
+    isValidationStarted,
+    validationSteps,
+    validationIssues,
+    completedModules,
+    totalModules,
+    startValidation,
+    resetValidation
+  } = useValidationRunner()
+
+  // Derived: show chat when validation has started or has completed with results
+  const showChat = isValidationStarted || completedModules.length > 0
 
   useEffect(() => {
     const fetchConfigs = async () => {
@@ -55,6 +64,13 @@ export default function Home() {
       }, 100)
     }
   }, [eventData])
+
+  // Automatically reset validation state when a new event is loaded
+  useEffect(() => {
+    if (eventData) {
+      resetValidation()
+    }
+  }, [eventData, resetValidation])
 
   const handleReset = () => {
     setEventData(null)
@@ -105,7 +121,34 @@ export default function Home() {
             </Link>
           </Button>
         </div>
+      ) : showChat ? (
+        /* ─── Agent Chat Mode ─── */
+        <div className="max-w-4xl mx-auto space-y-4 animate-in fade-in duration-500">
+          <Card className="border-primary/20 bg-muted/10 overflow-hidden">
+            <AgentChat
+              completedModules={completedModules}
+              totalModules={totalModules}
+              isRunning={isValidationStarted}
+              configName={selectedConfig?.name}
+            />
+          </Card>
+
+          {/* Action bar below the chat */}
+          <div className="flex justify-center gap-3">
+            <Button variant="outline" onClick={handleReset}>
+              <RefreshCw className="mr-2 h-4 w-4" /> Reset
+            </Button>
+            {!isValidationStarted && completedModules.length > 0 && (
+              <Button asChild size="lg" className="px-8 bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/25">
+                <Link href="/observability">
+                  Go to Observability <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
       ) : (
+        /* ─── Pre-validation: Two-column layout (Upload + Config) ─── */
         <div className="grid gap-8 lg:grid-cols-2 items-start">
           {/* Left Column: Validation Input */}
           <div className="space-y-6">
@@ -127,30 +170,21 @@ export default function Home() {
                   <Button variant="outline" onClick={handleReset} disabled={isValidationStarted}>
                     <RefreshCw className="mr-2 h-4 w-4" /> Reset
                   </Button>
-                  {(isValidationStarted || validationSteps.length === 0) && (
-                    <Button
-                      size="lg"
-                      className="px-8 shadow-lg shadow-primary/25"
-                      onClick={handleStartValidation}
-                      disabled={isValidationStarted || !selectedConfig}
-                    >
-                      {isValidationStarted ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                      Start Validation
-                    </Button>
-                  )}
-                  {!isValidationStarted && validationSteps.length > 0 && (
-                    <Button asChild size="lg" className="px-8 bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/25">
-                      <Link href="/observability">
-                        Go to Observability <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  )}
+                  <Button
+                    size="lg"
+                    className="px-8 shadow-lg shadow-primary/25"
+                    onClick={handleStartValidation}
+                    disabled={isValidationStarted || !selectedConfig}
+                  >
+                    {isValidationStarted ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                    Start Validation
+                  </Button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Column: Configuration & Validation Output */}
+          {/* Right Column: Configuration & Ready State */}
           <div className="space-y-8">
             {!eventData && (
               <div className="space-y-6">
@@ -175,40 +209,22 @@ export default function Home() {
                       <div>
                         <CardTitle>Validation Output</CardTitle>
                         <CardDescription>
-                          {isValidationStarted ? "Running analysis with " : "Results for "}
+                          Results for{" "}
                           <span className="font-semibold text-primary underline decoration-primary/30 underline-offset-4">
                             {selectedConfig?.name}
                           </span>
                         </CardDescription>
                       </div>
-                      {isValidationStarted && (
-                        <Badge variant="outline" className="animate-pulse bg-primary/10 text-primary border-primary/20 capitalize">
-                          {selectedConfig?.builderStrategy.replace('-', ' ')}
-                        </Badge>
-                      )}
                     </div>
                   </CardHeader>
-                  <CardContent className={cn("p-6", (!isValidationStarted && validationSteps.length === 0) && "flex flex-col items-center justify-center text-muted-foreground text-center min-h-[400px]")}>
-                    {!isValidationStarted && validationSteps.length === 0 ? (
-                      <>
-                        <div className="p-6 rounded-full bg-muted mb-4 ring-8 ring-muted/50">
-                          <Play className="h-10 w-10 text-muted-foreground/50" />
-                        </div>
-                        <h3 className="text-xl font-semibold">Ready to Validate</h3>
-                        <p className="text-muted-foreground max-w-xs mt-2">
-                          Confirm your event data on the left, select a preset above, and click &quot;Start Validation&quot;.
-                        </p>
-                      </>
-                    ) : (
-                      <div className="w-full">
-                        <ValidationProgress steps={validationSteps} />
-                        {!isValidationStarted && validationSteps.length > 0 && (
-                          <div className="flex justify-center mt-8 border-t border-dashed pt-8">
-                            <HomeIssuesDisplay issues={validationIssues} />
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  <CardContent className={cn("p-6", "flex flex-col items-center justify-center text-muted-foreground text-center min-h-[400px]")}>
+                    <div className="p-6 rounded-full bg-muted mb-4 ring-8 ring-muted/50">
+                      <Play className="h-10 w-10 text-muted-foreground/50" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Ready to Validate</h3>
+                    <p className="text-muted-foreground max-w-xs mt-2">
+                      Confirm your event data on the left, select a preset above, and click &quot;Start Validation&quot;.
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -219,3 +235,4 @@ export default function Home() {
     </main>
   )
 }
+
