@@ -34,5 +34,32 @@
         "| Issue Summary | TRUE / FALSE | Brief Reason |\n|---------------|--------------|--------------|\n| `EventDateModelList[].Code` differs from reference codes | **TRUE** | Target value does not match any of the provided reference codes, indicating a mismatch. |\n| `EventDateModelList[].RepresentationNameFR` differs from reference | **TRUE** | Target French representation name is not identical to any reference, suggesting an incorrect or unexpected value. |\n| `EventDateModelList[].RepresentationNameEN` differs from reference | **TRUE** | Target English representation name does not match any reference, indicating a discrepancy. |\n| `EventDateModelList[].DescriptionFR` differs from reference | **TRUE** | Target French description is different from all reference descriptions, flagging a potential error. |\n| `EventDateModelList[].DescriptionEN` differs from reference | **TRUE** | Target English description does not align with any reference description, marking it as inconsistent. |\n| `EventDateModelList[].BuyEventDateLink` differs from reference | **TRUE** | The link URL uses a different EventDateId than all references, which may be incorrect. |\n| `EventDateModelList[].RepresentationNameEN` appears to be French | **TRUE** | The value is in French while the field expects English, violating language expectations. |\n| `EventDateModelList[].DescriptionEN` appears to be French | **TRUE** | The description is written in French despite being the English description field, indicating a language mismatch. |"
       ]
     }
+  },
+  {
+    "eventId": 453,
+    "date": "2026-04-07T02:37:27.134Z",
+    "modules": {
+      "Event": [
+        "- \u0000"
+      ],
+      "EventDates": [
+        "- **Error in `EventDateModelList[].Schedule.Sales_BoxOffice.EndLocal`**: The local end time is `2003-11-28T00:00:00`, which corresponds to a UTC‑5 offset, while the associated `EndUTC` is `2003-11-28T05:00:00Z`. Given the consistent UTC‑4 offset used elsewhere, the correct local time should be `2003-11-28T01:00:00`. This mismatch violates the expected timezone conversion."
+      ],
+      "OwnerPOS": [
+        "-"
+      ],
+      "FeeDefinitions": [
+        "No validation issues found for this item, so no feedback is needed."
+      ],
+      "Prices": [
+        "-  "
+      ],
+      "PriceGroups": [
+        "- **PromoWebSaleLink** – The value `\"www.test.ca\"` lacks a URL scheme (e.g., `https://`) and appears to be a placeholder, making it an invalid web address."
+      ],
+      "RightToSellAndFees": [
+        "- **RightToSellFees[].RO_ChargeTax2** – The target value is `true` but reference 2 has `false`, showing an inconsistency in the tax‑charge setting.  \n- **RightToSellFees[].ChargeTax2** – The target value is `true` while reference 2 records `false`, indicating a mismatched tax‑charge configuration."
+      ]
+    }
   }
 ]
